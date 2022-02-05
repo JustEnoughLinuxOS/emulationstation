@@ -1,0 +1,54 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+# batocera
+*.mo
+
+# Compiled Dynamic libraries
+*.so
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Dependency makefiles
+*.d
+
+# Compiled executable
+emulationstation
+
+# build directory
+build
+Debug
+Release
+MinSizeRel
+RelWithDebInfo
+
+# CMake
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+Makefile
+
+# Eclipse
+.cproject
+.project
+.settings/
+
+# Clion
+.idea/
+CPackConfig.cmake
+CPackSourceConfig.cmake
+
+# batocera
+# po backup
+*.po~
+/.vs/
+*.sqlite
+.DS_Store
+
+# vscode
+.vscode/
+
