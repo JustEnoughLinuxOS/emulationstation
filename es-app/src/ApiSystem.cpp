@@ -1218,7 +1218,7 @@ void ApiSystem::setBrightness(int value)
 
 std::vector<std::string> ApiSystem::getWifiNetworks(bool scan)
 {
-	return executeEnumerationScript(scan ? "wifictl scanlist");
+	return executeScript("wifictl scanlist");
 }
 
 std::vector<std::string> ApiSystem::executeEnumerationScript(const std::string command)
