@@ -93,7 +93,7 @@ bool Win32ApiSystem::isScriptingSupported(ScriptId script)
 	switch (script)
 	{
 	case ApiSystem::WIFI:
-		executables.push_back("batocera-wifi");
+		executables.push_back("wifictl");
 		break;
 	case ApiSystem::RETROACHIVEMENTS:
 #ifdef CHEEVOS_DEV_LOGIN

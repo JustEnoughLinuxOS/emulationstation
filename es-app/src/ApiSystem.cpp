@@ -413,20 +413,12 @@ bool ApiSystem::enableWifi(std::string ssid, std::string key)
 	regex tic("(')");
 	key = regex_replace(key,tic,"\\'");
         ssid = regex_replace(ssid,tic,"\\'");
-#ifdef _ENABLEEMUELEC
-	return executeScript("batocera-config wifi enable $\'" + ssid + "\' $\'" + key + "\'");
-#else
-	return executeScript("batocera-wifi enable \"" + ssid + "\" \"" + key + "\"");
-#endif
+	return executeScript("wifictl enable");
 }
 
 bool ApiSystem::disableWifi() 
 {
-#ifdef _ENABLEEMUELEC
-	return executeScript("batocera-config wifi disable");
-#else
-	return executeScript("batocera-wifi disable");
-#endif
+	return executeScript("wifictl disable");
 }
 
 std::string ApiSystem::getIpAdress() 
@@ -1226,7 +1218,7 @@ void ApiSystem::setBrightness(int value)
 
 std::vector<std::string> ApiSystem::getWifiNetworks(bool scan)
 {
-	return executeEnumerationScript(scan ? "batocera-wifi scanlist" : "batocera-wifi list");
+	return executeEnumerationScript(scan ? "wifictl scanlist");
 }
 
 std::vector<std::string> ApiSystem::executeEnumerationScript(const std::string command)
@@ -1307,7 +1299,7 @@ bool ApiSystem::isScriptingSupported(ScriptId script)
 		executables.push_back("kodi");
 		break;
 	case ApiSystem::WIFI:
-		executables.push_back("batocera-wifi");
+		executables.push_back("wifictl");
 		break;
 	case ApiSystem::BLUETOOTH:
 		executables.push_back("batocera-bluetooth");
