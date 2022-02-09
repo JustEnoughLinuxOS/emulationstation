@@ -917,8 +917,6 @@ void GuiMenu::openSystemInformations_batocera()
 	bool isFullUI = UIModeController::getInstance()->isUIModeFull();
 	GuiSettings *informationsGui = new GuiSettings(window, _("INFORMATION").c_str());
 
-	informationsGui->addGroup(_("INFORMATION"));
-
 	// various informations
 	std::vector<std::string> infos = ApiSystem::getInstance()->getSystemInformations();
 	for (auto it = infos.begin(); it != infos.end(); it++) {
