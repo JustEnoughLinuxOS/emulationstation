@@ -416,8 +416,20 @@ std::string getArchString()
 	return "rpi4";
 #endif
 
-#if defined(HW_DEVICE)
-	return std::string(HW_DEVICE);
+#if RG351P
+	return "rg351p";
+#endif
+
+#if RG351V
+	return "rg351v";
+#endif
+
+#if RG351MP
+	return "rg351mp";
+#endif
+
+#if RG552
+	return "rg552";
 #endif
 
 #if ODROIDGOA
