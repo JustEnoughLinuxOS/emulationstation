@@ -1450,61 +1450,7 @@ void GuiMenu::openSystemSettings_batocera()
 	  }
 	});
 
-	// splash
-	auto optionsSplash = std::make_shared<OptionListComponent<std::string> >(mWindow, _("BOOT SPLASH"), false);
-
-	std::string enabledSplash = SystemConf::getInstance()->get("splash.screen.enabled");
-	std::string soundSplash   = SystemConf::getInstance()->get("splash.screen.sound");
-
-	std::string selectedSplash = "auto";
-	if(enabledSplash == "0")      selectedSplash = "nosplash";
-	else if(soundSplash   == "0") selectedSplash = "silentsplash";
-
-	optionsSplash->add(_("DEFAULT VIDEO/USER SET SPLASH"),          "auto", selectedSplash == "auto");
-	optionsSplash->add(_("SILENT VIDEO/USER SET SPLASH"), "silentsplash", selectedSplash == "silentsplash");
-	optionsSplash->add(_("BATOCERA SPLASH IMAGE"),     "nosplash", selectedSplash == "nosplash");
-
-	s->addWithLabel(_("SPLASH SETTING"), optionsSplash);
-
-	s->addSaveFunc([this, optionsSplash, selectedSplash]
-	{
-	  if (optionsSplash->changed()) {
-	    if(optionsSplash->getSelected() == "nosplash") {
-	      SystemConf::getInstance()->set("splash.screen.enabled", "0");
-	    } else {
-	      SystemConf::getInstance()->set("splash.screen.enabled", "1");
-	      if(optionsSplash->getSelected() == "silentsplash") {
-		SystemConf::getInstance()->set("splash.screen.sound", "0");
-	      } else {
-		SystemConf::getInstance()->set("splash.screen.sound", "1");
-	      }
-	    }
-	    SystemConf::getInstance()->saveSystemConf();
-	  }
-	});
 #endif
-
-//       auto oc_enabled = std::make_shared<SwitchComponent>(mWindow);
-//		bool baseEnabled = SystemConf::getInstance()->get("overclock") == "1";
-//		oc_enabled->setState(baseEnabled);
-//		s->addWithLabel(_("ENABLE OVERCLOCK"), oc_enabled);
-//		s->addSaveFunc([this, oc_enabled] {
-//			bool oc_need_reboot = false;
-//			if (oc_enabled->changed()) {
-//				if (oc_enabled->getState() == false) {
-//					runSystemCommand("351elec-overclock off", "", nullptr);
-//				} else {
-//					runSystemCommand("351elec-overclock on", "", nullptr);
-//				}
-//				oc_need_reboot = true;
-//			}
-//			bool ocenabled = oc_enabled->getState();
-//			SystemConf::getInstance()->set("overclock", ocenabled ? "1" : "0");
-//			SystemConf::getInstance()->saveSystemConf();
-//			if (oc_need_reboot) {
-//				mWindow->displayNotificationMessage(_U("\uF011  ") + _("A REBOOT OF THE SYSTEM IS REQUIRED TO APPLY THE NEW CONFIGURATION"));
-//			}
-//		});
 
 	if (!ApiSystem::getInstance()->isScriptingSupported(ApiSystem::GAMESETTINGS))
 	{
