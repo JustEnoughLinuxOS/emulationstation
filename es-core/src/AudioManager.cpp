@@ -195,7 +195,7 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 
 	// check in system sound directory
 	if (musics.empty())
-		getMusicIn("/storage/.config/distribution/BGM", musics);
+		getMusicIn("/storage/.config/system/BGM", musics);
 
 	// check in .emulationstation/music directory
 	if (musics.empty())

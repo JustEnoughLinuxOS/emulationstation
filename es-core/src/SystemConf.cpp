@@ -51,8 +51,8 @@ static std::map<std::string, std::string> defaults =
 	{ "global.ai_service_enabled", "0" },
 };
 
-std::string systemConfFile = "/storage/.config/distribution/configs/distribution.conf";
-std::string systemConfFileTmp = "/storage/.config/distribution/configs/distribution.conf.tmp";
+std::string systemConfFile = "/storage/.config/system/configs/system.cfg";
+std::string systemConfFileTmp = "/storage/.config/system/configs/system.cfg.tmp";
 
 SystemConf::SystemConf() 
 {

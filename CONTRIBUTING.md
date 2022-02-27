@@ -26,7 +26,7 @@ Pull requests are the best way to propose changes to the codebase (we use [Githu
 ## Any contributions you make will be under the Apache 2 Software License
 In short, when you submit code changes, your submissions are understood to be contributed under the same license as the original project code or under [Apache 2](https://choosealicense.com/licenses/apache-2.0/) license when no other license applies.
 
-## Report bugs using Github's [issues](https://github.com/jelos/distribution/issues)
+## Report bugs using Github's [issues](https://github.com/JustEnoughLinuxOS/distribution/issues)
 We use GitHub issues to track public bugs. Report a bug by [opening a new issue](); it's that easy!
 
 ## Write bug reports with detail, background, and sample code
