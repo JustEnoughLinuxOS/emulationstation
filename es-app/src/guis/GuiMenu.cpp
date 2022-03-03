@@ -1460,6 +1460,7 @@ void GuiMenu::openSystemSettings_batocera()
 		selectedFanProfile = "quiet";
 
 	optionsFanProfile->add(_("QUIET"),    "quiet", selectedFanProfile == "quiet");
+	optionsFanProfile->add(_("MODERATE"),"moderate", selectedFanProfile == "moderate");
 	optionsFanProfile->add(_("AGGRESSIVE"),"aggressive", selectedFanProfile == "aggressive");
 	optionsFanProfile->add(_("CUSTOM"),"custom", selectedFanProfile == "custom");
 
@@ -1470,6 +1471,7 @@ void GuiMenu::openSystemSettings_batocera()
 	  if (optionsFanProfile->changed()) {
 	    SystemConf::getInstance()->set("cooling.profile", optionsFanProfile->getSelected());
 	    SystemConf::getInstance()->saveSystemConf();
+	    runSystemCommand("systemctl restart fancontrol", "", nullptr);
 	  }
 	});
 
