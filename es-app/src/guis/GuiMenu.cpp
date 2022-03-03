@@ -1452,6 +1452,29 @@ void GuiMenu::openSystemSettings_batocera()
 
 #endif
 
+#ifdef RG552
+    auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
+
+	std::string selectedFanProfile = SystemConf::getInstance()->get("fan.profile");
+	if (selectedFanProfile.empty())
+		selectedFanProfile = "quiet";
+
+	optionsFanProfile->add(_("QUIET"),    "quiet", selectedFanProfile == "quiet");
+	optionsFanProfile->add(_("AGGRESSIVE"),"aggressive", selectedFanProfile == "aggressive");
+	optionsFanProfile->add(_("CUSTOM"),"custom", selectedFanProfile == "custom");
+
+	s->addWithLabel(_("COOLING PROFILE"), optionsFanProfile);
+
+	s->addSaveFunc([this, optionsFanProfile, selectedFanProfile]
+	{
+	  if (optionsFanProfile->changed()) {
+	    SystemConf::getInstance()->set("cooling.profile", optionsFanProfile->getSelected());
+	    SystemConf::getInstance()->saveSystemConf();
+	  }
+	});
+
+#endif
+
 	if (!ApiSystem::getInstance()->isScriptingSupported(ApiSystem::GAMESETTINGS))
 	{
 		// Retroachievements
