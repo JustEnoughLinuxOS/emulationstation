@@ -1455,7 +1455,7 @@ void GuiMenu::openSystemSettings_batocera()
 #ifdef RG552
     auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
 
-	std::string selectedFanProfile = SystemConf::getInstance()->get("fan.profile");
+	std::string selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
 	if (selectedFanProfile.empty())
 		selectedFanProfile = "quiet";
 
