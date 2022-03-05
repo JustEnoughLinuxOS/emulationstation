@@ -1482,6 +1482,7 @@ void GuiMenu::openSystemSettings_batocera()
 		selectedOCProfile = "off";
 
 	optionsOCProfile->add(_("OFF"),    "off", selectedOCProfile == "off");
+	optionsOCProfile->add(_("MEMORY ONLY"),"mem", selectedOCProfile == "mem");
 	optionsOCProfile->add(_("GPU FOCUSED"),"gpu", selectedOCProfile == "gpu");
 	optionsOCProfile->add(_("CPU FOCUSED"),"cpu", selectedOCProfile == "cpu");
 	optionsOCProfile->add(_("MAXIMUM PERFORMANCE"),"max", selectedOCProfile == "max");
