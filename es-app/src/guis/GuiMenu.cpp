@@ -4037,10 +4037,6 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 	} else {
 		runSystemCommand("/usr/bin/internalwifi enable", "", nullptr);
 	}
-	bool internalwifi = internal_wifi->getState();
-		SystemConf::getInstance()->set("internal.wifi", internalwifi ? "1" : "0");
-		SystemConf::getInstance()->saveSystemConf();
-	});
 #endif
 	// window, title, settingstring,
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
