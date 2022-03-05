@@ -1495,6 +1495,7 @@ void GuiMenu::openSystemSettings_batocera()
 			SystemConf::getInstance()->set("system.overclock", optionsOCProfile->getSelected());
 			SystemConf::getInstance()->saveSystemConf();
 			runSystemCommand("/usr/bin/overclock", "", nullptr);
+			selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
 		}
 	});
 
