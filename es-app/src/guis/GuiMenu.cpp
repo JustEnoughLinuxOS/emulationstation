@@ -1475,6 +1475,28 @@ void GuiMenu::openSystemSettings_batocera()
 	  }
 	});
 
+	auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
+
+	std::string selectedOCProfile = SystemConf::getInstance()->get("system.overclock");
+	if (selectedOCProfile.empty())
+		selectedOCProfile = "off";
+
+	optionsOCProfile->add(_("OFF"),    "off", selectedOCProfile == "off");
+	optionsOCProfile->add(_("GPU FOCUSED"),"gpu", selectedOCProfile == "gpu");
+	optionsOCProfile->add(_("CPU FOCUSED"),"cpu", selectedOCProfile == "cpu");
+	optionsOCProfile->add(_("MAXIMUM PERFORMANCE"),"max", selectedOCProfile == "max");
+
+	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
+
+	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
+	{
+		if (optionsOCProfile->changed()) {
+			SystemConf::getInstance()->set("system.overclock", optionsOCProfile->getSelected());
+			SystemConf::getInstance()->saveSystemConf();
+			runSystemCommand("/usr/bin/overclock", "", nullptr);
+		}
+	});
+
 #endif
 
 	if (!ApiSystem::getInstance()->isScriptingSupported(ApiSystem::GAMESETTINGS))
