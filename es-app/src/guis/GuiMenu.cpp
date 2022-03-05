@@ -1453,7 +1453,7 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 
 #ifdef RG552
-    auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
+	auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
 
 	std::string selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
 	if (selectedFanProfile.empty())
@@ -1492,9 +1492,13 @@ void GuiMenu::openSystemSettings_batocera()
 	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
 	{
 		if (optionsOCProfile->changed()) {
-			SystemConf::getInstance()->set("system.overclock", optionsOCProfile->getSelected());
-			SystemConf::getInstance()->saveSystemConf();
-			runSystemCommand("/usr/bin/overclock", "", nullptr);
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("THIS WILL RESTART EMULATIONSTATION!"), _("YES"),
+                                [this,optionsOCProfile] {
+					SystemConf::getInstance()->set("system.overclock", optionsOCProfile->getSelected());
+					SystemConf::getInstance()->saveSystemConf();
+					runSystemCommand("/usr/bin/overclock", "", nullptr);
+					runSystemCommand("systemctl restart emustation", "", nullptr);
+                                }, _("NO"), nullptr));
 		}
 	});
 
