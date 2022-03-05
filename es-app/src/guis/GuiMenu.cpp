@@ -1453,8 +1453,8 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 
 #ifdef RG552
+	// Provides cooling profile switching
 	auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
-
 	std::string selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
 	if (selectedFanProfile.empty())
 		selectedFanProfile = "quiet";
@@ -1475,8 +1475,8 @@ void GuiMenu::openSystemSettings_batocera()
 	  }
 	});
 
+	// Provides overclock profile switching
 	auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
-
 	std::string selectedOCProfile = SystemConf::getInstance()->get("system.overclock");
 	if (selectedOCProfile.empty())
 		selectedOCProfile = "off";
@@ -1501,6 +1501,21 @@ void GuiMenu::openSystemSettings_batocera()
                                 }, _("NO"), nullptr));
 		}
 	});
+
+	// Load or unload the internal WIFI kernel module
+        auto internal_wifi = std::make_shared<SwitchComponent>(mWindow);
+        bool internalmoduleEnabled = SystemConf::getInstance()->get("internal.wifi") == "1";
+        internal_wifi->setState(internalmoduleEnabled);
+        s->addWithLabel(_("ENABLE INTERNAL WIFI DEVICE"), internal_wifi);
+        s->addSaveFunc([internal_wifi] {
+                bool internalenabled = internal_wifi->getState();
+                SystemConf::getInstance()->set("internal.wifi", internalenabled ? "1" : "0");
+                if (internal_wifi->getState() == false) {
+                        runSystemCommand("/usr/bin/internalwifi disable", "", nullptr);
+                } else {
+                        runSystemCommand("/usr/bin/internalwifi enable", "", nullptr);
+                }
+        });
 
 #endif
 
@@ -4026,21 +4041,6 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
         enable_wifi->setState(baseWifiEnabled);
         s->addWithLabel(_("ENABLE WIFI"), enable_wifi, selectWifiEnable);
 
-#ifdef RG552
-	auto internal_wifi = std::make_shared<SwitchComponent>(mWindow);
-	bool internalmoduleEnabled = SystemConf::getInstance()->get("internal.wifi") == "1";
-	internal_wifi->setState(internalmoduleEnabled);
-	s->addWithLabel(_("ENABLE INTERNAL WIFI"), internal_wifi);
-	s->addSaveFunc([internal_wifi] {
-		bool internalenabled = internal_wifi->getState();
-		SystemConf::getInstance()->set("internal.wifi", internalenabled ? "1" : "0");
-		if (internal_wifi->getState() == false) {
-			runSystemCommand("/usr/bin/internalwifi disable", "", nullptr);
-		} else {
-			runSystemCommand("/usr/bin/internalwifi enable", "", nullptr);
-		}
-	});
-#endif
 	// window, title, settingstring,
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
 	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
