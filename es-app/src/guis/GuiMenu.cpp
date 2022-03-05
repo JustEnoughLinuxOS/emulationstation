@@ -4032,11 +4032,12 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 	internal_wifi->setState(internalmoduleEnabled);
 	s->addWithLabel(_("ENABLE INTERNAL WIFI"), internal_wifi);
 	s->addSaveFunc([internal_wifi] {
-	if (internal_wifi->getState() == false) {
-		runSystemCommand("/usr/bin/internalwifi disable", "", nullptr);
-	} else {
-		runSystemCommand("/usr/bin/internalwifi enable", "", nullptr);
-	}
+		if (internal_wifi->getState() == false) {
+			runSystemCommand("/usr/bin/internalwifi disable", "", nullptr);
+		} else {
+			runSystemCommand("/usr/bin/internalwifi enable", "", nullptr);
+		}
+	});
 #endif
 	// window, title, settingstring,
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
