@@ -4021,11 +4021,27 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 				SystemConf::getInstance()->saveSystemConf();
 		});
 
-	// Wifi enable
-	auto enable_wifi = std::make_shared<SwitchComponent>(mWindow);
-	enable_wifi->setState(baseWifiEnabled);
-	s->addWithLabel(_("ENABLE WIFI"), enable_wifi, selectWifiEnable);
+        // Wifi enable
+        auto enable_wifi = std::make_shared<SwitchComponent>(mWindow);
+        enable_wifi->setState(baseWifiEnabled);
+        s->addWithLabel(_("ENABLE WIFI"), enable_wifi, selectWifiEnable);
 
+#ifdef RG552
+	auto internal_wifi = std::make_shared<SwitchComponent>(mWindow);
+	bool internalmoduleEnabled = SystemConf::getInstance()->get("internal.wifi") == "1";
+	internal_wifi->setState(internalmoduleEnabled);
+	s->addWithLabel(_("ENABLE INTERNAL WIFI"), internal_wifi);
+	s->addSaveFunc([internal_wifi] {
+	if (internal_wifi->getState() == false) {
+		runSystemCommand("/usr/bin/internalwifi disable", "", nullptr);
+	} else {
+		runSystemCommand("/usr/bin/internalwifi enable", "", nullptr);
+	}
+	bool internalwifi = internal_wifi->getState();
+		SystemConf::getInstance()->set("internal.wifi", internalwifi ? "1" : "0");
+		SystemConf::getInstance()->saveSystemConf();
+	});
+#endif
 	// window, title, settingstring,
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
 	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
