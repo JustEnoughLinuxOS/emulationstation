@@ -4032,7 +4032,8 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 	internal_wifi->setState(internalmoduleEnabled);
 	s->addWithLabel(_("ENABLE INTERNAL WIFI"), internal_wifi);
 	s->addSaveFunc([internal_wifi] {
-		SystemConf::getInstance()->set("internal.wifi", internalmoduleEnabled ? "1" : "0");
+		bool internalenabled = internal_wifi->getState();
+		SystemConf::getInstance()->set("internal.wifi", internalenabled ? "1" : "0");
 		if (internal_wifi->getState() == false) {
 			runSystemCommand("/usr/bin/internalwifi disable", "", nullptr);
 		} else {
