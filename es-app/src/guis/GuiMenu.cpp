@@ -1484,13 +1484,15 @@ void GuiMenu::openSystemSettings_batocera()
 	optionsOCProfile->add(_("OFF"),    "off", selectedOCProfile == "off");
 	optionsOCProfile->add(_("MEMORY ONLY"),"mem", selectedOCProfile == "mem");
 	optionsOCProfile->add(_("GPU FOCUSED"),"gpu", selectedOCProfile == "gpu");
+	optionsOCProfile->add(_("CPU FOCUSED"),"cpu", selectedOCProfile == "cpu");
+	optionsOCProfile->add(_("MAX PERFORMANCE"),"max", selectedOCProfile == "max");
 
 	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
 
 	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
 	{
 		if (optionsOCProfile->changed()) {
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE! DO NOT LOWER THE COOLING PROFILE BELOW MODERATE WHILE USING GPU OVERCLOCK SETTINGS! JELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!  CLICK YES TO ACCEPT AND RESTART EMULATIONSTATION."), _("YES"),
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE! DO NOT CHANGE COOLING PROFILES WHILE USING AN OVERCLOCK! JELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!  CLICK YES TO ACCEPT AND RESTART EMULATIONSTATION."), _("YES"),
                                 [this,optionsOCProfile] {
 					SystemConf::getInstance()->set("system.overclock", optionsOCProfile->getSelected());
 					SystemConf::getInstance()->saveSystemConf();
