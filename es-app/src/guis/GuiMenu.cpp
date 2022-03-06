@@ -1492,7 +1492,7 @@ void GuiMenu::openSystemSettings_batocera()
 	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
 	{
 		if (optionsOCProfile->changed()) {
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("THIS WILL RESTART EMULATIONSTATION!"), _("YES"),
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE! DO NOT LOWER THE COOLING PROFILE BELOW MODERATE WHILE USING GPU/CPU/MAX OVERCLOCK SETTINGS! JELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!  CLICK YES TO ACCEPT AND RESTART EMULATIONSTATION."), _("YES"),
                                 [this,optionsOCProfile] {
 					SystemConf::getInstance()->set("system.overclock", optionsOCProfile->getSelected());
 					SystemConf::getInstance()->saveSystemConf();
