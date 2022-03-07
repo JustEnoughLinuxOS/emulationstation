@@ -1454,15 +1454,23 @@ void GuiMenu::openSystemSettings_batocera()
 
 #ifdef RG552
 
-	if (SystemConf::getInstance()->get("system.overclock") == "off") {
 	  // Provides cooling profile switching
 	  auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
 	  std::string selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
 	  if (selectedFanProfile.empty())
 		selectedFanProfile = "quiet";
 
-	  optionsFanProfile->add(_("QUIET"),    "quiet", selectedFanProfile == "quiet");
-	  optionsFanProfile->add(_("MODERATE"),"moderate", selectedFanProfile == "moderate");
+	  // Make this less gross with a regex match later.
+	  if (SystemConf::getInstance()->get("system.overclock") != "cpu-stable" ||
+	      SystemConf::getInstance()->get("system.overclock") != "cpu-unstable" || 
+	      SystemConf::getInstance()->get("system.overclock") != "max-stable" || 
+	      SystemConf::getInstance()->get("system.overclock") != "max-unstable") {
+	    	optionsFanProfile->add(_("QUIET"),    "quiet", selectedFanProfile == "quiet");
+	  }
+	  if (SystemConf::getInstance()->get("system.overclock") != "cpu-unstable" ||
+	      SystemConf::getInstance()->get("system.overclock") != "max-unstable") {
+	  	optionsFanProfile->add(_("MODERATE"),"moderate", selectedFanProfile == "moderate");
+	  }
 	  optionsFanProfile->add(_("AGGRESSIVE"),"aggressive", selectedFanProfile == "aggressive");
 	  optionsFanProfile->add(_("CUSTOM"),"custom", selectedFanProfile == "custom");
 
@@ -1476,7 +1484,6 @@ void GuiMenu::openSystemSettings_batocera()
 	      runSystemCommand("systemctl restart fancontrol", "", nullptr);
 	    }
 	  });
-	}
 
 	// Provides overclock profile switching
 	auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
@@ -1499,7 +1506,7 @@ void GuiMenu::openSystemSettings_batocera()
 	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
 	{
 		if (optionsOCProfile->changed()) {
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN\n\nSTABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE!\n\nES WILL DISABLE COOLING PROFILES WHILE USING AN OVERCLOCK!\n\nJELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!\n\nCLICK YES THAT YOU AGREE, OR NO TO CANCEL."), _("YES"),
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE!\n\nES WILL DISABLE THE QUIET COOLING PROFILE WHILE USING CERTAIN OVERCLOCKS!\n\nJELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!\n\nCLICK YES THAT YOU AGREE, OR NO TO CANCEL."), _("YES"),
                                 [this,optionsOCProfile] {
 					SystemConf::getInstance()->set("system.overclock", optionsOCProfile->getSelected());
 					SystemConf::getInstance()->saveSystemConf();
