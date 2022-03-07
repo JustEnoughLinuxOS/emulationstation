@@ -1453,27 +1453,30 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 
 #ifdef RG552
-	// Provides cooling profile switching
-	auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
-	std::string selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
-	if (selectedFanProfile.empty())
+
+	if (SystemConf::getInstance()->get("system.overclock") == "off") {
+	  // Provides cooling profile switching
+	  auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
+	  std::string selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
+	  if (selectedFanProfile.empty())
 		selectedFanProfile = "quiet";
 
-	optionsFanProfile->add(_("QUIET"),    "quiet", selectedFanProfile == "quiet");
-	optionsFanProfile->add(_("MODERATE"),"moderate", selectedFanProfile == "moderate");
-	optionsFanProfile->add(_("AGGRESSIVE"),"aggressive", selectedFanProfile == "aggressive");
-	optionsFanProfile->add(_("CUSTOM"),"custom", selectedFanProfile == "custom");
+	  optionsFanProfile->add(_("QUIET"),    "quiet", selectedFanProfile == "quiet");
+	  optionsFanProfile->add(_("MODERATE"),"moderate", selectedFanProfile == "moderate");
+	  optionsFanProfile->add(_("AGGRESSIVE"),"aggressive", selectedFanProfile == "aggressive");
+	  optionsFanProfile->add(_("CUSTOM"),"custom", selectedFanProfile == "custom");
 
-	s->addWithLabel(_("COOLING PROFILE"), optionsFanProfile);
+	  s->addWithLabel(_("COOLING PROFILE"), optionsFanProfile);
 
-	s->addSaveFunc([this, optionsFanProfile, selectedFanProfile]
-	{
-	  if (optionsFanProfile->changed()) {
-	    SystemConf::getInstance()->set("cooling.profile", optionsFanProfile->getSelected());
-	    SystemConf::getInstance()->saveSystemConf();
-	    runSystemCommand("systemctl restart fancontrol", "", nullptr);
-	  }
-	});
+	  s->addSaveFunc([this, optionsFanProfile, selectedFanProfile]
+	  {
+	    if (optionsFanProfile->changed()) {
+	      SystemConf::getInstance()->set("cooling.profile", optionsFanProfile->getSelected());
+	      SystemConf::getInstance()->saveSystemConf();
+	      runSystemCommand("systemctl restart fancontrol", "", nullptr);
+	    }
+	  });
+	}
 
 	// Provides overclock profile switching
 	auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
@@ -1492,12 +1495,11 @@ void GuiMenu::openSystemSettings_batocera()
 	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
 	{
 		if (optionsOCProfile->changed()) {
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE! DO NOT CHANGE COOLING PROFILES WHILE USING AN OVERCLOCK! JELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!  CLICK YES TO ACCEPT AND RESTART EMULATIONSTATION."), _("YES"),
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE! ES WILL DISABLE COOLING PROFILES WHILE USING AN OVERCLOCK! JELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!  CLICK YES THAT YOU AGREE, OR NO TO CANCEL."), _("YES"),
                                 [this,optionsOCProfile] {
 					SystemConf::getInstance()->set("system.overclock", optionsOCProfile->getSelected());
 					SystemConf::getInstance()->saveSystemConf();
 					runSystemCommand("/usr/bin/overclock", "", nullptr);
-					runSystemCommand("systemctl restart emustation", "", nullptr);
                                 }, _("NO"), nullptr));
 		}
 	});
