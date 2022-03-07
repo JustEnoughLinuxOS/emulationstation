@@ -1485,19 +1485,21 @@ void GuiMenu::openSystemSettings_batocera()
 		selectedOCProfile = "off";
 
 	optionsOCProfile->add(_("OFF"),    "off", selectedOCProfile == "off");
-	optionsOCProfile->add(_("MEMORY ONLY"),"mem", selectedOCProfile == "mem");
-	optionsOCProfile->add(_("GPU FOCUSED"),"gpu", selectedOCProfile == "gpu");
-	optionsOCProfile->add(_("CPU FOCUSED (STABLE)"),"cpu-stable", selectedOCProfile == "cpu-stable");
-	optionsOCProfile->add(_("CPU FOCUSED (UNSTABLE)"),"cpu-unstable", selectedOCProfile == "cpu-unstable");
-	optionsOCProfile->add(_("PERFORMANCE (STABLE)"),"max-stable", selectedOCProfile == "max-stable");
-	optionsOCProfile->add(_("PERFORMANCE (UNSTABLE)"),"max-unstable", selectedOCProfile == "max-unstable");
+	optionsOCProfile->add(_("RAM - 933"),"mem", selectedOCProfile == "mem");
+	optionsOCProfile->add(_("GPU - 900/933"),"gpu", selectedOCProfile == "gpu");
+	optionsOCProfile->add(_("CPU - 1992/1512/933"),"cpu-nominal", selectedOCProfile == "cpu-nominal");
+	optionsOCProfile->add(_("CPU - 2088/1608/933"),"cpu-stable", selectedOCProfile == "cpu-stable");
+	optionsOCProfile->add(_("CPU - 2184/1704/933"),"cpu-unstable", selectedOCProfile == "cpu-unstable");
+	optionsOCProfile->add(_("ALL - 1992/1512/900/933"),"max-nominal", selectedOCProfile == "max-nominal");
+	optionsOCProfile->add(_("ALL - 2088/1608/900/933"),"max-stable", selectedOCProfile == "max-stable");
+	optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
 
 	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
 
 	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
 	{
 		if (optionsOCProfile->changed()) {
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE! ES WILL DISABLE COOLING PROFILES WHILE USING AN OVERCLOCK! JELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!  CLICK YES THAT YOU AGREE, OR NO TO CANCEL."), _("YES"),
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN\n\nSTABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE!\n\nES WILL DISABLE COOLING PROFILES WHILE USING AN OVERCLOCK!\n\nJELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!\n\nCLICK YES THAT YOU AGREE, OR NO TO CANCEL."), _("YES"),
                                 [this,optionsOCProfile] {
 					SystemConf::getInstance()->set("system.overclock", optionsOCProfile->getSelected());
 					SystemConf::getInstance()->saveSystemConf();
