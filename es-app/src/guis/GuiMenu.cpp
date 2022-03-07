@@ -1487,8 +1487,10 @@ void GuiMenu::openSystemSettings_batocera()
 	optionsOCProfile->add(_("OFF"),    "off", selectedOCProfile == "off");
 	optionsOCProfile->add(_("MEMORY ONLY"),"mem", selectedOCProfile == "mem");
 	optionsOCProfile->add(_("GPU FOCUSED"),"gpu", selectedOCProfile == "gpu");
-	optionsOCProfile->add(_("CPU FOCUSED"),"cpu", selectedOCProfile == "cpu");
-	optionsOCProfile->add(_("MAX PERFORMANCE"),"max", selectedOCProfile == "max");
+	optionsOCProfile->add(_("CPU FOCUSED (STABLE)"),"cpu-stable", selectedOCProfile == "cpu-stable");
+	optionsOCProfile->add(_("CPU FOCUSED (UNSTABLE)"),"cpu-unstable", selectedOCProfile == "cpu-unstable");
+	optionsOCProfile->add(_("PERFORMANCE (STABLE)"),"max-stable", selectedOCProfile == "max-stable");
+	optionsOCProfile->add(_("PERFORMANCE (UNSTABLE)"),"max-unstable", selectedOCProfile == "max-unstable");
 
 	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
 
