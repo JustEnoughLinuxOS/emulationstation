@@ -1532,6 +1532,35 @@ void GuiMenu::openSystemSettings_batocera()
 
 #endif
 
+	s->addGroup(_("SOFTWARE UPDATE"));
+
+        // Enable updates
+        auto updates_enabled = std::make_shared<SwitchComponent>(mWindow);
+        updates_enabled->setState(SystemConf::getInstance()->getBool("updates.enabled"));
+
+        s->addWithLabel(_("CHECK FOR UPDATES"), updates_enabled);
+        s->addSaveFunc([updates_enabled]
+        {
+                SystemConf::getInstance()->setBool("updates.enabled", updates_enabled->getState());
+        });
+
+                // Start update
+        s->addEntry(GuiUpdate::state == GuiUpdateState::State::UPDATE_READY ? _("APPLY UPDATE") : _("START UPDATE"), true, [this]
+        {
+                if (GuiUpdate::state == GuiUpdateState::State::UPDATE_READY)
+                        quitES(QuitMode::RESTART);
+                else if (GuiUpdate::state == GuiUpdateState::State::UPDATER_RUNNING)
+                        mWindow->pushGui(new GuiMsgBox(mWindow, _("UPDATER IS ALREADY RUNNING")));
+                else
+                {
+                        if (!checkNetwork())
+                                return;
+
+                        mWindow->pushGui(new GuiUpdate(mWindow));
+                }
+        });
+
+
 	if (!ApiSystem::getInstance()->isScriptingSupported(ApiSystem::GAMESETTINGS))
 	{
 		// Retroachievements

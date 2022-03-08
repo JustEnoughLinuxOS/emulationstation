@@ -171,14 +171,14 @@ std::pair<std::string, int> ApiSystem::updateSystem(const std::function<void(con
 {
 	LOG(LogDebug) << "ApiSystem::updateSystem";
 
-	std::string updatecommand = "351elec-upgrade";
+	std::string updatecommand = "system-upgrade";
 
 	FILE *pipe = popen(updatecommand.c_str(), "r");
 	if (pipe == nullptr)
 		return std::pair<std::string, int>(std::string("Cannot call update command"), -1);
 
 	char line[1024] = "";
-	FILE *flog = fopen("/tmp/logs/351elec-upgrade.log", "w");
+	FILE *flog = fopen("/var/log/system-upgrade.log", "w");
 	while (fgets(line, 1024, pipe)) 
 	{
 		strtok(line, "\n");
@@ -300,7 +300,7 @@ bool ApiSystem::canUpdate(std::vector<std::string>& output)
 {
 	LOG(LogDebug) << "ApiSystem::canUpdate";
 
-	FILE *pipe = popen("batocera-config canupdate", "r");
+	FILE *pipe = popen("updatecheck", "r");
 	if (pipe == NULL)
 		return false;
 
