@@ -278,14 +278,14 @@ bool ImageGridComponent<T>::input(InputConfig* config, Input input)
 			dir[0 ^ idx] = -1;
 		else if(config->isMappedLike("right", input))
 			dir[0 ^ idx] = 1;
-		else  if (config->isMappedTo("lefttrigger", input))
+		else  if (config->isMappedTo("leftshoulder", input))
 		{
 			if (isVertical())
 				dir[1 ^ idx] = -10;
 			else
 				dir[0 ^ idx] = -10;
 		}
-		else if (config->isMappedTo("righttrigger", input))
+		else if (config->isMappedTo("rightshoulder", input))
 		{
 			if (isVertical())
 				dir[1 ^ idx] = 10;
@@ -305,7 +305,7 @@ bool ImageGridComponent<T>::input(InputConfig* config, Input input)
 	}else{
 		if(config->isMappedLike("up", input) || config->isMappedLike("down", input) || 
 			config->isMappedLike("left", input) || config->isMappedLike("right", input) ||
-			config->isMappedTo("righttrigger", input) || config->isMappedTo("lefttrigger", input))
+			config->isMappedTo("rightshoulder", input) || config->isMappedTo("leftshoulder", input))
 		{
 			stopScrolling();
 		}

@@ -459,13 +459,13 @@ bool SystemView::input(InputConfig* config, Input input)
 				listInput(1);
 				return true;
 			}
-			if ((Settings::getInstance()->getBool("QuickSystemSelect") && config->isMappedLike("left", input)) || config->isMappedTo("righttrigger", input))
+			if ((Settings::getInstance()->getBool("QuickSystemSelect") && config->isMappedLike("left", input)) || config->isMappedTo("rightshoulder", input))
 			{
 				int cursor = moveCursorFast(true);
 				listInput(cursor - mCursor);				
 				return true;
 			}
-			if ((Settings::getInstance()->getBool("QuickSystemSelect") && config->isMappedLike("right", input)) || config->isMappedTo("lefttrigger", input))
+			if ((Settings::getInstance()->getBool("QuickSystemSelect") && config->isMappedLike("right", input)) || config->isMappedTo("leftshoulder", input))
 			{
 				int cursor = moveCursorFast(false);
 				listInput(cursor - mCursor);
@@ -486,13 +486,13 @@ bool SystemView::input(InputConfig* config, Input input)
 				listInput(1);
 				return true;
 			}
-			if ((Settings::getInstance()->getBool("QuickSystemSelect") && config->isMappedLike("down", input)) || config->isMappedTo("righttrigger", input))
+			if ((Settings::getInstance()->getBool("QuickSystemSelect") && config->isMappedLike("down", input)) || config->isMappedTo("rightshoulder", input))
 			{
 				int cursor = moveCursorFast(true);
 				listInput(cursor - mCursor);
 				return true;
 			}
-			if ((Settings::getInstance()->getBool("QuickSystemSelect") && config->isMappedLike("up", input)) || config->isMappedTo("lefttrigger", input))
+			if ((Settings::getInstance()->getBool("QuickSystemSelect") && config->isMappedLike("up", input)) || config->isMappedTo("leftshoulder", input))
 			{
 				int cursor = moveCursorFast(false);
 				listInput(cursor - mCursor);
@@ -554,8 +554,8 @@ bool SystemView::input(InputConfig* config, Input input)
 			config->isMappedLike("right", input) ||
 			config->isMappedLike("up", input) ||
 			config->isMappedLike("down", input) ||
-			config->isMappedLike("righttrigger", input) ||
-			config->isMappedLike("lefttrigger", input) ||
+			config->isMappedLike("rightshoulder", input) ||
+			config->isMappedLike("leftshoulder", input) ||
 			config->isMappedLike("l2", input) ||
 			config->isMappedLike("r2", input))
 			listInput(0);

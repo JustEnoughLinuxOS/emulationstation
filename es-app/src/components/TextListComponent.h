@@ -317,19 +317,19 @@ bool TextListComponent<T>::input(InputConfig* config, Input input)
 				listInput(-1);
 				return true;
 			}
-			if(config->isMappedTo("righttrigger", input))
+			if(config->isMappedTo("rightshoulder", input))
 			{
 				listInput(10);
 				return true;
 			}
-			if(config->isMappedTo("lefttrigger", input))
+			if(config->isMappedTo("leftshoulder", input))
 			{
 				listInput(-10);
 				return true;
 			}
 		}else{
 			if(config->isMappedLike("down", input) || config->isMappedLike("up", input) || 
-				config->isMappedTo("righttrigger", input) || config->isMappedTo("lefttrigger", input))
+				config->isMappedTo("rightshoulder", input) || config->isMappedTo("leftshoulder", input))
 			{
 				stopScrolling();
 			}

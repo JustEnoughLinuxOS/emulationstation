@@ -136,10 +136,10 @@ bool ComponentList::input(InputConfig* config, Input input)
 	{
 		return listInput(input.value != 0 ? 1 : 0);
 
-	}else if(config->isMappedTo("lefttrigger", input))
+	}else if(config->isMappedTo("leftshoulder", input))
 	{
 		return listInput(input.value != 0 ? -6 : 0);
-	}else if(config->isMappedTo("righttrigger", input)){
+	}else if(config->isMappedTo("rightshoulder", input)){
 		return listInput(input.value != 0 ? 6 : 0);
 	}
 
