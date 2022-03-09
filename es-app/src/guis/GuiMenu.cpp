@@ -1460,17 +1460,8 @@ void GuiMenu::openSystemSettings_batocera()
 	  if (selectedFanProfile.empty())
 		selectedFanProfile = "quiet";
 
-	  // Make this less gross with a regex match later.
-	  if (SystemConf::getInstance()->get("system.overclock") != "cpu-stable" ||
-	      SystemConf::getInstance()->get("system.overclock") != "cpu-unstable" || 
-	      SystemConf::getInstance()->get("system.overclock") != "max-stable" || 
-	      SystemConf::getInstance()->get("system.overclock") != "max-unstable") {
-	    	optionsFanProfile->add(_("QUIET"),    "quiet", selectedFanProfile == "quiet");
-	  }
-	  if (SystemConf::getInstance()->get("system.overclock") != "cpu-unstable" ||
-	      SystemConf::getInstance()->get("system.overclock") != "max-unstable") {
-	  	optionsFanProfile->add(_("MODERATE"),"moderate", selectedFanProfile == "moderate");
-	  }
+	  optionsFanProfile->add(_("QUIET"),"quiet", selectedFanProfile == "quiet");
+	  optionsFanProfile->add(_("MODERATE"),"moderate", selectedFanProfile == "moderate");
 	  optionsFanProfile->add(_("AGGRESSIVE"),"aggressive", selectedFanProfile == "aggressive");
 	  optionsFanProfile->add(_("CUSTOM"),"custom", selectedFanProfile == "custom");
 
@@ -1501,12 +1492,12 @@ void GuiMenu::openSystemSettings_batocera()
 	optionsOCProfile->add(_("ALL - 2088/1608/900/933"),"max-stable", selectedOCProfile == "max-stable");
 	optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
 
-	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
+ 	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
 
 	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
 	{
 		if (optionsOCProfile->changed()) {
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE!\n\nES WILL DISABLE THE QUIET COOLING PROFILE WHILE USING CERTAIN OVERCLOCKS!\n\nJELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!\n\nCLICK YES THAT YOU AGREE, OR NO TO CANCEL."), _("YES"),
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE!\n\nUSING THE QUIET COOLING PROFILE WHILE USING CERTAIN OVERCLOCKS MAY CAUSE PANIC REBOOTS!\n\nJELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!\n\nCLICK YES THAT YOU AGREE, OR NO TO CANCEL."), _("YES"),
                                 [this,optionsOCProfile] {
 					SystemConf::getInstance()->set("system.overclock", optionsOCProfile->getSelected());
 					SystemConf::getInstance()->saveSystemConf();
@@ -1532,7 +1523,7 @@ void GuiMenu::openSystemSettings_batocera()
 
 #endif
 
-	s->addGroup(_("SOFTWARE UPDATE"));
+	s->addGroup(_("SYSTEM UPDATE"));
 
         // Enable updates
         auto updates_enabled = std::make_shared<SwitchComponent>(mWindow);
