@@ -23,7 +23,7 @@ public:
 		auto label = Utils::String::format(_("UPDATING %s").c_str(), ApiSystem::getInstance()->getApplicationName().c_str());
 		mWndNotification->updateTitle(_U("\uF019 ") + label);
 #else
-		mWndNotification->updateTitle(_U("\uF019 ") + _("UPDATING 351ELEC")); //351ELEC
+		mWndNotification->updateTitle(_U("\uF019 ") + _("UPDATING SYSTEM"));
 #endif
 		mHandle = new std::thread(&ThreadedUpdater::threadUpdate, this);
 	}
