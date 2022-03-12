@@ -90,7 +90,7 @@ void NetworkThread::run()
 				}
 
 				LOG(LogDebug) << "NetworkThread : Update available " << msg.c_str();
-				mWindow->displayNotificationMessage(_U("\uF019  ") + _("UPDATE AVAILABLE") + std::string(": ") + msg);
+				mWindow->displayNotificationMessage(_U("\uF019  ") + _("A NEW UPDATE IS AVAILABLE"));
 				mRunning = false;
 			}
 			else
