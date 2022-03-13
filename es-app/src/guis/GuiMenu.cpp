@@ -4010,7 +4010,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
         s->addSaveFunc([rotate_root_pass] { SystemConf::getInstance()->setBool("rotate.root.password", rotate_root_pass->getState()); });
 
 	auto root_password = std::make_shared<TextComponent>(mWindow, SystemConf::getInstance()->get("root.password"), font, color);
-	if (SystemConf::getInstance()->getBool("rotate_root_pass-", true)) {
+	if (SystemConf::getInstance()->getBool("rotate.root.password", true)) {
 	  s->addWithLabel(_("ROOT PASSWORD"), root_password);
         } else {
 	  s->addInputTextRow(_("ROOT PASSWORD"), "root.password", false);
