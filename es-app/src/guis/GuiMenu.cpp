@@ -4004,23 +4004,8 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 	auto ip = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->getIpAdress(), font, color);
 	s->addWithLabel(_("IP ADDRESS"), ip);
 
-        auto rotate_root_pass = std::make_shared<SwitchComponent>(mWindow);
-        rotate_root_pass->setState(SystemConf::getInstance()->getBool("rotate.root.password"));
-        s->addWithLabel(_("ROTATE ROOT PASSWORD"), rotate_root_pass);
-        s->addSaveFunc([rotate_root_pass] { SystemConf::getInstance()->setBool("rotate.root.password", rotate_root_pass->getState()); });
-
 	auto root_password = std::make_shared<TextComponent>(mWindow, SystemConf::getInstance()->get("root.password"), font, color);
-	if (SystemConf::getInstance()->getBool("rotate.root.password", true)) {
-	  s->addWithLabel(_("ROOT PASSWORD"), root_password);
-        } else {
-	  s->addInputTextRow(_("ROOT PASSWORD"), "root.password", false);
-        }
-
-	s->addSaveFunc([this, s, rotate_root_pass, root_password]()
-        {
-          const std::string rootpass = SystemConf::getInstance()->get("root.password");
-          runSystemCommand("setrootpass" + rootpass, "", nullptr);
-	});
+	s->addWithLabel(_("ROOT PASSWORD"), root_password);
 
 	auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
 	s->addWithLabel(_("INTERNET STATUS"), status);
