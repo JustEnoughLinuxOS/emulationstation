@@ -1494,7 +1494,10 @@ void GuiMenu::openSystemSettings_batocera()
 	      runSystemCommand("systemctl restart fancontrol", "", nullptr);
 	    }
 	  });
+#endif
 
+// Prep for additional device support.
+#ifdef RG552
 	// Provides overclock profile switching
 	auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
 	std::string selectedOCProfile = SystemConf::getInstance()->get("system.overclock");
@@ -1524,7 +1527,9 @@ void GuiMenu::openSystemSettings_batocera()
                                 }, _("NO"), nullptr));
 		}
 	});
+#endif
 
+#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
 	// Load or unload the internal WIFI kernel module
         auto internal_wifi = std::make_shared<SwitchComponent>(mWindow);
         bool internalmoduleEnabled = SystemConf::getInstance()->get("internal.wifi") == "1";
