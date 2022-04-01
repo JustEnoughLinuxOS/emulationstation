@@ -36,8 +36,8 @@ LibretroRatio::LibretroRatio() {
                     {"Config",        "config"},
                     {"Square pixel",  "squarepixel"},
                     {"Core provided",  "core"},
-                    {"Full",          "full"},
-                    {"Custom",        "custom"}
+                    {"Custom",        "custom"},
+                    {"Full",          "full"}
             };
 }
 
