@@ -4579,6 +4579,30 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         systemConfiguration->addSaveFunc([cores_used, configName] { SystemConf::getInstance()->set(configName + ".cores", cores_used->getSelected()); });
 #endif
 
+#ifdef RG552
+
+          // Provides cooling profile switching
+          auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
+          std::string selectedFanProfile = SystemConf::getInstance()->get(configName + "cooling.profile");
+          if (selectedFanProfile.empty())
+                selectedFanProfile = "quiet";
+
+          optionsFanProfile->add(_("QUIET"),"quiet", selectedFanProfile == "quiet");
+          optionsFanProfile->add(_("MODERATE"),"moderate", selectedFanProfile == "moderate");
+          optionsFanProfile->add(_("AGGRESSIVE"),"aggressive", selectedFanProfile == "aggressive");
+          optionsFanProfile->add(_("CUSTOM"),"custom", selectedFanProfile == "custom");
+
+          systemConfiguration->addWithLabel(_("COOLING PROFILE"), optionsFanProfile);
+
+          systemConfiguration->addSaveFunc([optionsFanProfile, selectedFanProfile, configName]
+          {
+            if (optionsFanProfile->changed()) {
+              SystemConf::getInstance()->set(configName + "cooling.profile", optionsFanProfile->getSelected());
+              SystemConf::getInstance()->saveSystemConf();
+            }
+          });
+#endif
+
 // Prep for additional device support.
 #ifdef RG552
         // Provides overclock profile switching
