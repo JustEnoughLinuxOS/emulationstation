@@ -4583,7 +4583,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
           // Provides cooling profile switching
           auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
-          std::string selectedFanProfile = SystemConf::getInstance()->get(configName + "cooling.profile");
+          std::string selectedFanProfile = SystemConf::getInstance()->get(configName + ".cooling.profile");
           if (selectedFanProfile.empty())
                 selectedFanProfile = "quiet";
 
@@ -4597,7 +4597,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
           systemConfiguration->addSaveFunc([optionsFanProfile, selectedFanProfile, configName]
           {
             if (optionsFanProfile->changed()) {
-              SystemConf::getInstance()->set(configName + "cooling.profile", optionsFanProfile->getSelected());
+              SystemConf::getInstance()->set(configName + ".cooling.profile", optionsFanProfile->getSelected());
               SystemConf::getInstance()->saveSystemConf();
             }
           });
