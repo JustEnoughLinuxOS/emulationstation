@@ -4575,8 +4575,8 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         // Core chooser
         auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
         cores_used->addRange({ { _("ALL"), "all" },{ _("BIG") , "big" },{ _("LITTLE") , "little" } }, SystemConf::getInstance()->get(configName + ".cores"));
-        s->addWithLabel(_("CORES USED"), cores_used);
-        s->addSaveFunc([cores_used] { SystemConf::getInstance()->set(configName + ".cores", cores_used->getSelected()); });
+        systemConfiguration->addWithLabel(_("CORES USED"), cores_used);
+        systemConfiguration->addSaveFunc([cores_used, configName] { SystemConf::getInstance()->set(configName + ".cores", cores_used->getSelected()); });
 #endif
 
 // Prep for additional device support.
@@ -4597,13 +4597,13 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         optionsOCProfile->add(_("ALL - 2088/1608/900/933"),"max-stable", selectedOCProfile == "max-stable");
         optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
 
-        s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
+        systemConfiguration->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
 
-        s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
+        systemConfiguration->addSaveFunc([optionsOCProfile, selectedOCProfile, configName, mWindow]
         {
                 if (optionsOCProfile->changed()) {
                         mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE!\n\nUSING THE QUIET COOLING PROFILE WHILE USING CERTAIN OVERCLOCKS MAY CAUSE PANIC REBOOTS!\n\nJELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!\n\nCLICK YES THAT YOU AGREE, OR NO TO CANCEL."), _("YES"),
-			[this,optionsOCProfile] {
+			[optionsOCProfile,configName] {
                                 SystemConf::getInstance()->set(configName + ".overclock", optionsOCProfile->getSelected());
                                 SystemConf::getInstance()->saveSystemConf();
                         }, _("NO"), nullptr));
