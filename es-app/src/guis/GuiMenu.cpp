@@ -4114,7 +4114,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 
        auto mount_cloud = std::make_shared<SwitchComponent>(mWindow);
                 bool mntcloudEnabled = SystemConf::getInstance()->get("clouddrive.mounted") == "1";
-                samba_enabled->setState(smbbaseEnabled);
+                mount_cloud->setState(mntcloudEnabled);
                 s->addWithLabel(_("MOUNT CLOUD DRIVE"), mount_cloud);
                 s->addSaveFunc([mount_cloud] {
                         if (mount_cloud->getState() == false) {
@@ -4122,8 +4122,8 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
                         } else {
                                 runSystemCommand("rclonectl mount", "", nullptr);
                         }
-                bool sambaenabled = samba_enabled->getState();
-                SystemConf::getInstance()->set("clouddrive.mounted", sambaenabled ? "1" : "0");
+                bool cloudenabled = mount_cloud->getState();
+                SystemConf::getInstance()->set("clouddrive.mounted", cloudenabled ? "1" : "0");
                                 SystemConf::getInstance()->saveSystemConf();
                 });
 
