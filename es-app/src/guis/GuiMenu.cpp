@@ -4017,50 +4017,6 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 	s->addInputTextRow(_("HOSTNAME"), "system.hostname", false);
 #endif
 
-       auto sshd_enabled = std::make_shared<SwitchComponent>(mWindow);
-		bool sshbaseEnabled = SystemConf::getInstance()->get("ssh.enabled") == "1";
-		sshd_enabled->setState(sshbaseEnabled);
-		s->addWithLabel(_("ENABLE SSH"), sshd_enabled);
-		s->addSaveFunc([sshd_enabled] {
-			if (sshd_enabled->getState() == false) {
-				runSystemCommand("systemctl stop sshd", "", nullptr);
-				runSystemCommand("systemctl disable sshd", "", nullptr);
-				runSystemCommand("rm /storage/.cache/services/sshd.conf", "", nullptr);
-			} else {
-				runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
-				runSystemCommand("touch /storage/.cache/services/sshd.conf", "", nullptr);
-				runSystemCommand("systemctl enable sshd", "", nullptr);
-				runSystemCommand("systemctl start sshd", "", nullptr);
-			}
-		bool sshenabled = sshd_enabled->getState();
-		SystemConf::getInstance()->set("ssh.enabled", sshenabled ? "1" : "0");
-				SystemConf::getInstance()->saveSystemConf();
-		});
-
-       auto samba_enabled = std::make_shared<SwitchComponent>(mWindow);
-		bool smbbaseEnabled = SystemConf::getInstance()->get("samba.enabled") == "1";
-		samba_enabled->setState(smbbaseEnabled);
-		s->addWithLabel(_("ENABLE SAMBA"), samba_enabled);
-		s->addSaveFunc([samba_enabled] {
-			if (samba_enabled->getState() == false) {
-				runSystemCommand("systemctl stop nmbd", "", nullptr);
-				runSystemCommand("systemctl disable nmbd", "", nullptr);
-				runSystemCommand("systemctl stop smbd", "", nullptr);
-				runSystemCommand("systemctl disable smbd", "", nullptr);
-				runSystemCommand("rm /storage/.cache/services/smb.conf", "", nullptr);
-			} else {
-				runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
-				runSystemCommand("touch /storage/.cache/services/smb.conf", "", nullptr);
-				runSystemCommand("systemctl enable nmbd", "", nullptr);
-				runSystemCommand("systemctl start nmbd", "", nullptr);
-				runSystemCommand("systemctl enable smbd", "", nullptr);
-				runSystemCommand("systemctl start smbd", "", nullptr);
-			}
-		bool sambaenabled = samba_enabled->getState();
-		SystemConf::getInstance()->set("samba.enabled", sambaenabled ? "1" : "0");
-				SystemConf::getInstance()->saveSystemConf();
-		});
-
         // Wifi enable
         auto enable_wifi = std::make_shared<SwitchComponent>(mWindow);
         enable_wifi->setState(baseWifiEnabled);
@@ -4115,6 +4071,61 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 			openNetworkSettings_batocera(true);
 		}
 	});
+
+       auto sshd_enabled = std::make_shared<SwitchComponent>(mWindow);
+                bool sshbaseEnabled = SystemConf::getInstance()->get("ssh.enabled") == "1";
+                sshd_enabled->setState(sshbaseEnabled);
+                s->addWithLabel(_("ENABLE SSH"), sshd_enabled);
+                s->addSaveFunc([sshd_enabled] {
+                        if (sshd_enabled->getState() == false) {
+                                runSystemCommand("systemctl stop sshd", "", nullptr);
+                                runSystemCommand("systemctl disable sshd", "", nullptr);
+                                runSystemCommand("rm /storage/.cache/services/sshd.conf", "", nullptr);
+                        } else {
+                                runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
+                                runSystemCommand("touch /storage/.cache/services/sshd.conf", "", nullptr);
+                                runSystemCommand("systemctl enable sshd", "", nullptr);
+                                runSystemCommand("systemctl start sshd", "", nullptr);
+                        }
+                bool sshenabled = sshd_enabled->getState();
+                SystemConf::getInstance()->set("ssh.enabled", sshenabled ? "1" : "0");
+                                SystemConf::getInstance()->saveSystemConf();
+                });
+
+       auto samba_enabled = std::make_shared<SwitchComponent>(mWindow);
+                bool smbbaseEnabled = SystemConf::getInstance()->get("samba.enabled") == "1";
+                samba_enabled->setState(smbbaseEnabled);
+                s->addWithLabel(_("ENABLE SAMBA"), samba_enabled);
+                s->addSaveFunc([samba_enabled] {
+                        if (samba_enabled->getState() == false) {
+                                runSystemCommand("systemctl stop nmbd", "", nullptr);
+                                runSystemCommand("systemctl stop smbd", "", nullptr);
+                                runSystemCommand("rm /storage/.cache/services/smb.conf", "", nullptr);
+                        } else {
+                                runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
+                                runSystemCommand("touch /storage/.cache/services/smb.conf", "", nullptr);
+                                runSystemCommand("systemctl start nmbd", "", nullptr);
+                                runSystemCommand("systemctl start smbd", "", nullptr);
+                        }
+                bool sambaenabled = samba_enabled->getState();
+                SystemConf::getInstance()->set("samba.enabled", sambaenabled ? "1" : "0");
+                                SystemConf::getInstance()->saveSystemConf();
+                });
+
+       auto mount_cloud = std::make_shared<SwitchComponent>(mWindow);
+                bool mntcloudEnabled = SystemConf::getInstance()->get("clouddrive.mounted") == "1";
+                samba_enabled->setState(smbbaseEnabled);
+                s->addWithLabel(_("MOUNT CLOUD DRIVE"), mount_cloud);
+                s->addSaveFunc([mount_cloud] {
+                        if (mount_cloud->getState() == false) {
+                                runSystemCommand("rclonectl unmount", "", nullptr);
+                        } else {
+                                runSystemCommand("rclonectl mount", "", nullptr);
+                        }
+                bool sambaenabled = samba_enabled->getState();
+                SystemConf::getInstance()->set("clouddrive.mounted", sambaenabled ? "1" : "0");
+                                SystemConf::getInstance()->saveSystemConf();
+                });
 
 	mWindow->pushGui(s);
 }
