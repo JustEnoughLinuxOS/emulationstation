@@ -394,41 +394,6 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 
 	GuiSettings* dangerZone = new GuiSettings(mWindow, _("DANGER ZONE").c_str());
 
-#if defined(_ENABLEGAMEFORCE) || defined(ODROIDGOA)
-	// OG OC
-	auto emuelec_oga_overclock = std::make_shared<OptionListComponent<std::string>>(mWindow, _("OVERCLOCK"));
-    emuelec_oga_overclock->addRange({ { _("Off"), "Off" }, { _("1.4ghz"), "1.4ghz" }, { "1.5ghz", "1.5ghz" } }, SystemConf::getInstance()->get("oga_oc"));
-    dangerZone->addWithLabel(_("OVERCLOCK"), emuelec_oga_overclock);
-    dangerZone->addSaveFunc([configName, emuelec_oga_overclock, mWindow] {
-
- auto setOverclock = [emuelec_oga_overclock](const std::string& value)
-        {
-            LOG(LogInfo) << "Setting OGA_OC to " + value;
-            runSystemCommand("/usr/bin/odroidgoa_utils.sh oga_oc " + value, "", nullptr);
-            SystemConf::getInstance()->set("oga_oc", value);
-            SystemConf::getInstance()->saveSystemConf();
-        };
-
-        std::string selectedoc = emuelec_oga_overclock->getSelected();
-        if (emuelec_oga_overclock && emuelec_oga_overclock->changed())
-        {
-            if (selectedoc != "Off")
-            {
-                std::string msg = _("OGA OC is HIGHLY experimental, you may encounter random lockups or your device might not boot anymore. \n");
-                msg += _("In case you cannot boot anymore, create an empty file called \"no_oc.oga\" on the boot (EMUELEC) partition.\n\n");
-                msg += _("There is also the posibility of SD card file corruption!!! Only enable OC if you agree to the risks!\n\n");
-                msg += _("Do you want to proceed ?");
-
-                mWindow->pushGui(new GuiMsgBox(mWindow, msg, _("YES"), [selectedoc, setOverclock]() { setOverclock(selectedoc); }, _("NO"), nullptr));
-            }
-            else
-                setOverclock(selectedoc);
-        }
-
-
-         });
-#endif
-
     dangerZone->addEntry(_("BACKUP CONFIGURATIONS"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL RESTART EMULATIONSTATION!\n\nAFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/JELOS_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n\nBACKUP CURRENT CONFIG AND RESTART?"), _("YES"),
 				[] {
@@ -1497,7 +1462,7 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 
 // Prep for additional device support.
-#ifdef RG552
+#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
 	// Provides overclock profile switching
 	auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
 	std::string selectedOCProfile = SystemConf::getInstance()->get("system.overclock");
@@ -1505,6 +1470,8 @@ void GuiMenu::openSystemSettings_batocera()
 		selectedOCProfile = "off";
 
 	optionsOCProfile->add(_("OFF"),    "off", selectedOCProfile == "off");
+#endif
+#if defined(RG552)
 	optionsOCProfile->add(_("RAM - 933"),"mem", selectedOCProfile == "mem");
 	optionsOCProfile->add(_("GPU - 900/933"),"gpu", selectedOCProfile == "gpu");
 	optionsOCProfile->add(_("CPU - 1992/1512/933"),"cpu-nominal", selectedOCProfile == "cpu-nominal");
@@ -1513,7 +1480,14 @@ void GuiMenu::openSystemSettings_batocera()
 	optionsOCProfile->add(_("ALL - 1992/1512/900/933"),"max-nominal", selectedOCProfile == "max-nominal");
 	optionsOCProfile->add(_("ALL - 2088/1608/900/933"),"max-stable", selectedOCProfile == "max-stable");
 	optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
-
+#endif
+#if defined(RG351P) || defined(RG351V) || defined(RG351MP)
+        optionsOCProfile->add(_("RAM - 850"),"mem", selectedOCProfile == "mem");
+        optionsOCProfile->add(_("GPU - 560/850"),"gpu", selectedOCProfile == "gpu");
+        optionsOCProfile->add(_("CPU - 1368/850"),"cpu-stable", selectedOCProfile == "cpu-stable");
+        optionsOCProfile->add(_("ALL - 1368/560/850"),"max-stable", selectedOCProfile == "max-stable");
+#endif
+#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
  	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
 
 	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
@@ -2215,6 +2189,14 @@ void GuiMenu::openGamesSettings_batocera()
 	maxperf_enabled->add(_("OFF"), "0", SystemConf::getInstance()->get("global.maxperf") == "0");
 	s->addWithLabel(_("ENABLE MAX PERFORMANCE"), maxperf_enabled);
     s->addSaveFunc([maxperf_enabled] { SystemConf::getInstance()->set("global.maxperf", maxperf_enabled->getSelected()); });
+#endif
+
+#ifdef RG552
+        // Core chooser
+        auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
+        cores_used->addRange({ { _("ALL"), "all" },{ _("BIG") , "big" },{ _("LITTLE") , "little" } }, SystemConf::getInstance()->get("global.cores"));
+        s->addWithLabel(_("CORES USED"), cores_used);
+        s->addSaveFunc([cores_used] { SystemConf::getInstance()->set("global.cores", cores_used->getSelected()); });
 #endif
 
 	// rewind
@@ -4044,50 +4026,6 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 	s->addInputTextRow(_("HOSTNAME"), "system.hostname", false);
 #endif
 
-       auto sshd_enabled = std::make_shared<SwitchComponent>(mWindow);
-		bool sshbaseEnabled = SystemConf::getInstance()->get("ssh.enabled") == "1";
-		sshd_enabled->setState(sshbaseEnabled);
-		s->addWithLabel(_("ENABLE SSH"), sshd_enabled);
-		s->addSaveFunc([sshd_enabled] {
-			if (sshd_enabled->getState() == false) {
-				runSystemCommand("systemctl stop sshd", "", nullptr);
-				runSystemCommand("systemctl disable sshd", "", nullptr);
-				runSystemCommand("rm /storage/.cache/services/sshd.conf", "", nullptr);
-			} else {
-				runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
-				runSystemCommand("touch /storage/.cache/services/sshd.conf", "", nullptr);
-				runSystemCommand("systemctl enable sshd", "", nullptr);
-				runSystemCommand("systemctl start sshd", "", nullptr);
-			}
-		bool sshenabled = sshd_enabled->getState();
-		SystemConf::getInstance()->set("ssh.enabled", sshenabled ? "1" : "0");
-				SystemConf::getInstance()->saveSystemConf();
-		});
-
-       auto samba_enabled = std::make_shared<SwitchComponent>(mWindow);
-		bool smbbaseEnabled = SystemConf::getInstance()->get("samba.enabled") == "1";
-		samba_enabled->setState(smbbaseEnabled);
-		s->addWithLabel(_("ENABLE SAMBA"), samba_enabled);
-		s->addSaveFunc([samba_enabled] {
-			if (samba_enabled->getState() == false) {
-				runSystemCommand("systemctl stop nmbd", "", nullptr);
-				runSystemCommand("systemctl disable nmbd", "", nullptr);
-				runSystemCommand("systemctl stop smbd", "", nullptr);
-				runSystemCommand("systemctl disable smbd", "", nullptr);
-				runSystemCommand("rm /storage/.cache/services/smb.conf", "", nullptr);
-			} else {
-				runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
-				runSystemCommand("touch /storage/.cache/services/smb.conf", "", nullptr);
-				runSystemCommand("systemctl enable nmbd", "", nullptr);
-				runSystemCommand("systemctl start nmbd", "", nullptr);
-				runSystemCommand("systemctl enable smbd", "", nullptr);
-				runSystemCommand("systemctl start smbd", "", nullptr);
-			}
-		bool sambaenabled = samba_enabled->getState();
-		SystemConf::getInstance()->set("samba.enabled", sambaenabled ? "1" : "0");
-				SystemConf::getInstance()->saveSystemConf();
-		});
-
         // Wifi enable
         auto enable_wifi = std::make_shared<SwitchComponent>(mWindow);
         enable_wifi->setState(baseWifiEnabled);
@@ -4142,6 +4080,61 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 			openNetworkSettings_batocera(true);
 		}
 	});
+
+       auto sshd_enabled = std::make_shared<SwitchComponent>(mWindow);
+                bool sshbaseEnabled = SystemConf::getInstance()->get("ssh.enabled") == "1";
+                sshd_enabled->setState(sshbaseEnabled);
+                s->addWithLabel(_("ENABLE SSH"), sshd_enabled);
+                s->addSaveFunc([sshd_enabled] {
+                        if (sshd_enabled->getState() == false) {
+                                runSystemCommand("systemctl stop sshd", "", nullptr);
+                                runSystemCommand("systemctl disable sshd", "", nullptr);
+                                runSystemCommand("rm /storage/.cache/services/sshd.conf", "", nullptr);
+                        } else {
+                                runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
+                                runSystemCommand("touch /storage/.cache/services/sshd.conf", "", nullptr);
+                                runSystemCommand("systemctl enable sshd", "", nullptr);
+                                runSystemCommand("systemctl start sshd", "", nullptr);
+                        }
+                bool sshenabled = sshd_enabled->getState();
+                SystemConf::getInstance()->set("ssh.enabled", sshenabled ? "1" : "0");
+                                SystemConf::getInstance()->saveSystemConf();
+                });
+
+       auto samba_enabled = std::make_shared<SwitchComponent>(mWindow);
+                bool smbbaseEnabled = SystemConf::getInstance()->get("samba.enabled") == "1";
+                samba_enabled->setState(smbbaseEnabled);
+                s->addWithLabel(_("ENABLE SAMBA"), samba_enabled);
+                s->addSaveFunc([samba_enabled] {
+                        if (samba_enabled->getState() == false) {
+                                runSystemCommand("systemctl stop nmbd", "", nullptr);
+                                runSystemCommand("systemctl stop smbd", "", nullptr);
+                                runSystemCommand("rm /storage/.cache/services/smb.conf", "", nullptr);
+                        } else {
+                                runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
+                                runSystemCommand("touch /storage/.cache/services/smb.conf", "", nullptr);
+                                runSystemCommand("systemctl start nmbd", "", nullptr);
+                                runSystemCommand("systemctl start smbd", "", nullptr);
+                        }
+                bool sambaenabled = samba_enabled->getState();
+                SystemConf::getInstance()->set("samba.enabled", sambaenabled ? "1" : "0");
+                                SystemConf::getInstance()->saveSystemConf();
+                });
+
+       auto mount_cloud = std::make_shared<SwitchComponent>(mWindow);
+                bool mntcloudEnabled = SystemConf::getInstance()->get("clouddrive.mounted") == "1";
+                mount_cloud->setState(mntcloudEnabled);
+                s->addWithLabel(_("MOUNT CLOUD DRIVE"), mount_cloud);
+                s->addSaveFunc([mount_cloud] {
+                        if (mount_cloud->getState() == false) {
+                                runSystemCommand("rclonectl unmount", "", nullptr);
+                        } else {
+                                runSystemCommand("rclonectl mount", "", nullptr);
+                        }
+                bool cloudenabled = mount_cloud->getState();
+                SystemConf::getInstance()->set("clouddrive.mounted", cloudenabled ? "1" : "0");
+                                SystemConf::getInstance()->saveSystemConf();
+                });
 
 	mWindow->pushGui(s);
 }
@@ -4598,112 +4591,70 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		systemConfiguration->addWithLabel(_("ENABLE MAX PERFORMANCE"), maxperf_enabled);
 		systemConfiguration->addSaveFunc([maxperf_enabled, configName] { SystemConf::getInstance()->set(configName + ".maxperf", maxperf_enabled->getSelected()); });
 
-	// Enable Decorations for 351ELEC
-	// decorations
-	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::DECORATIONS) && systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::decoration))
-	{
-			Window* window = mWindow;
-			auto sets = GuiMenu::getDecorationsSets(systemData);
-			if (sets.size() > 0)
-			{
-				auto decorations = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DECORATION SET"), false);
-				decorations->setRowTemplate([window, sets](std::string data, ComponentListRow& row)
-				{
-					createDecorationItemTemplate(window, sets, data, row);
-				});
-
-			std::vector<std::string> decorations_item;
-			decorations_item.push_back(_("AUTO"));
-			decorations_item.push_back(_("NONE"));
-
-			for (auto set : sets)
-				decorations_item.push_back(set.name);
-
-			for (auto it = decorations_item.begin(); it != decorations_item.end(); it++) {
-				decorations->add(*it, *it,
-					(SystemConf::getInstance()->get(configName + ".bezel") == *it)
-					||
-					(SystemConf::getInstance()->get(configName + ".bezel") == "none" && *it == _("NONE"))
-					||
-					(SystemConf::getInstance()->get(configName + ".bezel") == "" && *it == _("AUTO"))
-				);
-			}
-			systemConfiguration->addWithLabel(_("DECORATION SET"), decorations);
-
-			//351elec - set decoration on change so it's update for decoration options without exiting screen
-			decorations->setSelectedChangedCallback([decorations, configName](std::string value)
-			{
-				LOG(LogDebug) << "Setting bezel on change: " << configName << " to: " << value;
-				if (Utils::String::toLower(value) == "auto") {
-					value = "";
-				}
-				SystemConf::getInstance()->set(configName + ".bezel", value);
-			});
-
-			if (decorations->getSelectedName() == "")
-			{
-				decorations->selectFirstItem();
-			}
-
-            systemConfiguration->addEntry(_("DECORATION OPTIONS"), true, [mWindow, configName, sets]
-                                              { openDecorationConfiguration(mWindow, configName, sets); });
-#if !defined(WIN32) || defined(_DEBUG)
-			// stretch bezels
-			/*
-			auto bezel_stretch_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("STRETCH BEZELS (4K & ULTRAWIDE)"));
-			bezel_stretch_enabled->add(_("AUTO"), "auto", SystemConf::getInstance()->get(configName + ".bezel_stretch") != "0" && SystemConf::getInstance()->get(configName + ".bezel_stretch") != "1");
-			bezel_stretch_enabled->add(_("ON"), "1", SystemConf::getInstance()->get(configName + ".bezel_stretch") == "1");
-			bezel_stretch_enabled->add(_("OFF"), "0", SystemConf::getInstance()->get(configName + ".bezel_stretch") == "0");
-				decorations_window->addWithLabel(_("STRETCH BEZELS (4K & ULTRAWIDE)"), bezel_stretch_enabled);
-				decorations_window->addSaveFunc([bezel_stretch_enabled, configName] {
-					if (bezel_stretch_enabled->changed()) {
-					SystemConf::getInstance()->set(configName + ".bezel_stretch", bezel_stretch_enabled->getSelected());
-					SystemConf::getInstance()->saveSystemConf();
-					}
-					});
-
-				// tattoo and controller overlays
-				auto bezel_tattoo = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SHOW CONTROLLER OVERLAYS"));
-				bezel_tattoo->add(_("AUTO"), "auto", SystemConf::getInstance()->get(configName + ".bezel.tattoo") != "0"
-					&& SystemConf::getInstance()->get(configName + ".bezel.tattoo") != "system"
-					&& SystemConf::getInstance()->get(configName + ".bezel.tattoo") != "custom");
-				bezel_tattoo->add(_("NO"), "0", SystemConf::getInstance()->get(configName + ".bezel.tattoo") == "0");
-				bezel_tattoo->add(_("SYSTEM CONTROLLERS"), "system", SystemConf::getInstance()->get(configName + ".bezel.tattoo") == "system");
-				bezel_tattoo->add(_("CUSTOM .PNG IMAGE"), "custom", SystemConf::getInstance()->get(configName + ".bezel.tattoo") == "custom");
-				decorations_window->addWithLabel(_("SHOW CONTROLLER OVERLAYS"), bezel_tattoo);
-				decorations_window->addSaveFunc([bezel_tattoo, configName] {
-					if (bezel_tattoo->changed()) {
-						SystemConf::getInstance()->set(configName + ".bezel.tattoo", bezel_tattoo->getSelected());
-						SystemConf::getInstance()->saveSystemConf();
-					}
-				});
-
-				auto bezel_tattoo_corner = std::make_shared<OptionListComponent<std::string>>(mWindow, _("OVERLAY CORNER"));
-				bezel_tattoo_corner->add(_("AUTO"), "auto", SystemConf::getInstance()->get(configName + ".bezel.tattoo_corner") != "NW"
-					&& SystemConf::getInstance()->get(configName + ".bezel.tattoo_corner") != "NE"
-					&& SystemConf::getInstance()->get(configName + ".bezel.tattoo_corner") != "SE"
-					&& SystemConf::getInstance()->get(configName + ".bezel.tattoo_corner") != "SW");
-				bezel_tattoo_corner->add(_("NORTH WEST"), "NW", SystemConf::getInstance()->get(configName + ".bezel.tattoo_corner") == "NW");
-				bezel_tattoo_corner->add(_("NORTH EAST"), "NE", SystemConf::getInstance()->get(configName + ".bezel.tattoo_corner") == "NE");
-				bezel_tattoo_corner->add(_("SOUTH EAST"), "SE", SystemConf::getInstance()->get(configName + ".bezel.tattoo_corner") == "SE");
-				bezel_tattoo_corner->add(_("SOUTH WEST"), "SW", SystemConf::getInstance()->get(configName + ".bezel.tattoo_corner") == "SW");
-				decorations_window->addWithLabel(_("OVERLAY CORNER"), bezel_tattoo_corner);
-				decorations_window->addSaveFunc([bezel_tattoo_corner, configName] {
-					if (bezel_tattoo_corner->changed()) {
-						SystemConf::getInstance()->set(configName + ".bezel.tattoo_corner", bezel_tattoo_corner->getSelected());
-						SystemConf::getInstance()->saveSystemConf();
-					}
-				});
-
-				std::string tatpath = configName + ".bezel.tattoo_file";
-				const char *bezelpath = const_cast<char*>(tatpath.data());
-				decorations_window->addInputTextRow(_("CUSTOM .PNG IMAGE PATH"), bezelpath, false);
-
-				mWindow->pushGui(decorations_window);
-			});*/
+#ifdef RG552
+        // Core chooser
+        auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
+        cores_used->addRange({ { _("ALL"), "all" },{ _("BIG") , "big" },{ _("LITTLE") , "little" } }, SystemConf::getInstance()->get(configName + ".cores"));
+        systemConfiguration->addWithLabel(_("CORES USED"), cores_used);
+        systemConfiguration->addSaveFunc([cores_used, configName] { SystemConf::getInstance()->set(configName + ".cores", cores_used->getSelected()); });
 #endif
-			}
-	}
+
+#ifdef RG552
+
+          // Provides cooling profile switching
+          auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
+          std::string selectedFanProfile = SystemConf::getInstance()->get(configName + ".cooling.profile");
+          if (selectedFanProfile.empty())
+                selectedFanProfile = "quiet";
+
+          optionsFanProfile->add(_("QUIET"),"quiet", selectedFanProfile == "quiet");
+          optionsFanProfile->add(_("MODERATE"),"moderate", selectedFanProfile == "moderate");
+          optionsFanProfile->add(_("AGGRESSIVE"),"aggressive", selectedFanProfile == "aggressive");
+          optionsFanProfile->add(_("CUSTOM"),"custom", selectedFanProfile == "custom");
+
+          systemConfiguration->addWithLabel(_("COOLING PROFILE"), optionsFanProfile);
+
+          systemConfiguration->addSaveFunc([optionsFanProfile, selectedFanProfile, configName]
+          {
+            if (optionsFanProfile->changed()) {
+              SystemConf::getInstance()->set(configName + ".cooling.profile", optionsFanProfile->getSelected());
+              SystemConf::getInstance()->saveSystemConf();
+            }
+          });
+#endif
+
+// Prep for additional device support.
+#ifdef RG552
+        // Provides overclock profile switching
+        auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
+        std::string selectedOCProfile = SystemConf::getInstance()->get(configName + ".overclock");
+        if (selectedOCProfile.empty())
+                selectedOCProfile = "off";
+
+        optionsOCProfile->add(_("OFF"), "off", selectedOCProfile == "off");
+        optionsOCProfile->add(_("RAM - 933"),"mem", selectedOCProfile == "mem");
+        optionsOCProfile->add(_("GPU - 900/933"),"gpu", selectedOCProfile == "gpu");
+        optionsOCProfile->add(_("CPU - 1992/1512/933"),"cpu-nominal", selectedOCProfile == "cpu-nominal");
+        optionsOCProfile->add(_("CPU - 2088/1608/933"),"cpu-stable", selectedOCProfile == "cpu-stable");
+        optionsOCProfile->add(_("CPU - 2184/1704/933"),"cpu-unstable", selectedOCProfile == "cpu-unstable");
+        optionsOCProfile->add(_("ALL - 1992/1512/900/933"),"max-nominal", selectedOCProfile == "max-nominal");
+        optionsOCProfile->add(_("ALL - 2088/1608/900/933"),"max-stable", selectedOCProfile == "max-stable");
+        optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
+
+        systemConfiguration->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
+
+        systemConfiguration->addSaveFunc([optionsOCProfile, selectedOCProfile, configName, mWindow]
+        {
+                if (optionsOCProfile->changed()) {
+                        mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE!\n\nUSING THE QUIET COOLING PROFILE WHILE USING CERTAIN OVERCLOCKS MAY CAUSE PANIC REBOOTS!\n\nJELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!\n\nCLICK YES THAT YOU AGREE, OR NO TO CANCEL."), _("YES"),
+			[optionsOCProfile,configName] {
+                                SystemConf::getInstance()->set(configName + ".overclock", optionsOCProfile->getSelected());
+                                SystemConf::getInstance()->saveSystemConf();
+                        }, _("NO"), nullptr));
+                }
+        });
+#endif
+
 #endif
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::latency_reduction))
 		systemConfiguration->addEntry(_("LATENCY REDUCTION"), true, [mWindow, configName] { openLatencyReductionConfiguration(mWindow, configName); });
