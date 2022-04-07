@@ -4624,14 +4624,17 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 #endif
 
 // Prep for additional device support.
-#ifdef RG552
+#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
         // Provides overclock profile switching
         auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
         std::string selectedOCProfile = SystemConf::getInstance()->get(configName + ".overclock");
         if (selectedOCProfile.empty())
-                selectedOCProfile = "off";
+                selectedOCProfile = "system";
 
+        optionsOCProfile->add(_("USE SYSTEM SETTING"), "system", selectedOCProfile == "system");
         optionsOCProfile->add(_("OFF"), "off", selectedOCProfile == "off");
+#endif
+#if defined(RG552)
         optionsOCProfile->add(_("RAM - 933"),"mem", selectedOCProfile == "mem");
         optionsOCProfile->add(_("GPU - 900/933"),"gpu", selectedOCProfile == "gpu");
         optionsOCProfile->add(_("CPU - 1992/1512/933"),"cpu-nominal", selectedOCProfile == "cpu-nominal");
@@ -4640,7 +4643,14 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         optionsOCProfile->add(_("ALL - 1992/1512/900/933"),"max-nominal", selectedOCProfile == "max-nominal");
         optionsOCProfile->add(_("ALL - 2088/1608/900/933"),"max-stable", selectedOCProfile == "max-stable");
         optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
-
+#endif
+#if defined(RG351P) || defined(RG351V) || defined(RG351MP)
+        optionsOCProfile->add(_("RAM - 850"),"mem", selectedOCProfile == "mem");
+        optionsOCProfile->add(_("GPU - 560/850"),"gpu", selectedOCProfile == "gpu");
+        optionsOCProfile->add(_("CPU - 1368/850"),"cpu-stable", selectedOCProfile == "cpu-stable");
+        optionsOCProfile->add(_("ALL - 1368/560/850"),"max-stable", selectedOCProfile == "max-stable");
+#endif
+#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
         systemConfiguration->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
 
         systemConfiguration->addSaveFunc([optionsOCProfile, selectedOCProfile, configName, mWindow]
