@@ -3686,6 +3686,18 @@ void GuiMenu::openUISettings()
 		SystemConf::getInstance()->saveSystemConf();
 	});
 
+        auto invertJoy = std::make_shared<SwitchComponent>(mWindow);
+        invertJoy->setState(Settings::getInstance()->getBool("InvertButtons"));
+        s->addWithLabel(_("SWITCH A & B BUTTONS IN EMULATIONSTATION"), invertJoy);
+        s->addSaveFunc([this, s, invertJoy]
+        {
+                if (Settings::getInstance()->setBool("InvertButtons", invertJoy->getState()))
+                {
+                        InputConfig::AssignActionButtons();
+                        s->setVariable("reloadAll", true);
+                }
+        });
+
 	auto fps_enabled = std::make_shared<SwitchComponent>(mWindow);
 	bool fpsEnabled = SystemConf::getInstance()->get("global.showFPS") == "1";
 	fps_enabled->setState(fpsEnabled);

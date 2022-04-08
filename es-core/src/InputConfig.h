@@ -9,9 +9,7 @@
 #include <sstream>
 #include <vector>
 
-#ifdef WIN32
 #define INVERTEDINPUTCONFIG
-#endif
 
 namespace pugi { class xml_node; }
 
