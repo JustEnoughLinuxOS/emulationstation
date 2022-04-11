@@ -312,7 +312,8 @@ bool ApiSystem::canUpdate(std::vector<std::string>& output)
 	}
 
 	int res = WEXITSTATUS(pclose(pipe));
-	if (res == 0) 
+        bool ForceUpdateEnabled = SystemConf::getInstance()->getBool("updates.force");
+	if (res == 0 || ForceUpdateEnabled == true) 
 	{
 		LOG(LogInfo) << "Can update ";
 		return true;
