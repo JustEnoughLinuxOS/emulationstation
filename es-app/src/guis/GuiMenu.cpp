@@ -1527,6 +1527,30 @@ void GuiMenu::openSystemSettings_batocera()
         auto updates_enabled = std::make_shared<SwitchComponent>(mWindow);
         updates_enabled->setState(SystemConf::getInstance()->getBool("updates.enabled"));
 
+        auto optionsUpdates = std::make_shared<OptionListComponent<std::string> >(mWindow, _("UPDATE BRANCH"), false);
+
+        std::string selectedBranch = SystemConf::getInstance()->get("updates.branch");
+        if (selectedBranch.empty())
+                selectedBranch = "stable";
+
+        optionsUpdates->add(_("STABLE"), "stable", selectedBranch == "stable");
+        optionsUpdates->add(_("DEVELOPMENT"), "dev", selectedBranch == "dev");
+
+        s->addWithLabel(_("UPDATE BRANCH"), optionsUpdates);
+
+        s->addSaveFunc([this, optionsUpdates, selectedBranch]
+        {
+          if (optionsUpdates->changed()) {
+            SystemConf::getInstance()->set("updates.branch", optionsUpdates->getSelected());
+            SystemConf::getInstance()->saveSystemConf();
+          }
+        });
+
+        bool ForceUpdateEnabled = SystemConf::getInstance()->getBool("updates.force");
+        auto force_update = std::make_shared<SwitchComponent>(mWindow);
+        force_update->setState(ForceUpdateEnabled);
+        s->addWithLabel(_("FORCE NEXT UPDATE"), force_update);
+
         s->addWithLabel(_("CHECK FOR UPDATES"), updates_enabled);
         s->addSaveFunc([updates_enabled]
         {
