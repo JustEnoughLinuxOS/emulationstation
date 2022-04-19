@@ -651,21 +651,7 @@ void GuiMenu::openScraperSettings()
 		s->addWithLabel(_("LOGO SOURCE"), logoSource);
 		s->addSaveFunc([logoSource] { Settings::getInstance()->setString("ScrapperLogoSrc", logoSource->getSelected()); });
 
-		if (scraper == "TheGamesDB")
-		{
-			// SCRAPE FANART
-			auto scrape_fanart = std::make_shared<SwitchComponent>(mWindow);
-			scrape_fanart->setState(Settings::getInstance()->getBool("ScrapeFanart"));
-			s->addWithLabel(_("SCRAPE FANART"), scrape_fanart);
-			s->addSaveFunc([scrape_fanart] { Settings::getInstance()->setBool("ScrapeFanart", scrape_fanart->getState()); });
-
-			// SCRAPE BOX BACKSIDE
-			auto scrape_boxBack = std::make_shared<SwitchComponent>(mWindow);
-			scrape_boxBack->setState(Settings::getInstance()->getBool("ScrapeBoxBack"));
-			s->addWithLabel(_("SCRAPE BOX BACKSIDE"), scrape_boxBack);
-			s->addSaveFunc([scrape_boxBack] { Settings::getInstance()->setBool("ScrapeBoxBack", scrape_boxBack->getState()); });
-		}
-		else if (scraper == "HfsDB")
+		if (scraper == "HfsDB")
 		{
 			// SCRAPE FANART
 			auto scrape_fanart = std::make_shared<SwitchComponent>(mWindow);

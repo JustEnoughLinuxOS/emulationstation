@@ -414,12 +414,12 @@ bool ApiSystem::enableWifi(std::string ssid, std::string key)
 	regex tic("(')");
 	key = regex_replace(key,tic,"\\'");
         ssid = regex_replace(ssid,tic,"\\'");
-	return executeScript("wifictl enable");
+	return executeScript("/usr/bin/wifictl enable");
 }
 
 bool ApiSystem::disableWifi() 
 {
-	return executeScript("wifictl disable");
+	return executeScript("/usr/bin/wifictl disable");
 }
 
 std::string ApiSystem::getIpAdress() 
@@ -1219,7 +1219,7 @@ void ApiSystem::setBrightness(int value)
 
 std::vector<std::string> ApiSystem::getWifiNetworks(bool scan)
 {
-	return executeEnumerationScript(scan ? "wifictl scan" : "wifictl list");
+	return executeEnumerationScript(scan ? "/usr/bin/wifictl scan" : "/usr/bin/wifictl list");
 }
 
 std::vector<std::string> ApiSystem::executeEnumerationScript(const std::string command)

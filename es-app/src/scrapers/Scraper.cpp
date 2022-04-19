@@ -2,7 +2,6 @@
 
 #include "FileData.h"
 #include "ArcadeDBJSONScraper.h"
-#include "GamesDBJSONScraper.h"
 #include "ScreenScraper.h"
 #include "Log.h"
 #include "Settings.h"
@@ -22,10 +21,6 @@ std::vector<std::pair<std::string, Scraper*>> Scraper::scrapers
 {
 #ifdef SCREENSCRAPER_DEV_LOGIN
 	{ "ScreenScraper", new ScreenScraperScraper() },
-#endif
-
-#ifdef GAMESDB_APIKEY
-	{ "TheGamesDB", new TheGamesDBScraper() },
 #endif
 
 #ifdef HFS_DEV_LOGIN

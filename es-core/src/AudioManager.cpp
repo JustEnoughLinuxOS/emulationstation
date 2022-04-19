@@ -100,11 +100,6 @@ void AudioManager::deinit()
 	Mix_HookMusicFinished(nullptr);
 	Mix_HaltMusic();
 
-#ifdef _ENABLEEMUELEC	
-	LOG(LogInfo) << "Attempting to close SDL AUDIO";
-	runSystemCommand("/usr/bin/set_audio alsa", "", nullptr); 
-#endif
-
 	//completely tear down SDL audio. else SDL hogs audio resources and emulators might fail to start...
 	Mix_CloseAudio();
 	SDL_QuitSubSystem(SDL_INIT_AUDIO);
