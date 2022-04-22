@@ -96,6 +96,8 @@ private:
 	/*
 	ScraperSearchParams mLastScreenScraperSearch;
 	std::unique_ptr<ScraperSearchHandle> mScreenScraperSearchHandle;
+	ScraperSearchParams mLastTheGamesDBSearch;
+	std::unique_ptr<ScraperSearchHandle> mTheGamesDBHandle;
 	std::vector<std::pair<std::string, ScraperSearchResult>> mScraperResults;
 	*/
 
