@@ -405,16 +405,9 @@ bool ApiSystem::launchFileManager(Window *window)
 	return exitCode == 0;
 }
 
-bool ApiSystem::enableWifi(std::string ssid, std::string key) 
+bool ApiSystem::enableWifi() 
 {
-	// Escape single quote if it's in the passphrase
-	using std::regex;
-        using std::regex_replace;
-
-	regex tic("(')");
-	key = regex_replace(key,tic,"\\'");
-        ssid = regex_replace(ssid,tic,"\\'");
-	return executeScript("/usr/bin/wifictl enable");
+	return executeScript("/usr/bin/wifictl disable;/usr/bin/wifictl enable");
 }
 
 bool ApiSystem::disableWifi() 

@@ -144,7 +144,7 @@ public:
     virtual bool launchKodi(Window *window);
     bool launchFileManager(Window *window);
 
-    bool enableWifi(std::string ssid, std::string key);
+    bool enableWifi();
     bool disableWifi();
 
 	virtual std::string getIpAdress();

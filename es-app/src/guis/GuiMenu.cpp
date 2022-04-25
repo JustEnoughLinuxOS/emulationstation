@@ -4098,7 +4098,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 
 			if (baseSSID != newSSID || baseKEY != newKey || !baseWifiEnabled)
 			{
-				if (ApiSystem::getInstance()->enableWifi(newSSID, newKey))
+				if (ApiSystem::getInstance()->enableWifi())
 					window->pushGui(new GuiMsgBox(window, _("WIFI ENABLED")));
 				else
 					window->pushGui(new GuiMsgBox(window, _("WIFI CONFIGURATION ERROR")));
@@ -4116,7 +4116,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 			SystemConf::getInstance()->setBool("wifi.enabled", wifienabled);
 
 			if (wifienabled)
-				ApiSystem::getInstance()->enableWifi(SystemConf::getInstance()->get("wifi.ssid"), SystemConf::getInstance()->get("wifi.key"));
+				ApiSystem::getInstance()->enableWifi();
 			else
 				ApiSystem::getInstance()->disableWifi();
 
