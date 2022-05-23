@@ -28,7 +28,7 @@ int runShutdownCommand()
 #ifdef WIN32 // windows
 	return system("shutdown -s -t 0");
 #else // osx / linux	
-	return system("/usr/bin/shutdown.sh -h now");
+	return system("/usr/sbin/shutdown -h now");
 #endif
 }
 
@@ -37,7 +37,7 @@ int runRestartCommand()
 #ifdef WIN32 // windows	
 	return system("shutdown -r -t 0");
 #else // osx / linux	
-	return system("/usr/bin/shutdown.sh -r now");
+	return system("/usr/sbin/shutdown -r now");
 #endif
 }
 
