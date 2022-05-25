@@ -4180,7 +4180,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
                                 SystemConf::getInstance()->saveSystemConf();
                 });
 
-	const std::string wireguardConfigFile = "/storage/roms/wireguard/wg0.conf";
+	const std::string wireguardConfigFile = "/storage/.config/wireguard/wg0.conf";
 	if (Utils::FileSystem::exists(wireguardConfigFile)) {
 		auto wireguard = std::make_shared<SwitchComponent>(mWindow);
 		bool wgUp = SystemConf::getInstance()->get("wireguard.up") == "1";
