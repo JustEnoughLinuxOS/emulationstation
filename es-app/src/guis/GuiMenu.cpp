@@ -4180,6 +4180,23 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
                                 SystemConf::getInstance()->saveSystemConf();
                 });
 
+	const std::string wireguardConfigFile = "/storage/.config/wireguard/wg0.conf";
+	if (Utils::FileSystem::exists(wireguardConfigFile)) {
+		auto wireguard = std::make_shared<SwitchComponent>(mWindow);
+		bool wgUp = SystemConf::getInstance()->get("wireguard.up") == "1";
+		wireguard->setState(wgUp);
+		s->addWithLabel(_("WIREGUARD VPN"), wireguard);
+		s->addSaveFunc([wireguard, wireguardConfigFile] {
+			if (wireguard->getState() == false) {
+				runSystemCommand("wg-quick down " + wireguardConfigFile, "", nullptr);
+			} else {
+				runSystemCommand("wg-quick up " + wireguardConfigFile, "", nullptr);
+			}
+			SystemConf::getInstance()->set("wireguard.up", wireguard->getState() ? "1" : "0");
+			SystemConf::getInstance()->saveSystemConf();
+		});
+	}
+								
 	mWindow->pushGui(s);
 }
 
