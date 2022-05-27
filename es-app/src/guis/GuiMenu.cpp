@@ -18,6 +18,7 @@
 #include "guis/GuiRetroAchievements.h" //batocera
 #include "guis/GuiGamelistOptions.h"
 #include "guis/GuiImageViewer.h"
+#include "guis/GuiMoonlight.h"
 #include "views/UIModeController.h"
 #include "views/ViewController.h"
 #include "CollectionSystemManager.h"
@@ -150,8 +151,10 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		//addEntry(_("CONTROLLERS SETTINGS").c_str(), true, [this] { openControllersSettings_batocera(); }, "iconControllers");
 		addEntry(_("SOUND SETTINGS").c_str(), true, [this] { openSoundSettings(); }, "iconSound");
 
-		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI))
+		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI)) {
 			addEntry(_("NETWORK SETTINGS").c_str(), true, [this] { openNetworkSettings_batocera(); }, "iconNetwork");
+		  addEntry(_("MOONLIGHT GAME STREAMING").c_str(), true, [this] { GuiMoonlight::show(mWindow); }, "iconGames");
+		}
 #else
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::GAMESETTINGS))
 			addEntry(_("GAME SETTINGS").c_str(), true, [this] { openGamesSettings_batocera(); }, "iconGames");
