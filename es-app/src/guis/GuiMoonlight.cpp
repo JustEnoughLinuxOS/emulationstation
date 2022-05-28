@@ -5,6 +5,7 @@
 #include <sstream>
 #include <fstream>
 
+#include "Scripting.h"
 #include "Window.h"
 #include "guis/GuiMsgBox.h"
 #include "platform.h"
@@ -31,17 +32,13 @@ GuiMoonlight::GuiMoonlight(Window* window)
 
   addEntry(_("UPDATE MOONLIGHT GAMES"), false, [window] {
     std::string server_ip = SystemConf::getInstance()->get("moonlight.host");
-
-    auto lines = executeScript("moonlight list " + server_ip);
-    if (lines.empty()) {
+    auto apps = ParseAppList(executeScript("moonlight list " + server_ip));
+    if (apps.empty()) {
       window->pushGui(new GuiMsgBox(window, _("Unable to connect to server")));
-    } else if (lines[lines.size() - 1] == "You must pair with the PC first") {
-      window->pushGui(new GuiMsgBox(window, _("Please pair with Moonlight server")));
     } else {
-
       executeScript("rm /storage/roms/moonlight/*");
       executeScript("mkdir -p /storage/roms/moonlight");
-      for (auto app : ParseAppList(lines)) {
+      for (auto app : apps) {
         std::string filename = app;
         std::replace(filename.begin(), filename.end(), '/', ' ');
         std::ofstream app_file("/storage/roms/moonlight/" + filename + ".sh");
@@ -49,6 +46,8 @@ GuiMoonlight::GuiMoonlight(Window* window)
         app_file << "moonlight stream -app \"" << app << "\" -platform sdl " << server_ip << std::endl;
         app_file.close();
       }
+      Scripting::fireEvent("quit", "restart");
+			quitES(QuitMode::QUIT);
     }
   });
 
@@ -103,7 +102,9 @@ bool GuiMoonlight::ParseServerIp(const std::string& line, std::string* server_ip
 
 std::vector<std::string> GuiMoonlight::executeScript(const std::string& command) {
   std::vector<std::string> vec;
-  executeScript(command, [&vec](const std::string& line) { vec.push_back(line); });
+  executeScript(command, [&vec](const std::string& line) {
+    vec.push_back(line);
+  });
   return vec;
 }
 
