@@ -1506,6 +1506,29 @@ void GuiMenu::openSystemSettings_batocera()
 	});
 #endif
 
+        // Default CPU governor
+
+        auto cpuGovUpdate = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEFAULT CPU GOVERNOR"), false);
+
+        std::string cpu_governor = SystemConf::getInstance()->get("system.cpugovernor");
+        if (cpu_governor.empty())
+                cpu_governor = "interactive";
+
+        cpuGovUpdate->add(_("INTERACTIVE"), "interactive", cpu_governor == "interactive");
+        cpuGovUpdate->add(_("ONDEMAND"), "ondemand", cpu_governor == "ondemand");
+        cpuGovUpdate->add(_("PERFORMANCE"), "performance", cpu_governor == "performance");
+
+        s->addWithLabel(_("DEFAULT CPU GOVERNOR"), cpuGovUpdate);
+
+        s->addSaveFunc([this, cpuGovUpdate, cpu_governor]
+        {
+          if (cpuGovUpdate->changed()) {
+            SystemConf::getInstance()->set("system.cpugovernor", cpuGovUpdate->getSelected());
+            SystemConf::getInstance()->saveSystemConf();
+          }
+	  runSystemCommand("/usr/bin/bash -lc \". /etc/profile; "+ cpuGovUpdate->getSelected() + "\"", "", nullptr);
+        });
+
 #if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
 	// Load or unload the internal WIFI kernel module
         auto internal_wifi = std::make_shared<SwitchComponent>(mWindow);
