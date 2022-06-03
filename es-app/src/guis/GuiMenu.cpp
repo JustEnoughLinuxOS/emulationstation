@@ -2241,12 +2241,6 @@ void GuiMenu::openGamesSettings_batocera()
 	s->addSaveFunc([bezel_enabled] { SystemConf::getInstance()->set("global.bezel", bezel_enabled->getSelected()); });
 	*/
 
-	//maxperf
-	auto maxperf_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("ENABLE MAX PERFORMANCE"));
-	maxperf_enabled->add(_("ON"), "1", SystemConf::getInstance()->get("global.maxperf") == "1" || SystemConf::getInstance()->get("global.maxperf") != "0");
-	maxperf_enabled->add(_("OFF"), "0", SystemConf::getInstance()->get("global.maxperf") == "0");
-	s->addWithLabel(_("ENABLE MAX PERFORMANCE"), maxperf_enabled);
-    s->addSaveFunc([maxperf_enabled] { SystemConf::getInstance()->set("global.maxperf", maxperf_enabled->getSelected()); });
 #endif
 
 #ifdef RG552
@@ -4670,14 +4664,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		systemConfiguration->addSaveFunc([rgascale_enabled, configName] { SystemConf::getInstance()->set(configName + ".rgascale", rgascale_enabled->getSelected()); });
 	}
 
-	// maxperf
-		auto maxperf_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("ENABLE MAX PERFORMANCE"));
-		maxperf_enabled->add(_("AUTO"), "auto", SystemConf::getInstance()->get(configName + ".maxperf") != "0" && SystemConf::getInstance()->get(configName + ".maxperf") != "1");
-		maxperf_enabled->add(_("YES"), "1", SystemConf::getInstance()->get(configName + ".maxperf") == "1");
-		maxperf_enabled->add(_("NO"), "0", SystemConf::getInstance()->get(configName + ".maxperf") == "0");
-		systemConfiguration->addWithLabel(_("ENABLE MAX PERFORMANCE"), maxperf_enabled);
-		systemConfiguration->addSaveFunc([maxperf_enabled, configName] { SystemConf::getInstance()->set(configName + ".maxperf", maxperf_enabled->getSelected()); });
-
 #ifdef RG552
         // Core chooser
         auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
@@ -4709,6 +4695,28 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
             }
           });
 #endif
+
+        // Default CPU governor
+
+        auto cpuGovUpdate = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEFAULT CPU GOVERNOR"), false);
+
+        std::string cpu_governor = SystemConf::getInstance()->get(configName + ".cpugovernor");
+        if (cpu_governor.empty())
+                cpu_governor = "interactive";
+
+        cpuGovUpdate->add(_("INTERACTIVE"), "interactive", cpu_governor == "interactive");
+        cpuGovUpdate->add(_("ONDEMAND"), "ondemand", cpu_governor == "ondemand");
+        cpuGovUpdate->add(_("PERFORMANCE"), "performance", cpu_governor == "performance");
+
+        systemConfiguration->addWithLabel(_("DEFAULT CPU GOVERNOR"), cpuGovUpdate);
+
+        systemConfiguration->addSaveFunc([configName, cpuGovUpdate, cpu_governor]
+        {
+          if (cpuGovUpdate->changed()) {
+            SystemConf::getInstance()->set(configName + ".cpugovernor", cpuGovUpdate->getSelected());
+            SystemConf::getInstance()->saveSystemConf();
+          }
+        });
 
 // Prep for additional device support.
 #if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
