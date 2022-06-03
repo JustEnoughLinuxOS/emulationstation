@@ -428,6 +428,10 @@ std::string getArchString()
 	return "rg351mp";
 #endif
 
+#if RG503
+	return "rg503";
+#endif
+
 #if RG552
 	return "rg552";
 #endif

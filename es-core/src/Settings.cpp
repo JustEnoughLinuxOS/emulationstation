@@ -145,7 +145,7 @@ void Settings::setDefaults()
 #if defined(_WIN32) || defined(TINKERBOARD) || defined(X86) || defined(X86_64) || defined(ODROIDN2) || defined(ODROIDC2) || defined(ODROIDXU4) || defined(RPI4) || defined(RG552)
 	// Boards > 1Gb RAM
 	mIntMap["MaxVRAM"] = 256;
-#elif defined(ODROIDGOA) || defined(GAMEFORCE) || defined(RPI2) || defined(RPI3) || defined(ROCKPRO64) || defined(RG351P) || defined(RG351MP) || defined(RG351V)
+#elif defined(ODROIDGOA) || defined(GAMEFORCE) || defined(RPI2) || defined(RPI3) || defined(ROCKPRO64) || defined(RG351P) || defined(RG351MP) || defined(RG351V) || defined(RG503)
 	// Boards with 1Gb RAM
 	mIntMap["MaxVRAM"] = 128;
 #elif defined(_RPI_)

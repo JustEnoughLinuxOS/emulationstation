@@ -4698,7 +4698,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
         // Default CPU governor
 
-        auto cpuGovUpdate = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEFAULT CPU GOVERNOR"), false);
+        auto cpuGovUpdate = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU GOVERNOR"), false);
 
         std::string cpu_governor = SystemConf::getInstance()->get(configName + ".cpugovernor");
         if (cpu_governor.empty())
