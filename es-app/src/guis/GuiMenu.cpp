@@ -4664,6 +4664,12 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		systemConfiguration->addSaveFunc([rgascale_enabled, configName] { SystemConf::getInstance()->set(configName + ".rgascale", rgascale_enabled->getSelected()); });
 	}
 
+	// Enable TATE mode
+ 	auto tate_mode = std::make_shared<OptionListComponent<std::string>>(mWindow, _("TATE MODE (ROTATED)"));
+ 	tate_mode->addRange({{ _("OFF"), "0" },{ _("ON") , "1" }}, SystemConf::getInstance()->get(configName + ".tatemode"));
+ 	systemConfiguration->addWithLabel(_("TATE MODE (ROTATED)"), tate_mode);
+ 	systemConfiguration->addSaveFunc([tate_mode, configName] { SystemConf::getInstance()->set(configName + ".tatemode", tate_mode->getSelected()); });
+
 #ifdef RG552
         // Core chooser
         auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
@@ -4696,7 +4702,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
           });
 #endif
 
-        // Default CPU governor
+        // Per game/core/emu CPU governor
 
         auto cpuGovUpdate = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU GOVERNOR"), false);
 
