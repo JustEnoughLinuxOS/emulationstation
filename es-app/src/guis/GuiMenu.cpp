@@ -1529,7 +1529,6 @@ void GuiMenu::openSystemSettings_batocera()
 	  runSystemCommand("/usr/bin/bash -lc \". /etc/profile; "+ cpuGovUpdate->getSelected() + "\"", "", nullptr);
         });
 
-#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
 	// Load or unload the internal WIFI kernel module
         auto internal_wifi = std::make_shared<SwitchComponent>(mWindow);
         bool internalmoduleEnabled = SystemConf::getInstance()->get("internal.wifi") == "1";
@@ -1545,7 +1544,16 @@ void GuiMenu::openSystemSettings_batocera()
                 }
         });
 
-#endif
+        // Automatically enable or disable WIFI power saving mode
+        auto wifi_powersave = std::make_shared<SwitchComponent>(mWindow);
+        bool powersaveEnabled = SystemConf::getInstance()->get("wifi.powersave") == "0";
+        wifi_powersave->setState(powersaveEnabled);
+        s->addWithLabel(_("ENABLE WIFI POWERSAVE"), wifi_powersave);
+        s->addSaveFunc([wifi_powersave] {
+                bool powersaveenabled = wifi_powersave->getState();
+                SystemConf::getInstance()->set("wifi.powersave", powersaveenabled ? "0" : "1");
+                runSystemCommand("/usr/bin/wifictl setpowersave", "", nullptr);
+        });
 
 	s->addGroup(_("SYSTEM UPDATE"));
 
