@@ -152,7 +152,7 @@ std::string ApiSystem::getApplicationName()
 
 bool ApiSystem::setOverscan(bool enable) 
 {
-	return executeScript("batocera-config overscan " + std::string(enable ? "enable" : "disable"));
+	return executeScriptLegacy("batocera-config overscan " + std::string(enable ? "enable" : "disable"));
 }
 
 bool ApiSystem::setOverclock(std::string mode) 
@@ -163,7 +163,7 @@ bool ApiSystem::setOverclock(std::string mode)
 	if (mode.empty())
 		return false;
 
-	return executeScript("batocera-overclock set " + mode);
+	return executeScriptLegacy("batocera-overclock set " + mode);
 }
 
 // BusyComponent* ui
@@ -290,8 +290,8 @@ std::pair<std::string, int> ApiSystem::scrape(BusyComponent* ui)
 
 bool ApiSystem::ping() 
 {
-	if (!executeScript("timeout 1 ping -c 1 -t 1000 8.8.8.8")) // ping Google DNS
-		return executeScript("timeout 2 ping -c 1 -t 2000 8.8.4.4"); // ping Google secondary DNS & give 2 seconds
+	if (!executeScriptLegacy("timeout 1 ping -c 1 -t 1000 8.8.8.8")) // ping Google DNS
+		return executeScriptLegacy("timeout 2 ping -c 1 -t 2000 8.8.4.4"); // ping Google secondary DNS & give 2 seconds
 
 	return true;
 }
@@ -414,12 +414,12 @@ bool ApiSystem::enableWifi(std::string ssid, std::string key)
 	regex tic("(')");
 	key = regex_replace(key,tic,"\\'");
         ssid = regex_replace(ssid,tic,"\\'");
-	return executeScript("/usr/bin/wifictl enable $\'" + ssid + "\' $\'" + key + "\'");
+	return executeScriptLegacy("/usr/bin/wifictl enable $\'" + ssid + "\' $\'" + key + "\'");
 }
 
 bool ApiSystem::disableWifi() 
 {
-	return executeScript("/usr/bin/wifictl disable");
+	return executeScriptLegacy("/usr/bin/wifictl disable");
 }
 
 std::string ApiSystem::getIpAdress() 
@@ -435,7 +435,7 @@ std::string ApiSystem::getIpAdress()
 
 bool ApiSystem::scanNewBluetooth(const std::function<void(const std::string)>& func)
 {
-	return executeScript("batocera-bluetooth trust", func).second == 0;
+	return executeScriptLegacy("batocera-bluetooth trust", func).second == 0;
 }
 
 std::vector<std::string> ApiSystem::getBluetoothDeviceList()
@@ -445,7 +445,7 @@ std::vector<std::string> ApiSystem::getBluetoothDeviceList()
 
 bool ApiSystem::removeBluetoothDevice(const std::string deviceName)
 {
-	return executeScript("batocera-bluetooth remove "+ deviceName);
+	return executeScriptLegacy("batocera-bluetooth remove "+ deviceName);
 }
 
 std::vector<std::string> ApiSystem::getAvailableStorageDevices() 
@@ -540,7 +540,7 @@ std::vector<BiosSystem> ApiSystem::getBiosInformations(const std::string system)
 
 bool ApiSystem::generateSupportFile() 
 {
-	return executeScript("batocera-support");
+	return executeScriptLegacy("batocera-support");
 }
 
 std::string ApiSystem::getCurrentStorage() 
@@ -569,22 +569,22 @@ std::string ApiSystem::getCurrentStorage()
 
 bool ApiSystem::setStorage(std::string selected) 
 {
-	return executeScript("batocera-config storage " + selected);
+	return executeScriptLegacy("batocera-config storage " + selected);
 }
 
 bool ApiSystem::setButtonColorGameForce(std::string selected)
 {
-	return executeScript("batocera-gameforce buttonColorLed " + selected);
+	return executeScriptLegacy("batocera-gameforce buttonColorLed " + selected);
 }
 
 bool ApiSystem::setPowerLedGameForce(std::string selected)
 {
-	return executeScript("batocera-gameforce powerLed " + selected);
+	return executeScriptLegacy("batocera-gameforce powerLed " + selected);
 }
 
 bool ApiSystem::forgetBluetoothControllers() 
 {
-	return executeScript("batocera-config forgetBT");
+	return executeScriptLegacy("batocera-config forgetBT");
 }
 
 std::string ApiSystem::getRootPassword() 
@@ -822,12 +822,12 @@ std::vector<ThreeFiftyOnePackage> ApiSystem::getThreeFiftyOnePackagesList()
 
 std::pair<std::string, int> ApiSystem::installThreeFiftyOnePackage(std::string thname, const std::function<void(const std::string)>& func)
 {
-        return executeScript("351elec-es-packages install " + thname, func);
+        return executeScriptLegacy("351elec-es-packages install " + thname, func);
 }
 
 std::pair<std::string, int> ApiSystem::uninstallThreeFiftyOnePackage(std::string thname, const std::function<void(const std::string)>& func)
 {
-        return executeScript("351elec-es-packages remove " + thname, func);
+        return executeScriptLegacy("351elec-es-packages remove " + thname, func);
 }
 
 std::vector<BatoceraTheme> ApiSystem::getBatoceraThemesList()
@@ -904,12 +904,12 @@ void ApiSystem::getBatoceraThemesImages(std::vector<BatoceraTheme>& items)
 
 std::pair<std::string, int> ApiSystem::installBatoceraTheme(std::string thname, const std::function<void(const std::string)>& func)
 {
-	return executeScript("batocera-es-theme install " + thname, func);
+	return executeScriptLegacy("batocera-es-theme install " + thname, func);
 }
 
 std::pair<std::string, int> ApiSystem::uninstallBatoceraTheme(std::string thname, const std::function<void(const std::string)>& func)
 {
-	return executeScript("batocera-es-theme remove " + thname, func);
+	return executeScriptLegacy("batocera-es-theme remove " + thname, func);
 }
 
 std::vector<BatoceraBezel> ApiSystem::getBatoceraBezelsList()
@@ -943,12 +943,12 @@ std::vector<BatoceraBezel> ApiSystem::getBatoceraBezelsList()
 
 std::pair<std::string, int> ApiSystem::installBatoceraBezel(std::string bezelsystem, const std::function<void(const std::string)>& func)
 {
-	return executeScript("batocera-es-thebezelproject install " + bezelsystem, func);
+	return executeScriptLegacy("batocera-es-thebezelproject install " + bezelsystem, func);
 }
 
 std::pair<std::string, int> ApiSystem::uninstallBatoceraBezel(std::string bezelsystem, const std::function<void(const std::string)>& func)
 {
-	return executeScript("batocera-es-thebezelproject remove " + bezelsystem, func);
+	return executeScriptLegacy("batocera-es-thebezelproject remove " + bezelsystem, func);
 }
 
 std::string ApiSystem::getMD5(const std::string fileName, bool fromZipContents)
@@ -1119,7 +1119,7 @@ bool ApiSystem::unzipFile(const std::string fileName, const std::string destFold
 	LOG(LogDebug) << "unzipFile is using 7z";
 
 	std::string cmd = getSevenZipCommand() + " x \"" + Utils::FileSystem::getPreferredPath(fileName) + "\" -y -o\"" + Utils::FileSystem::getPreferredPath(destFolder) + "\"";
-	bool ret = executeScript(cmd);
+	bool ret = executeScriptLegacy(cmd);
 	LOG(LogDebug) << "unzipFile <<";
 	return ret;
 }
@@ -1244,9 +1244,48 @@ std::vector<std::string> ApiSystem::executeEnumerationScript(const std::string c
 	return res;
 }
 
-std::pair<std::string, int> ApiSystem::executeScript(const std::string command, const std::function<void(const std::string)>& func)
-{
+std::vector<std::string> ApiSystem::executeScript(const std::string& command) {
+  std::vector<std::string> vec;
+  executeScript(command, [&vec](const std::string& line) {
+    vec.push_back(line);
+  });
+  return vec;
+}
+
+std::pair<std::string, int> ApiSystem::executeScript(const std::string& command, const std::function<void(const std::string)>& func)
+{  
+  std::cout << "ApiSystem::executeScript -> " << command << std::endl;
 	LOG(LogInfo) << "ApiSystem::executeScript -> " << command;
+
+	FILE *pipe = popen(command.c_str(), "r");
+	if (pipe == NULL)
+	{
+		LOG(LogError) << "Error executing " << command;
+		return std::pair<std::string, int>("Error starting command : " + command, -1);
+	}
+
+  std::stringstream output_stream;
+	char buff[1024];
+	while (fgets(buff, 1024, pipe))
+	{
+    std::stringstream output_stream(buff);
+    std::string line;
+    while (getline(output_stream, line).good()) {
+      if (line.empty()) continue;
+      std::cout << line << std::endl;
+      if (func != nullptr) {
+        func(std::string(line));
+      }
+    }
+	}
+
+	int exitCode = WEXITSTATUS(pclose(pipe));
+	return std::pair<std::string, int>("", exitCode);
+}
+
+std::pair<std::string, int> ApiSystem::executeScriptLegacy(const std::string command, const std::function<void(const std::string)>& func)
+{
+	LOG(LogInfo) << "ApiSystem::executeScriptLegacy -> " << command;
 
 	FILE *pipe = popen(command.c_str(), "r");
 	if (pipe == NULL)
@@ -1274,7 +1313,7 @@ std::pair<std::string, int> ApiSystem::executeScript(const std::string command, 
 	return std::pair<std::string, int>(line, exitCode);
 }
 
-bool ApiSystem::executeScript(const std::string command)
+bool ApiSystem::executeScriptLegacy(const std::string command)
 {	
 	LOG(LogInfo) << "Running " << command;
 
@@ -1416,7 +1455,7 @@ std::vector<std::string> ApiSystem::getFormatFileSystems()
 
 int ApiSystem::formatDisk(const std::string disk, const std::string format, const std::function<void(const std::string)>& func)
 {
-	return executeScript("batocera-format format " + disk + " " + format, func).second;
+	return executeScriptLegacy("batocera-format format " + disk + " " + format, func).second;
 }
 
 int ApiSystem::getPdfPageCount(const std::string fileName)
@@ -1597,28 +1636,28 @@ std::vector<PacmanPackage> ApiSystem::getBatoceraStorePackages()
 
 std::pair<std::string, int> ApiSystem::installBatoceraStorePackage(std::string name, const std::function<void(const std::string)>& func)
 {
-	return executeScript("batocera-store install \"" + name + "\"", func);
+	return executeScriptLegacy("batocera-store install \"" + name + "\"", func);
 }
 
 std::pair<std::string, int> ApiSystem::uninstallBatoceraStorePackage(std::string name, const std::function<void(const std::string)>& func)
 {
-	return executeScript("batocera-store remove \"" + name + "\"", func);
+	return executeScriptLegacy("batocera-store remove \"" + name + "\"", func);
 }
 
 void ApiSystem::refreshBatoceraStorePackageList()
 {
-	executeScript("batocera-store refresh");
-	executeScript("batocera-store clean-all");
+	executeScriptLegacy("batocera-store refresh");
+	executeScriptLegacy("batocera-store clean-all");
 }
 
 void ApiSystem::callBatoceraPreGameListsHook()
 {
-	executeScript("batocera-preupdate-gamelists-hook");
+	executeScriptLegacy("batocera-preupdate-gamelists-hook");
 }
 
 void ApiSystem::updateBatoceraStorePackageList()
 {
-	executeScript("batocera-store update");
+	executeScriptLegacy("batocera-store update");
 }
 
 std::vector<std::string> ApiSystem::getShaderList(const std::string systemName)
@@ -1723,7 +1762,7 @@ bool ApiSystem::setTimezone(std::string tz)
 {
 	if (tz.empty())
 		return false;
-	return executeScript("batocera-timezone set \"" + tz + "\"");
+	return executeScriptLegacy("batocera-timezone set \"" + tz + "\"");
 }
 
 std::vector<PadInfo> ApiSystem::getPadsInfo()
@@ -1802,5 +1841,5 @@ bool ApiSystem::emuKill()
 {
 	LOG(LogDebug) << "ApiSystem::emuKill";
 
-	return executeScript("batocera-es-swissknife --emukill");
+	return executeScriptLegacy("batocera-es-swissknife --emukill");
 }
