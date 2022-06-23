@@ -243,11 +243,14 @@ public:
 	virtual std::string getHostsName();
 	virtual bool emuKill();
 
+  static std::pair<std::string, int> executeScript(const std::string& command, const std::function<void(const std::string)>& func);
+  static std::vector<std::string> executeScript(const std::string& command);
+
 protected:
 	ApiSystem();
 
-	virtual bool executeScript(const std::string command);  
-	virtual std::pair<std::string, int> executeScript(const std::string command, const std::function<void(const std::string)>& func);
+	virtual bool executeScriptLegacy(const std::string command);  
+	virtual std::pair<std::string, int> executeScriptLegacy(const std::string command, const std::function<void(const std::string)>& func);
 	virtual std::vector<std::string> executeEnumerationScript(const std::string command);
 	
 	void getBatoceraThemesImages(std::vector<BatoceraTheme>& items);
