@@ -411,6 +411,13 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 				}, _("NO"), nullptr));
      });
 
+    dangerZone->addEntry(_("SPLIT ROM SYSTEMS"), true, [mWindow] {
+    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL RESTART EMULATIONSTATION!\n\nTHIS SCRIPT WILL LOOK FOR SYSTEMS IN '/STORAGE/ROMS_LOCAL' AND '/STORAGE/ROMS' AND UPDATE EMULATIONSTATION ROM LOCATIONS\n\nSPLIT SYSTEM FOLDERS AND RESTART?"), _("YES"),
+				[] {
+				runSystemCommand("systemd-run /usr/bin/rom_system_split", "", nullptr);
+				}, _("NO"), nullptr));
+     });
+
     dangerZone->addEntry(_("RESET RETROARCH CONFIG TO DEFAULT"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n\nPER-CORE CONFIGURATIONS WILL NOT BE AFFECTED BUT NO BACKUP WILL BE CREATED!\n\nRESET RETROARCH CONFIG TO DEFAULT?"), _("YES"),
 				[] {
