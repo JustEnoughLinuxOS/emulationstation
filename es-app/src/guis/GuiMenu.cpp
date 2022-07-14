@@ -411,6 +411,13 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 				}, _("NO"), nullptr));
      });
 
+    dangerZone->addEntry(_("SPLIT ROM SYSTEMS"), true, [mWindow] {
+    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL RESTART EMULATIONSTATION!\n\nTHIS SCRIPT WILL LOOK FOR SYSTEMS IN '/STORAGE/ROMS_LOCAL' AND '/STORAGE/ROMS' AND UPDATE EMULATIONSTATION ROM LOCATIONS\n\nSPLIT SYSTEM FOLDERS AND RESTART?"), _("YES"),
+				[] {
+				runSystemCommand("systemd-run /usr/bin/rom_system_split", "", nullptr);
+				}, _("NO"), nullptr));
+     });
+
     dangerZone->addEntry(_("RESET RETROARCH CONFIG TO DEFAULT"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n\nPER-CORE CONFIGURATIONS WILL NOT BE AFFECTED BUT NO BACKUP WILL BE CREATED!\n\nRESET RETROARCH CONFIG TO DEFAULT?"), _("YES"),
 				[] {
@@ -4224,12 +4231,46 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 			} else {
 				runSystemCommand("wg-quick up " + wireguardConfigFile, "", nullptr);
 			}
-			SystemConf::getInstance()->set("wireguard.up", wireguard->getState() ? "1" : "0");
-			SystemConf::getInstance()->saveSystemConf();
+      SystemConf::getInstance()->set("wireguard.up", wireguard->getState() ? "1" : "0");
+      SystemConf::getInstance()->saveSystemConf();
 		});
 	}
-								
+
+	auto tailscale = std::make_shared<SwitchComponent>(mWindow);
+	bool tsUp = SystemConf::getInstance()->get("tailscale.up") == "1";
+	tailscale->setState(tsUp);
+	s->addWithLabel(_("TAILSCALE VPN"), tailscale);
+	s->addSaveFunc([tailscale] {
+  	bool tsEnabled = tailscale->getState();
+		if (tsEnabled) {
+			runSystemCommand("tailscale up --timeout=7s", "", nullptr);
+			tsEnabled = IsTailscaleUp();
+		} else {
+			runSystemCommand("tailscale down", "", nullptr);
+		}
+		SystemConf::getInstance()->set("tailscale.up", tsEnabled ? "1" : "0");
+		SystemConf::getInstance()->saveSystemConf();
+	});
+
+	std::string tsUrl;
+	if (!IsTailscaleUp(&tsUrl) && !tsUrl.empty()) {
+		s->addGroup("TAILSCALE REAUTHENTICATE:");
+		s->addGroup(tsUrl);
+	}
+
 	mWindow->pushGui(s);
+}
+
+bool GuiMenu::IsTailscaleUp(std::string* loginUrl) {
+  bool loggedOut = false;
+	ApiSystem::executeScript("tailscale status", [loginUrl, &loggedOut](std::string line) {
+		 const std::string prompt = "Log in at: ";
+		 if (loginUrl && line.find(prompt) == 0)
+		 	 *loginUrl = line.substr(prompt.length());
+
+		 if (line.find("Logged out.") != std::string::npos) loggedOut = true;
+	});
+	return !loggedOut;
 }
 
 void GuiMenu::openQuitMenu_batocera()

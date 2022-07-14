@@ -112,6 +112,8 @@ private:
 	static void saveSubsetSettings();
 	static void loadSubsetSettings(const std::string themeName);
 
+	static bool IsTailscaleUp(std::string* loginUrl = nullptr);
+
 public:
 	static std::vector<DecorationSetInfo> getDecorationsSets(SystemData* system = nullptr);
 };
