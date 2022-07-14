@@ -1529,6 +1529,7 @@ void GuiMenu::openSystemSettings_batocera()
 	  runSystemCommand("/usr/bin/bash -lc \". /etc/profile; "+ cpuGovUpdate->getSelected() + "\"", "", nullptr);
         });
 
+#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
 	// Load or unload the internal WIFI kernel module
         auto internal_wifi = std::make_shared<SwitchComponent>(mWindow);
         bool internalmoduleEnabled = SystemConf::getInstance()->get("internal.wifi") == "1";
@@ -1543,6 +1544,7 @@ void GuiMenu::openSystemSettings_batocera()
                         runSystemCommand("/usr/bin/internalwifi enable", "", nullptr);
                 }
         });
+#endif
 
         // Automatically enable or disable WIFI power saving mode
         auto wifi_powersave = std::make_shared<SwitchComponent>(mWindow);
@@ -2271,11 +2273,13 @@ void GuiMenu::openGamesSettings_batocera()
 	s->addWithLabel(_("INTEGER SCALING (PIXEL PERFECT)"), integerscale_enabled);
 	s->addSaveFunc([integerscale_enabled] { SystemConf::getInstance()->set("global.integerscale", integerscale_enabled->getSelected()); });
 
+#if defined(RG552) || defined(RG351P)
 	// RGA scale
 	auto rgascale_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("RGA SCALE"));
 	rgascale_enabled->addRange({ { _("AUTO"), "auto" },{ _("ON") , "1" },{ _("OFF") , "0" } }, SystemConf::getInstance()->get("global.rgascale"));
 	s->addWithLabel(_("RGA SCALE"), rgascale_enabled);
 	s->addSaveFunc([rgascale_enabled] { SystemConf::getInstance()->set("global.rgascale", rgascale_enabled->getSelected()); });
+#endif
 
 	// autosave/load
 	auto autosave_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("AUTO SAVE/LOAD ON GAME LAUNCH"));
