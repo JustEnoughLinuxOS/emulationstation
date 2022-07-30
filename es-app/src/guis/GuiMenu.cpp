@@ -4243,12 +4243,12 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 	s->addSaveFunc([tailscale] {
   	bool tsEnabled = tailscale->getState();
 		if (tsEnabled) {
-			runSystemCommand("systemctl start tailscaled");
+			runSystemCommand("systemctl start tailscaled", "", nullptr);
 			runSystemCommand("tailscale up --timeout=7s", "", nullptr);
 			tsEnabled = IsTailscaleUp();
 		} else {
 			runSystemCommand("tailscale down", "", nullptr);
-			runSystemCommand("systemctl stop tailscaled");
+			runSystemCommand("systemctl stop tailscaled", "", nullptr);
 		}
 		SystemConf::getInstance()->set("tailscale.up", tsEnabled ? "1" : "0");
 		SystemConf::getInstance()->saveSystemConf();
