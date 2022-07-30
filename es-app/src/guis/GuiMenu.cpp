@@ -1472,7 +1472,7 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 
 // Prep for additional device support.
-#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
+#if defined(RG552)
 	// Provides overclock profile switching
 	auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
 	std::string selectedOCProfile = SystemConf::getInstance()->get("system.overclock");
@@ -1491,13 +1491,7 @@ void GuiMenu::openSystemSettings_batocera()
 	optionsOCProfile->add(_("ALL - 2088/1608/900/933"),"max-stable", selectedOCProfile == "max-stable");
 	optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
 #endif
-#if defined(RG351P) || defined(RG351V) || defined(RG351MP)
-        optionsOCProfile->add(_("RAM - 850"),"mem", selectedOCProfile == "mem");
-        optionsOCProfile->add(_("GPU - 560/850"),"gpu", selectedOCProfile == "gpu");
-        optionsOCProfile->add(_("CPU - 1368/850"),"cpu-stable", selectedOCProfile == "cpu-stable");
-        optionsOCProfile->add(_("ALL - 1368/560/850"),"max-stable", selectedOCProfile == "max-stable");
-#endif
-#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
+#if defined(RG552)
  	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
 
 	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
@@ -1536,7 +1530,7 @@ void GuiMenu::openSystemSettings_batocera()
 	  runSystemCommand("/usr/bin/bash -lc \". /etc/profile; "+ cpuGovUpdate->getSelected() + "\"", "", nullptr);
         });
 
-#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
+#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG353P) || defined(RG503)
 	// Load or unload the internal WIFI kernel module
         auto internal_wifi = std::make_shared<SwitchComponent>(mWindow);
         bool internalmoduleEnabled = SystemConf::getInstance()->get("internal.wifi") == "1";
@@ -4780,7 +4774,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         });
 
 // Prep for additional device support.
-#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
+#if defined(RG552)
         // Provides overclock profile switching
         auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
         std::string selectedOCProfile = SystemConf::getInstance()->get(configName + ".overclock");
@@ -4800,13 +4794,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         optionsOCProfile->add(_("ALL - 2088/1608/900/933"),"max-stable", selectedOCProfile == "max-stable");
         optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
 #endif
-#if defined(RG351P) || defined(RG351V) || defined(RG351MP)
-        optionsOCProfile->add(_("RAM - 850"),"mem", selectedOCProfile == "mem");
-        optionsOCProfile->add(_("GPU - 560/850"),"gpu", selectedOCProfile == "gpu");
-        optionsOCProfile->add(_("CPU - 1368/850"),"cpu-stable", selectedOCProfile == "cpu-stable");
-        optionsOCProfile->add(_("ALL - 1368/560/850"),"max-stable", selectedOCProfile == "max-stable");
-#endif
-#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG351MP)
+#if defined(RG552)
         systemConfiguration->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
 
         systemConfiguration->addSaveFunc([optionsOCProfile, selectedOCProfile, configName, mWindow]
