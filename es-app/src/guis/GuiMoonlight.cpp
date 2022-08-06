@@ -12,6 +12,164 @@
 #include "platform.h"
 #include "Log.h"
 #include "SystemConf.h"
+#include "HttpReq.h"
+#include <pugixml/src/pugixml.hpp>
+
+class MoonlightClient {
+ public:
+  MoonlightClient(const std::string& server_ip)
+   : server_ip_(server_ip) {}
+  
+  // Requests to Moonlight server
+  std::string GetAppListXml() { return MakeRequest(MakeUrl("applist")); }
+  void QuitApp() { MakeRequest(MakeUrl("cancel")); }
+  bool WriteBoxArtFile(const std::string& app_id, std::string filename);
+
+  // Helpers
+  bool UpdateMoonlightGames();
+
+ private:
+  std::string MakeUrl(const std::string& command, std::string args={});
+  std::string MakeRequest(const std::string& url, std::string* filename = nullptr);
+  static std::string CreateNewGuid();
+
+  std::string server_ip_;
+};
+
+std::string MoonlightClient::CreateNewGuid() {
+  srand(time(NULL));
+
+  char strUuid[256];
+  snprintf(strUuid, sizeof strUuid, "%x%x-%x-%x-%x-%x%x%x", 
+      rand(), rand(),                 // Generates a 64-bit Hex number
+      rand(),                         // Generates a 32-bit Hex number
+      ((rand() & 0x0fff) | 0x4000),   // Generates a 32-bit Hex number of the form 4xxx (4 indicates the UUID version)
+      rand() % 0x3fff + 0x8000,       // Generates a 32-bit Hex number in the range [0x8000, 0xbfff]
+      rand(), rand(), rand());
+  return strUuid;
+}
+
+std::string MoonlightClient::MakeUrl(
+    const std::string& command, std::string args) {
+  if (!args.empty()) args += "&";
+  args += "uniqueid=0123456789ABCDEF&uuid=" + CreateNewGuid();
+
+  char url[1024];
+  snprintf(url, sizeof url, "https://%s:47984/%s?%s",
+      server_ip_.c_str(), command.c_str(), args.c_str());
+  return std::string(url);
+}
+
+std::string MoonlightClient::MakeRequest(const std::string& url, std::string* filename) {
+  const std::string cert_path = "/storage/.cache/moonlight/";
+
+  HttpReqOptions opts;
+  opts.clientCert = cert_path + "client.pem";
+  opts.clientKey = cert_path + "key.pem";
+
+  if (filename != nullptr)
+    opts.outputFilename = *filename;
+
+	HttpReq req(url, &opts);
+  std::cout << "MoonlightClient::MakeRequest : " << url << std::endl;
+	req.wait();
+	
+	if (req.status() != HttpReq::REQ_SUCCESS) return "";
+  if (filename) {
+    std::cout << "MoonlightClient::MakeRequest saved to : " << *filename << std::endl;
+    return {};
+  } else {
+    auto res = req.getContent();
+    std::cout << "MoonlightClient::MakeRequest got : " << res << std::endl;
+    return res;
+  }
+}
+
+bool MoonlightClient::WriteBoxArtFile(const std::string& app_id, std::string filename) {
+  char args[256];
+  snprintf(args, sizeof args, "appid=%s&AssetType=2&AssetIdx=0", app_id.c_str());
+  MakeRequest(MakeUrl("appasset", args), &filename);
+  return true;
+}
+
+bool MoonlightClient::UpdateMoonlightGames() {
+  ApiSystem::executeScript("rm /storage/roms/moonlight/images/*");
+  ApiSystem::executeScript("rm /storage/roms/moonlight/*");
+  ApiSystem::executeScript("mkdir -p /storage/roms/moonlight");
+
+  auto xml = GetAppListXml();
+  if (xml.empty()) return false;
+
+	pugi::xml_document doc;
+	auto result = doc.load_string(xml.c_str());
+ 	if (!result) return false;
+
+  // list api returns the following xml
+  // <?xml version="1.0" encoding="UTF-16"?>
+  // <root protocol_version="0.1" query="applist" status_code="200" status_message="OK">
+  //   <App>
+  //     <AppInstallPath>C:\Program Files (x86)\Steam\</AppInstallPath>
+  //     <AppTitle>Steam</AppTitle>
+  //     <CmsId>100021711</CmsId>
+  //     <Distributor>Steam</Distributor>
+  //     <ID>1088017781</ID>
+  //     <IsAppCollectorGame>0</IsAppCollectorGame>
+  //     <IsHdrSupported>1</IsHdrSupported>
+  //     <MaxControllersForSingleSession>1</MaxControllersForSingleSession>
+  //     <ShortName>steam</ShortName>
+  //     <SupportedSOPS>
+  //       <SOPS>
+  //         <Height>2160</Height>
+  //         <RefreshRate>60</RefreshRate>
+  //         <Width>3840</Width>
+  //       </SOPS>
+  //       ...
+  //     </SupportedSOPS>
+  //     <UniqueId>20225001</UniqueId>
+  //     <simulateControllers>0</simulateControllers>
+  //   </App>
+  //   ...
+  // </root>
+
+	pugi::xml_node root = doc.child("root");
+  if (!root) return false;
+
+  pugi::xml_document gamelist_doc;
+  auto gamelist = gamelist_doc.append_child("gameList");
+
+	for (auto app : root.children())
+	{
+    if (std::string(app.name()) != "App") continue;
+
+    std::string title = app.child("AppTitle").text().get();
+    std::cout << "MoonlightClient::UpdateMoonlightGames: " << title << std::endl;
+    auto filename = title;
+    std::replace(filename.begin(), filename.end(), '/', ' ');
+
+    // Write bash script
+    std::ofstream app_file("/storage/roms/moonlight/" + filename + ".sh");
+    app_file << "#!/bin/bash" << std::endl;
+    app_file << "moonlight stream -app \"" << title << "\" -platform sdl " << server_ip_ << std::endl;
+    app_file.close();
+
+    // Write box art image
+    std::string app_id = app.child("ID").text().get();
+    if (!app_id.empty()) {
+      WriteBoxArtFile(app_id, "/storage/roms/moonlight/images/" + filename + ".png");
+    }
+
+    // Update gamelist
+    auto game = gamelist.append_child("game");
+    game.append_child("path").text().set(std::string("./" + filename + ".sh").c_str());
+    game.append_child("name").text().set(title.c_str());
+    game.append_child("image").text().set(std::string("./images/" + filename + ".png").c_str());
+  }
+
+  gamelist_doc.save_file("/storage/roms/moonlight/gamelist.xml");
+  return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 void GuiMoonlight::show(Window* window)
 {
@@ -31,24 +189,22 @@ GuiMoonlight::GuiMoonlight(Window* window)
 
 	addGroup(_("TOOLS"));
 
+  addEntry(_("QUIT CURRENT GAME"), false, [window] {
+    std::string server_ip = SystemConf::getInstance()->get("moonlight.host");
+    char cmd[1024];
+    snprintf(cmd, sizeof cmd, "moonlight quit %s", server_ip.c_str());
+    ApiSystem::executeScript(cmd);
+  });
+
   addEntry(_("UPDATE MOONLIGHT GAMES"), false, [window] {
     std::string server_ip = SystemConf::getInstance()->get("moonlight.host");
-    auto apps = ParseAppList(ApiSystem::executeScript("moonlight list " + server_ip));
-    if (apps.empty()) {
-      window->pushGui(new GuiMsgBox(window, _("Unable to connect to server")));
-    } else {
-      ApiSystem::executeScript("rm /storage/roms/moonlight/*");
-      ApiSystem::executeScript("mkdir -p /storage/roms/moonlight");
-      for (auto app : apps) {
-        std::string filename = app;
-        std::replace(filename.begin(), filename.end(), '/', ' ');
-        std::ofstream app_file("/storage/roms/moonlight/" + filename + ".sh");
-        app_file << "#!/bin/bash" << std::endl;
-        app_file << "moonlight stream -app \"" << app << "\" -platform sdl " << server_ip << std::endl;
-        app_file.close();
-      }
+    
+    MoonlightClient client(server_ip);
+    if (!server_ip.empty() && client.UpdateMoonlightGames()) {
       Scripting::fireEvent("quit", "restart");
 			quitES(QuitMode::QUIT);
+    } else {
+      window->pushGui(new GuiMsgBox(window, _("Unable to connect to server")));
     }
   });
 
