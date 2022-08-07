@@ -39,6 +39,8 @@ public:
 	std::string outputFilename;
 	std::vector<std::string> customHeaders;
 	std::string dataToPost;
+	// Client certificate files in .pem format
+	std::string clientCert, clientKey;
 };
 
 class HttpReq
