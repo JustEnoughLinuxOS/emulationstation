@@ -183,9 +183,9 @@ void Settings::setDefaults()
 	// mStringMap["SlideshowScreenSaverBackgroundAudioFile"] = "/userdata/music/slideshow_bg.wav"; // batocera
 	mBoolMap["SlideshowScreenSaverCustomImageSource"] = false;
 #ifdef _ENABLEEMUELEC
-	mStringMap["SlideshowScreenSaverImageDir"] = "/storage/screenshots"; // 351ELEC
+	mStringMap["SlideshowScreenSaverImageDir"] = "/storage/roms/screenshots"; // 351ELEC
 #else
-	mStringMap["SlideshowScreenSaverImageDir"] = "/userdata/screenshots"; // batocera
+	mStringMap["SlideshowScreenSaverImageDir"] = "/storage/roms/screenshots"; // batocera
 #endif
 	mStringMap["SlideshowScreenSaverImageFilter"] = ".png,.jpg";
 	mBoolMap["SlideshowScreenSaverRecurse"] = false;
@@ -199,7 +199,7 @@ void Settings::setDefaults()
 	mStringMap["SlideshowScreenSaverVideoFilter"] = ".mp4,.avi,.mkv,.flv,.mpg,.mov";
 	mBoolMap["SlideshowScreenSaverVideoRecurse"] = true;
 #else
-	mStringMap["SlideshowScreenSaverVideoDir"] = "/userdata/screenshots"; // batocera
+	mStringMap["SlideshowScreenSaverVideoDir"] = "/storage/roms/screenshots"; // batocera
 	mStringMap["SlideshowScreenSaverVideoFilter"] = ".mp4,.avi";
 	mBoolMap["SlideshowScreenSaverVideoRecurse"] = false;
 #endif

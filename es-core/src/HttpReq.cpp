@@ -175,12 +175,12 @@ void HttpReq::performRequest(const std::string& url, HttpReqOptions* options)
 	curl_easy_setopt(mHandle, CURLOPT_SSL_VERIFYPEER, 0L);
 
 	// Add client cert support
-	if (!options->clientCert.empty() && !options->clientKey.empty()) {
+	if (options != nullptr && !options->clientCert.empty() && !options->clientKey.empty()) {
 		// curl_easy_setopt(mHandle, CURLOPT_VERBOSE, 1L);
-	  curl_easy_setopt(mHandle, CURLOPT_SSLCERT, options->clientCert.c_str());
-  	curl_easy_setopt(mHandle, CURLOPT_SSLCERTTYPE, "PEM");
-  	curl_easy_setopt(mHandle, CURLOPT_SSLKEY, options->clientKey.c_str());
-  	curl_easy_setopt(mHandle, CURLOPT_SSL_VERIFYHOST, 0L);
+		curl_easy_setopt(mHandle, CURLOPT_SSLCERT, options->clientCert.c_str());
+  		curl_easy_setopt(mHandle, CURLOPT_SSLCERTTYPE, "PEM");
+  		curl_easy_setopt(mHandle, CURLOPT_SSLKEY, options->clientKey.c_str());
+  		curl_easy_setopt(mHandle, CURLOPT_SSL_VERIFYHOST, 0L);
 	}
 
 	//set curl to handle redirects

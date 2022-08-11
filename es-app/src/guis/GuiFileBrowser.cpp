@@ -52,7 +52,7 @@ GuiFileBrowser::GuiFileBrowser(Window* window, const std::string startPath, cons
 #if WIN32
 		navigateTo(Win32ApiSystem::getEmulatorLauncherPath("screenshots"));
 #else
-		navigateTo("/userdata/screenshots");
+		navigateTo("/storage/roms/screenshots");
 #endif
 	}
 	else
@@ -213,7 +213,7 @@ bool GuiFileBrowser::input(InputConfig* config, Input input)
 #if WIN32
 		navigateTo(Win32ApiSystem::getEmulatorLauncherPath("screenshots"));
 #else
-		navigateTo("/userdata/screenshots");
+		navigateTo("/storage/roms/screenshots");
 #endif
 		return true;
 	}

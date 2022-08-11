@@ -211,7 +211,7 @@ std::pair<std::string, int> ApiSystem::backupSystem(BusyComponent* ui, std::stri
 
 	char line[1024] = "";
 
-	FILE* flog = fopen("/userdata/system/logs/batocera-sync.log", "w");
+	FILE* flog = fopen("/var/log/sync.log", "w");
 	while (fgets(line, 1024, pipe)) 
 	{
 		strtok(line, "\n");
@@ -240,7 +240,7 @@ std::pair<std::string, int> ApiSystem::installSystem(BusyComponent* ui, std::str
 
 	char line[1024] = "";
 
-	FILE *flog = fopen("/userdata/system/logs/batocera-install.log", "w");
+	FILE *flog = fopen("/var/log/install.log", "w");
 	while (fgets(line, 1024, pipe)) 
 	{
 		strtok(line, "\n");
@@ -1666,7 +1666,7 @@ std::vector<std::string> ApiSystem::getShaderList(const std::string systemName)
 
 	std::vector<std::string> ret;
 
-	std::vector<std::string> folderList = { "/usr/share/batocera/shaders/configs", "/userdata/shaders/configs" };
+	std::vector<std::string> folderList = { "/usr/share/batocera/shaders/configs", "/storage/shaders/configs" };
 	for (auto folder : folderList)
 	{
 		for (auto file : Utils::FileSystem::getDirContent(folder, true))
@@ -1696,7 +1696,7 @@ std::vector<std::string> ApiSystem::getRetroachievementsSoundsList()
 
 	LOG(LogDebug) << "ApiSystem::getRetroAchievementsSoundsList";
 
-	std::vector<std::string> folderList = { "/usr/share/libretro/assets/sounds", "/userdata/sounds/retroachievements" };
+	std::vector<std::string> folderList = { "/usr/share/libretro/assets/sounds", "/storage/sounds/retroachievements" };
 	for (auto folder : folderList)
 	{
 		for (auto file : Utils::FileSystem::getDirContent(folder, false))

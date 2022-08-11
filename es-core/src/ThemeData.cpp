@@ -1541,7 +1541,7 @@ void ThemeData::parseElement(const pugi::xml_node& root, const std::map<std::str
 #else
 				path = Utils::String::replace(path,
 					"/recalbox/share_init/system/.emulationstation/themes",
-					"/userdata/themes");
+					"/storage/.config/emulationstation/themes");
 #endif
 			}
 

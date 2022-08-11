@@ -240,7 +240,7 @@ void ImageIO::loadImageCache()
 #if WIN32
 	std::string relativeTo = Utils::FileSystem::getParent(Utils::FileSystem::getHomePath());
 #else
-	std::string relativeTo = "/userdata";	
+	std::string relativeTo = "/storage";	
 #endif
 
 	std::vector<std::string> splits;
@@ -302,7 +302,7 @@ void ImageIO::saveImageCache()
 #if WIN32
 	std::string relativeTo = Utils::FileSystem::getParent(Utils::FileSystem::getHomePath());
 #else
-	std::string relativeTo = "/userdata";
+	std::string relativeTo = "/storage";
 #endif
 
 	for (auto it : sizeCache)
