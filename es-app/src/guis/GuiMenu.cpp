@@ -4631,16 +4631,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		systemConfiguration->addSaveFunc([filters_choices, configName] { SystemConf::getInstance()->set(configName + ".filterset", filters_choices->getSelected()); });
 	}
 
-#if defined(ODROIDGOA) || defined(_ENABLEGAMEFORCE)
-	// RGA SCALING
-		auto rgascale_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("RGA SCALING"));
-		rgascale_enabled->add(_("AUTO"), "auto", SystemConf::getInstance()->get(configName + ".rgascale") != "0" && SystemConf::getInstance()->get(configName + ".rgascale") != "1");
-		rgascale_enabled->add(_("ON"), "1", SystemConf::getInstance()->get(configName + ".rgascale") == "1");
-		rgascale_enabled->add(_("OFF"), "0", SystemConf::getInstance()->get(configName + ".rgascale") == "0");
-		systemConfiguration->addWithLabel(_("RGA SCALING"), rgascale_enabled);
-		systemConfiguration->addSaveFunc([configName, rgascale_enabled] { SystemConf::getInstance()->set(configName + ".rgascale", rgascale_enabled->getSelected()); });
-#endif
-
 	// Vertical Game
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::vertical))
 	{
@@ -4702,6 +4692,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	}
 	*/
 
+#if defined(RG552) || defined(RG351P)
 	// RGA scale
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::pixel_perfect))
 	{
@@ -4712,12 +4703,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		systemConfiguration->addWithLabel(_("RGA SCALE"), rgascale_enabled);
 		systemConfiguration->addSaveFunc([rgascale_enabled, configName] { SystemConf::getInstance()->set(configName + ".rgascale", rgascale_enabled->getSelected()); });
 	}
-
-	// Enable TATE mode
- 	auto tate_mode = std::make_shared<OptionListComponent<std::string>>(mWindow, _("TATE MODE (ROTATED)"));
- 	tate_mode->addRange({{ _("OFF"), "0" },{ _("ON") , "1" }}, SystemConf::getInstance()->get(configName + ".tatemode"));
- 	systemConfiguration->addWithLabel(_("TATE MODE (ROTATED)"), tate_mode);
- 	systemConfiguration->addSaveFunc([tate_mode, configName] { SystemConf::getInstance()->set(configName + ".tatemode", tate_mode->getSelected()); });
+#endif
 
 #ifdef RG552
         // Core chooser
