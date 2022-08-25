@@ -22,6 +22,7 @@
 #include "components/BatteryIndicatorComponent.h"
 #include "guis/GuiMsgBox.h"
 #include "components/VolumeInfoComponent.h"
+#include "components/BrightnessInfoComponent.h"
 #include "Splash.h"
 #include "PowerSaver.h"
 #ifdef _ENABLEEMUELEC
@@ -147,6 +148,11 @@ bool Window::init(bool initRenderer, bool initInputManager)
 		mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);
 	else
 		mVolumeInfo->reset();
+
+	if (mBrightnessInfo == nullptr)
+		mBrightnessInfo = std::make_shared<BrightnessInfoComponent>(this);
+	else
+		mBrightnessInfo->reset();
 
 	// update our help because font sizes probably changed
 	if (peekGui())
@@ -422,6 +428,9 @@ void Window::update(int deltaTime)
 	if (mVolumeInfo)
 		mVolumeInfo->update(deltaTime);
 
+	if (mBrightnessInfo && Settings::getInstance()->getBool("BrightnessPopup"))
+		mBrightnessInfo->update(deltaTime);
+
 	mFrameTimeElapsed += deltaTime;
 	mFrameCountElapsed++;
 	if (mFrameTimeElapsed > 500)
@@ -598,6 +607,9 @@ void Window::render()
 
 	if (mVolumeInfo && Settings::getInstance()->getBool("VolumePopup"))
 		mVolumeInfo->render(transform);
+
+	if (mBrightnessInfo && Settings::getInstance()->getBool("BrightnessPopup"))
+		mBrightnessInfo->render(transform);
 
 	if(mTimeSinceLastInput >= screensaverTime && screensaverTime != 0)
 	{
@@ -977,4 +989,6 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 		mBatteryIndicator->applyTheme(theme, "screen", "batteryIndicator", ThemeFlags::ALL);
 	
 	mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);
+
+	mBrightnessInfo  = std::make_shared<BrightnessInfoComponent>(this);
 }

@@ -27,6 +27,7 @@ class ControllerActivityComponent;
 class VolumeInfoComponent;
 class BatteryIndicatorComponent;
 class Splash;
+class BrightnessInfoComponent;
 
 class Window
 {
@@ -147,7 +148,8 @@ private:
 	std::shared_ptr<TextComponent>	mClock;
 	std::shared_ptr<ControllerActivityComponent>	mControllerActivity;
 	std::shared_ptr<VolumeInfoComponent> mVolumeInfo;
-	std::shared_ptr<BatteryIndicatorComponent>	mBatteryIndicator;	
+	std::shared_ptr<BatteryIndicatorComponent>	mBatteryIndicator;
+	std::shared_ptr<BrightnessInfoComponent> mBrightnessInfo;
 
 	bool mNormalizeNextUpdate;
 

@@ -77,6 +77,8 @@ void Settings::setDefaults()
 	mBoolMap["SplashScreen"] = true;
 	mBoolMap["SplashScreenProgress"] = true;
 	mBoolMap["StartupOnGameList"] = false;
+	mBoolMap["BrightnessPopup"] = true;
+
 	mStringMap["StartupSystem"] = "lastsystem";
 
 #if WIN32
