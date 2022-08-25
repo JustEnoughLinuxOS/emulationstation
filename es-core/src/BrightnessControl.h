@@ -9,9 +9,6 @@ Singleton pattern. Call getInstance() to get an object.
 */
 class BrightnessControl
 {
-    int originalBrightness;
-    int internalBrightness;
-
     static std::weak_ptr<BrightnessControl> sInstance;
 
     BrightnessControl();
