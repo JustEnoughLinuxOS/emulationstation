@@ -8,23 +8,22 @@
 #include "Window.h"
 #include "BrightnessControl.h"
 
+#define PADDING_PX (Renderer::getScreenWidth() * 0.006)
+#define PADDING_BAR (Renderer::isSmallScreen() ? Renderer::getScreenWidth() * 0.02 : Renderer::getScreenWidth() * 0.006)
 
-#define PADDING_PX			(Renderer::getScreenWidth()*0.006)
-#define PADDING_BAR			(Renderer::isSmallScreen() ? Renderer::getScreenWidth()*0.02 : Renderer::getScreenWidth()*0.006)
+#define VISIBLE_TIME 2650
+#define FADE_TIME 350
+#define BASEOPACITY 200
+#define CHECKBRIGHTNESSDELAY 40
 
-#define VISIBLE_TIME		2650
-#define FADE_TIME			350
-#define BASEOPACITY			200
-#define CHECKBRIGHTNESSDELAY	40
-
-BrightnessInfoComponent::BrightnessInfoComponent(Window* window, bool actionLine)
+BrightnessInfoComponent::BrightnessInfoComponent(Window *window, bool actionLine)
 	: GuiComponent(window)
 {
 	mDisplayTime = -1;
 	mBrightness = -1;
 	mCheckTime = 0;
 
-	auto theme = ThemeData::getMenuTheme();	
+	auto theme = ThemeData::getMenuTheme();
 
 	auto font = theme->TextSmall.font;
 	if (Renderer::isSmallScreen())
@@ -46,7 +45,6 @@ BrightnessInfoComponent::BrightnessInfoComponent(Window* window, bool actionLine
 	mFrame->fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
 	addChild(mFrame);
 
-
 	mLabel = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_CENTER);
 
 	int h = font->sizeText("100%").y() + PADDING_PX;
@@ -54,10 +52,9 @@ BrightnessInfoComponent::BrightnessInfoComponent(Window* window, bool actionLine
 	mLabel->setSize(fullSize.x(), h);
 	addChild(mLabel);
 
-
 	// FCA TopRight
-	float posX = Renderer::getScreenWidth() - (Renderer::getScreenWidth() * 0.07f);
-	float posY = Renderer::getScreenHeight() * 0.04f;
+	float posX = Renderer::getScreenWidth() - (Renderer::getScreenWidth() * 0.02f) - fullSize.x();
+	float posY = Renderer::getScreenHeight() * 0.13f; // 351ELEC
 
 	setPosition(posX, posY, 0);
 	setOpacity(BASEOPACITY);
@@ -94,35 +91,32 @@ void BrightnessInfoComponent::update(int deltaTime)
 
 	mCheckTime = 0;
 
-	int brightness;
-	if (BrightnessControl::getInstance()->getBrightness(brightness))
+	int brightness = BrightnessControl::getInstance()->getBrightness();
+	if (brightness != mBrightness)
 	{
-		if (brightness != mBrightness)
+		bool firstTime = (mBrightness < 0);
+
+		mBrightness = brightness;
+
+		if (mBrightness == 0)
+			mLabel->setText("X");
+		else
+			mLabel->setText(std::to_string(mBrightness) + "%");
+
+		if (!firstTime)
 		{
-			bool firstTime = (mBrightness < 0);
+			mDisplayTime = 0;
 
-			mBrightness = brightness;
-
-			if (mBrightness == 0)
-				mLabel->setText("X");
-			else
-				mLabel->setText(std::to_string(mBrightness) + "%");
-
-			if (!firstTime)
+			if (!isVisible())
 			{
-				mDisplayTime = 0;
-
-				if (!isVisible())
-				{
-					setVisible(true);
-					PowerSaver::pause();
-				}
+				setVisible(true);
+				PowerSaver::pause();
 			}
 		}
 	}
 }
 
-void BrightnessInfoComponent::render(const Transform4x4f& parentTrans)
+void BrightnessInfoComponent::render(const Transform4x4f &parentTrans)
 {
 	if (!mVisible || mDisplayTime < 0)
 		return;
@@ -144,6 +138,6 @@ void BrightnessInfoComponent::render(const Transform4x4f& parentTrans)
 
 	Renderer::drawRect(x, y, w, h, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
 
-	float px = (h*mBrightness) / 100;
+	float px = (h * mBrightness) / 100;
 	Renderer::drawRect(x, y + h - px, w, px, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
 }

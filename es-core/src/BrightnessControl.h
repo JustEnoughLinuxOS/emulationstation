@@ -18,7 +18,9 @@ class BrightnessControl
 public:
     static std::shared_ptr<BrightnessControl> &getInstance();
 
-    bool getBrightness(int& value);
+    bool isAvailable();
+
+    int getBrightness() const;
     void setBrightness(int Brightness);
 };
 

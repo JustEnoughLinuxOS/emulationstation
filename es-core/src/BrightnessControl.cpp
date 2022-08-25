@@ -13,25 +13,27 @@ const char *BACKLIGHT_BRIGHTNESS_MAX_NAME = "/sys/class/backlight/backlight/max_
 
 std::weak_ptr<BrightnessControl> BrightnessControl::sInstance;
 
-std::shared_ptr<BrightnessControl> & BrightnessControl::getInstance()
+std::shared_ptr<BrightnessControl> &BrightnessControl::getInstance()
 {
-	//check if an BrightnessControl instance is already created, if not create one
-	static std::shared_ptr<BrightnessControl> sharedInstance = sInstance.lock();
-	if (sharedInstance == nullptr) {
-		sharedInstance.reset(new BrightnessControl);
-		sInstance = sharedInstance;
-	}
-	return sharedInstance;
+    // check if an BrightnessControl instance is already created, if not create one
+    static std::shared_ptr<BrightnessControl> sharedInstance = sInstance.lock();
+    if (sharedInstance == nullptr)
+    {
+        sharedInstance.reset(new BrightnessControl);
+        sInstance = sharedInstance;
+    }
+    return sharedInstance;
 }
 
-BrightnessControl::BrightnessControl(){}
+BrightnessControl::BrightnessControl() {}
 
-bool BrightnessControl::getBrightness(int &value)
+int BrightnessControl::getBrightness() const
 {
-#if WIN32
-    return false;
-#else
-    value = 0;
+#ifdef WIN32
+#error TODO: Not implemented for Windows yet!!!
+#endif
+
+    int value = 0;
 
     int fd;
     int max = 100;
@@ -66,13 +68,15 @@ bool BrightnessControl::getBrightness(int &value)
     close(fd);
 
     value = (uint32_t)((value / (float)max * 100.0f) + 0.5f);
-    return true;
-#endif
+    return value;
 }
 
 void BrightnessControl::setBrightness(int value)
 {
-#if !WIN32
+#ifdef WIN32
+#error TODO: Not implemented for Windows yet!!!
+#endif
+
     if (value < 1)
         value = 1;
 
@@ -112,5 +116,13 @@ void BrightnessControl::setBrightness(int value)
     SystemConf::getInstance()->set("system.brightness", buffer);
 
     close(fd);
+}
+
+bool BrightnessControl::isAvailable()
+{
+#if WIN32
+    return false;
+#else
+    return true;
 #endif
 }
