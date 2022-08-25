@@ -1271,26 +1271,26 @@ void GuiMenu::openSystemSettings_batocera()
 	{
 		// brightness
 		int brightness = BrightnessControl::getInstance()->getBrightness();
-			auto brightnessComponent = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
-			brightnessComponent->setValue(brightness);
-			brightnessComponent->setOnValueChanged([](const float &newVal) { BrightnessControl::getInstance()->setBrightness((int)Math::round(newVal)); });
+		auto brightnessComponent = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
+		brightnessComponent->setValue(brightness);
+		brightnessComponent->setOnValueChanged([](const float &newVal) { BrightnessControl::getInstance()->setBrightness((int)Math::round(newVal)); });
 
 		s->addSaveFunc([this, brightnessComponent] {
 				SystemConf::getInstance()->set("system.brightness", std::to_string((int)Math::round(brightnessComponent->getValue())));
 		});
 
-			s->addWithLabel(_("BRIGHTNESS"), brightnessComponent);
+		s->addWithLabel(_("BRIGHTNESS"), brightnessComponent);
 
-			auto brightnessPopup = std::make_shared<SwitchComponent>(mWindow);
-			brightnessPopup->setState(Settings::getInstance()->getBool("BrightnessPopup"));
-			s->addWithLabel(_("SHOW OVERLAY WHEN BRIGHTNESS CHANGES"), brightnessPopup);
-			s->addSaveFunc([brightnessPopup]
-				{
-					bool old_value = Settings::getInstance()->getBool("BrightnessPopup");
-					if (old_value != brightnessPopup->getState())
-						Settings::getInstance()->setBool("BrightnessPopup", brightnessPopup->getState());
-				}
-			);
+		auto brightnessPopup = std::make_shared<SwitchComponent>(mWindow);
+		brightnessPopup->setState(Settings::getInstance()->getBool("BrightnessPopup"));
+		s->addWithLabel(_("SHOW OVERLAY WHEN BRIGHTNESS CHANGES"), brightnessPopup);
+		s->addSaveFunc([brightnessPopup]
+			{
+				bool old_value = Settings::getInstance()->getBool("BrightnessPopup");
+				if (old_value != brightnessPopup->getState())
+					Settings::getInstance()->setBool("BrightnessPopup", brightnessPopup->getState());
+			}
+		);
 	}
 #endif
 
