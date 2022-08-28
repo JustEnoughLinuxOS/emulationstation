@@ -26,6 +26,7 @@
 #include "Scripting.h"
 #include "SystemData.h"
 #include "VolumeControl.h"
+#include "BrightnessControl.h"
 #include <SDL_events.h>
 #include <algorithm>
 #include "platform.h"
@@ -1266,22 +1267,30 @@ void GuiMenu::openSystemSettings_batocera()
 #if !defined(WIN32) || defined(_DEBUG)
 	s->addGroup(_("HARDWARE"));
 
-	// brightness
-	int brightness;
-	if (ApiSystem::getInstance()->getBrightness(brightness))
+	if (BrightnessControl::getInstance()->isAvailable())
 	{
+		// brightness
+		int brightness = BrightnessControl::getInstance()->getBrightness();
 		auto brightnessComponent = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
 		brightnessComponent->setValue(brightness);
-		brightnessComponent->setOnValueChanged([](const float &newVal)
-		{
-			ApiSystem::getInstance()->setBrightness((int)Math::round(newVal));
+		brightnessComponent->setOnValueChanged([](const float &newVal) { BrightnessControl::getInstance()->setBrightness((int)Math::round(newVal)); });
+
+		s->addSaveFunc([this, brightnessComponent] {
+				SystemConf::getInstance()->set("system.brightness", std::to_string((int)Math::round(brightnessComponent->getValue())));
 		});
 
-       s->addSaveFunc([this, brightnessComponent] {
-            SystemConf::getInstance()->set("system.brightness", std::to_string((int)Math::round(brightnessComponent->getValue())));
-       });
-
 		s->addWithLabel(_("BRIGHTNESS"), brightnessComponent);
+
+		auto brightnessPopup = std::make_shared<SwitchComponent>(mWindow);
+		brightnessPopup->setState(Settings::getInstance()->getBool("BrightnessPopup"));
+		s->addWithLabel(_("SHOW OVERLAY WHEN BRIGHTNESS CHANGES"), brightnessPopup);
+		s->addSaveFunc([brightnessPopup]
+			{
+				bool old_value = Settings::getInstance()->getBool("BrightnessPopup");
+				if (old_value != brightnessPopup->getState())
+					Settings::getInstance()->setBool("BrightnessPopup", brightnessPopup->getState());
+			}
+		);
 	}
 #endif
 
