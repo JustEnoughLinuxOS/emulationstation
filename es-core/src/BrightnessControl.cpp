@@ -6,9 +6,11 @@
 #include <string.h>
 #include <SystemConf.h>
 #include <unistd.h>
+#include "platform.h"
 
-const char *BACKLIGHT_BRIGHTNESS_NAME = "/sys/class/backlight/backlight/brightness";
-const char *BACKLIGHT_BRIGHTNESS_MAX_NAME = "/sys/class/backlight/backlight/max_brightness";
+std::string BACKLIGHT_DEVICE = std::string(getShOutput(R"(/usr/bin/brightness device)"));
+std::string BACKLIGHT_BRIGHTNESS_NAME = "/sys/class/backlight/" + BACKLIGHT_DEVICE + "/brightness";
+std::string BACKLIGHT_BRIGHTNESS_MAX_NAME = "/sys/class/backlight/" + BACKLIGHT_DEVICE + "/max_brightness";
 #define BACKLIGHT_BUFFER_SIZE 127
 
 std::weak_ptr<BrightnessControl> BrightnessControl::sInstance;
@@ -40,7 +42,7 @@ int BrightnessControl::getBrightness() const
     char buffer[BACKLIGHT_BUFFER_SIZE + 1];
     ssize_t count;
 
-    fd = open(BACKLIGHT_BRIGHTNESS_MAX_NAME, O_RDONLY);
+    fd = open(BACKLIGHT_BRIGHTNESS_MAX_NAME.c_str(), O_RDONLY);
     if (fd < 0)
         return false;
 
@@ -55,7 +57,7 @@ int BrightnessControl::getBrightness() const
     if (max == 0)
         return 0;
 
-    fd = open(BACKLIGHT_BRIGHTNESS_NAME, O_RDONLY);
+    fd = open(BACKLIGHT_BRIGHTNESS_NAME.c_str(), O_RDONLY);
     if (fd < 0)
         return false;
 
@@ -88,7 +90,7 @@ void BrightnessControl::setBrightness(int value)
     char buffer[BACKLIGHT_BUFFER_SIZE + 1];
     ssize_t count;
 
-    fd = open(BACKLIGHT_BRIGHTNESS_MAX_NAME, O_RDONLY);
+    fd = open(BACKLIGHT_BRIGHTNESS_MAX_NAME.c_str(), O_RDONLY);
     if (fd < 0)
         return;
 
@@ -103,7 +105,7 @@ void BrightnessControl::setBrightness(int value)
     if (max == 0)
         return;
 
-    fd = open(BACKLIGHT_BRIGHTNESS_NAME, O_WRONLY);
+    fd = open(BACKLIGHT_BRIGHTNESS_NAME.c_str(), O_WRONLY);
     if (fd < 0)
         return;
 
