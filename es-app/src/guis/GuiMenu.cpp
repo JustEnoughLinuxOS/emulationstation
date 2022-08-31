@@ -3782,16 +3782,17 @@ void GuiMenu::openUISettings()
 			SystemConf::getInstance()->saveSystemConf();
 		});
 
-	auto splash_enabled = std::make_shared<SwitchComponent>(mWindow);
-	bool splashEnabled = SystemConf::getInstance()->get("splash.enabled") == "1";
-	splash_enabled->setState(splashEnabled);
-	s->addWithLabel(_("ENABLE GAME SPLASH"), splash_enabled);
+#if defined(X86_64) || defined(RG552)
+	auto desktop_enabled = std::make_shared<SwitchComponent>(mWindow);
+	bool desktopEnabled = SystemConf::getInstance()->get("desktop.enabled") == "1";
+	desktop_enabled->setState(desktopEnabled);
+	s->addWithLabel(_("DESKTOP MODE (REBOOT)"), desktop_enabled);
 	s->addSaveFunc([splash_enabled] {
-	bool splashenabled = splash_enabled->getState();
-	SystemConf::getInstance()->set("splash.enabled", splashenabled ? "1" : "0");
+	bool desktopenabled = desktop_enabled->getState();
+	SystemConf::getInstance()->set("desktop.enabled", desktopenabled ? "1" : "0");
 			SystemConf::getInstance()->saveSystemConf();
 		});
-
+#endif
 	s->addGroup(_("DISPLAY OPTIONS"));
 
 	s->addEntry(_("SCREENSAVER SETTINGS"), true, std::bind(&GuiMenu::openScreensaverOptions, this));
