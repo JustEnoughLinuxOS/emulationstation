@@ -3786,7 +3786,7 @@ void GuiMenu::openUISettings()
 	bool desktopEnabled = SystemConf::getInstance()->get("desktop.enabled") == "1";
 	desktop_enabled->setState(desktopEnabled);
 	s->addWithLabel(_("DESKTOP MODE (REBOOT)"), desktop_enabled);
-	s->addSaveFunc([splash_enabled] {
+	s->addSaveFunc([desktop_enabled] {
 	bool desktopenabled = desktop_enabled->getState();
 	SystemConf::getInstance()->set("desktop.enabled", desktopenabled ? "1" : "0");
 			SystemConf::getInstance()->saveSystemConf();
