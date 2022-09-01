@@ -3782,7 +3782,6 @@ void GuiMenu::openUISettings()
 			SystemConf::getInstance()->saveSystemConf();
 		});
 
-#if defined(X86_64) || defined(RG552)
 	auto desktop_enabled = std::make_shared<SwitchComponent>(mWindow);
 	bool desktopEnabled = SystemConf::getInstance()->get("desktop.enabled") == "1";
 	desktop_enabled->setState(desktopEnabled);
@@ -3792,7 +3791,7 @@ void GuiMenu::openUISettings()
 	SystemConf::getInstance()->set("desktop.enabled", desktopenabled ? "1" : "0");
 			SystemConf::getInstance()->saveSystemConf();
 		});
-#endif
+
 	s->addGroup(_("DISPLAY OPTIONS"));
 
 	s->addEntry(_("SCREENSAVER SETTINGS"), true, std::bind(&GuiMenu::openScreensaverOptions, this));
