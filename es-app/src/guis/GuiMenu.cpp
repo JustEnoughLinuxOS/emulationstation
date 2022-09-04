@@ -1481,7 +1481,7 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 
 // Prep for additional device support.
-#if defined(RG552)
+#if defined(RG552) || defined(handheld)
 	// Provides overclock profile switching
 	auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
 	std::string selectedOCProfile = SystemConf::getInstance()->get("system.overclock");
@@ -1500,7 +1500,18 @@ void GuiMenu::openSystemSettings_batocera()
 	optionsOCProfile->add(_("ALL - 2088/1608/900/933"),"max-stable", selectedOCProfile == "max-stable");
 	optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
 #endif
-#if defined(RG552)
+#if defined(handheld)
+        optionsOCProfile->add(_("TDP - 2w"),"mem", selectedOCProfile == "2w");
+        optionsOCProfile->add(_("TDP - 4w"),"gpu", selectedOCProfile == "4w");
+        optionsOCProfile->add(_("TDP - 6w"),"gpu", selectedOCProfile == "6w");
+        optionsOCProfile->add(_("TDP - 8w"),"gpu", selectedOCProfile == "8w");
+        optionsOCProfile->add(_("TDP - 10w"),"gpu", selectedOCProfile == "10w");
+        optionsOCProfile->add(_("TDP - 12w"),"gpu", selectedOCProfile == "12w");
+        optionsOCProfile->add(_("TDP - 14w"),"gpu", selectedOCProfile == "14w");
+        optionsOCProfile->add(_("TDP - 16w"),"gpu", selectedOCProfile == "16w");
+        optionsOCProfile->add(_("TDP - 18w"),"gpu", selectedOCProfile == "18w");
+#endif
+#if defined(RG552) || defined(handheld)
  	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
 
 	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
@@ -4769,7 +4780,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         });
 
 // Prep for additional device support.
-#if defined(RG552)
+#if defined(RG552) || defined(handheld)
         // Provides overclock profile switching
         auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
         std::string selectedOCProfile = SystemConf::getInstance()->get(configName + ".overclock");
@@ -4789,7 +4800,18 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         optionsOCProfile->add(_("ALL - 2088/1608/900/933"),"max-stable", selectedOCProfile == "max-stable");
         optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
 #endif
-#if defined(RG552)
+#if defined(handheld)
+        optionsOCProfile->add(_("TDP - 2w"),"mem", selectedOCProfile == "2w");
+        optionsOCProfile->add(_("TDP - 4w"),"gpu", selectedOCProfile == "4w");
+        optionsOCProfile->add(_("TDP - 6w"),"gpu", selectedOCProfile == "6w");
+        optionsOCProfile->add(_("TDP - 8w"),"gpu", selectedOCProfile == "8w");
+        optionsOCProfile->add(_("TDP - 10w"),"gpu", selectedOCProfile == "10w");
+        optionsOCProfile->add(_("TDP - 12w"),"gpu", selectedOCProfile == "12w");
+        optionsOCProfile->add(_("TDP - 14w"),"gpu", selectedOCProfile == "14w");
+        optionsOCProfile->add(_("TDP - 16w"),"gpu", selectedOCProfile == "16w");
+        optionsOCProfile->add(_("TDP - 18w"),"gpu", selectedOCProfile == "18w");
+#endif
+#if defined(RG552) || defined(handheld)
         systemConfiguration->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
 
         systemConfiguration->addSaveFunc([optionsOCProfile, selectedOCProfile, configName, mWindow]
