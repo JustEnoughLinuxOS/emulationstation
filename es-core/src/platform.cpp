@@ -336,7 +336,7 @@ BatteryInformation queryBatteryInformation()
 		auto files = Utils::FileSystem::getDirContent("/sys/class/power_supply");
 		for (auto file : files)
 		{
-			if (Utils::String::toLower(file).find("/*at") != std::string::npos)
+			if (Utils::String::toLower(file).find("/bat") != std::string::npos)
 			{
 				batteryRootPath = file;
 				break;
