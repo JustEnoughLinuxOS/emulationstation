@@ -1501,15 +1501,15 @@ void GuiMenu::openSystemSettings_batocera()
 	optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
 #endif
 #if defined(handheld)
-        optionsOCProfile->add(_("TDP - 2w"),"mem", selectedOCProfile == "2w");
-        optionsOCProfile->add(_("TDP - 4w"),"gpu", selectedOCProfile == "4w");
-        optionsOCProfile->add(_("TDP - 6w"),"gpu", selectedOCProfile == "6w");
-        optionsOCProfile->add(_("TDP - 8w"),"gpu", selectedOCProfile == "8w");
-        optionsOCProfile->add(_("TDP - 10w"),"gpu", selectedOCProfile == "10w");
-        optionsOCProfile->add(_("TDP - 12w"),"gpu", selectedOCProfile == "12w");
-        optionsOCProfile->add(_("TDP - 14w"),"gpu", selectedOCProfile == "14w");
-        optionsOCProfile->add(_("TDP - 16w"),"gpu", selectedOCProfile == "16w");
-        optionsOCProfile->add(_("TDP - 18w"),"gpu", selectedOCProfile == "18w");
+        optionsOCProfile->add(_("TDP - 2w"),"2w", selectedOCProfile == "2w");
+        optionsOCProfile->add(_("TDP - 4w"),"4w", selectedOCProfile == "4w");
+        optionsOCProfile->add(_("TDP - 6w"),"6w", selectedOCProfile == "6w");
+        optionsOCProfile->add(_("TDP - 8w"),"8w", selectedOCProfile == "8w");
+        optionsOCProfile->add(_("TDP - 10w"),"10w", selectedOCProfile == "10w");
+        optionsOCProfile->add(_("TDP - 12w"),"12w", selectedOCProfile == "12w");
+        optionsOCProfile->add(_("TDP - 14w"),"14w", selectedOCProfile == "14w");
+        optionsOCProfile->add(_("TDP - 16w"),"16w", selectedOCProfile == "16w");
+        optionsOCProfile->add(_("TDP - 18w"),"18w", selectedOCProfile == "18w");
 #endif
 #if defined(RG552) || defined(handheld)
  	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
@@ -4801,15 +4801,15 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
 #endif
 #if defined(handheld)
-        optionsOCProfile->add(_("TDP - 2w"),"mem", selectedOCProfile == "2w");
-        optionsOCProfile->add(_("TDP - 4w"),"gpu", selectedOCProfile == "4w");
-        optionsOCProfile->add(_("TDP - 6w"),"gpu", selectedOCProfile == "6w");
-        optionsOCProfile->add(_("TDP - 8w"),"gpu", selectedOCProfile == "8w");
-        optionsOCProfile->add(_("TDP - 10w"),"gpu", selectedOCProfile == "10w");
-        optionsOCProfile->add(_("TDP - 12w"),"gpu", selectedOCProfile == "12w");
-        optionsOCProfile->add(_("TDP - 14w"),"gpu", selectedOCProfile == "14w");
-        optionsOCProfile->add(_("TDP - 16w"),"gpu", selectedOCProfile == "16w");
-        optionsOCProfile->add(_("TDP - 18w"),"gpu", selectedOCProfile == "18w");
+        optionsOCProfile->add(_("TDP - 2w"),"2w", selectedOCProfile == "2w");
+        optionsOCProfile->add(_("TDP - 4w"),"4w", selectedOCProfile == "4w");
+        optionsOCProfile->add(_("TDP - 6w"),"6w", selectedOCProfile == "6w");
+        optionsOCProfile->add(_("TDP - 8w"),"8w", selectedOCProfile == "8w");
+        optionsOCProfile->add(_("TDP - 10w"),"10w", selectedOCProfile == "10w");
+        optionsOCProfile->add(_("TDP - 12w"),"12w", selectedOCProfile == "12w");
+        optionsOCProfile->add(_("TDP - 14w"),"14w", selectedOCProfile == "14w");
+        optionsOCProfile->add(_("TDP - 16w"),"16w", selectedOCProfile == "16w");
+        optionsOCProfile->add(_("TDP - 18w"),"18w", selectedOCProfile == "18w");
 #endif
 #if defined(RG552) || defined(handheld)
         systemConfiguration->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
