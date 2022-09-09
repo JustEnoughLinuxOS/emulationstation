@@ -485,6 +485,7 @@ EmulatorFeatures::Features EmulatorFeatures::parseFeatures(const std::string fea
 		if (trim == "ratio") ret = ret | EmulatorFeatures::Features::ratio;
 		if (trim == "rewind") ret = ret | EmulatorFeatures::Features::rewind;
 		if (trim == "smooth") ret = ret | EmulatorFeatures::Features::smooth;
+		if (trim == "cap") ret = ret | EmulatorFeatures::Features::force_native_refresh;
 		if (trim == "shaders") ret = ret | EmulatorFeatures::Features::shaders;
 		if (trim == "pixel_perfect") ret = ret | EmulatorFeatures::Features::pixel_perfect;
 		if (trim == "decoration") ret = ret | EmulatorFeatures::Features::decoration;

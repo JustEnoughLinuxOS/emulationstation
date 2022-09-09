@@ -2261,6 +2261,13 @@ void GuiMenu::openGamesSettings_batocera()
 	s->addWithLabel(_("BILINEAR FILTERING"), smoothing_enabled);
 	s->addSaveFunc([smoothing_enabled] { SystemConf::getInstance()->set("global.smooth", smoothing_enabled->getSelected()); });
 
+    // force native refresh rate
+	auto nativeRefreshRate_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("FORCE NATIVE REFRESH RATE"));
+	nativeRefreshRate_enabled->addRange({ { _("AUTO"), "auto" },{ _("ON") , "1" },{ _("OFF") , "0" } }, SystemConf::getInstance()->get("global.cap"));
+	s->addWithLabel(_("FORCE NATIVE REFRESH RATE"), nativeRefreshRate_enabled);
+	s->addSaveFunc([nativeRefreshRate_enabled] { SystemConf::getInstance()->set("global.cap", nativeRefreshRate_enabled->getSelected()); });
+
+
 #ifdef _ENABLEEMUELEC
 	// bezel
 	/*
@@ -4593,6 +4600,15 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		smoothing_enabled->addRange({ { _("AUTO"), "auto" },{ _("ON") , "1" },{ _("OFF"), "0" } }, SystemConf::getInstance()->get(configName + ".smooth"));
 		systemConfiguration->addWithLabel(_("BILINEAR FILTERING"), smoothing_enabled);
 		systemConfiguration->addSaveFunc([configName, smoothing_enabled] { SystemConf::getInstance()->set(configName + ".smooth", smoothing_enabled->getSelected()); });
+	}
+
+	// nativeRefreshRate
+	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::cap))
+	{
+		auto nativeRefreshRate_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("FORCE NATIVE REFRESH RATE"));
+		nativeRefreshRate_enabled->addRange({ { _("AUTO"), "auto" },{ _("ON") , "1" },{ _("OFF"), "0" } }, SystemConf::getInstance()->get(configName + ".cap"));
+		systemConfiguration->addWithLabel(_("FORCE NATIVE REFRESH RATE"), nativeRefreshRate_enabled);
+		systemConfiguration->addSaveFunc([configName, nativeRefreshRate_enabled] { SystemConf::getInstance()->set(configName + ".cap", nativeRefreshRate_enabled->getSelected()); });
 	}
 
 	// rewind
