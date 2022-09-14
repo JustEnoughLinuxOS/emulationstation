@@ -171,7 +171,7 @@ std::pair<std::string, int> ApiSystem::updateSystem(const std::function<void(con
 {
 	LOG(LogDebug) << "ApiSystem::updateSystem";
 
-	std::string updatecommand = "system-upgrade";
+	std::string updatecommand = "run system-upgrade";
 
 	FILE *pipe = popen(updatecommand.c_str(), "r");
 	if (pipe == nullptr)
