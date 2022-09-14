@@ -232,7 +232,7 @@ GuiMoonlight::GuiMoonlight(Window* window)
 
 	addGroup(_("SETTINGS"));
   addInputTextRow(_("SERVER IP"), "moonlight.host", false);
-  addWithLabel(_("PARING PIN"), pinUI);
+  addWithLabel(_("PAIRING PIN"), pinUI);
 }
 
 std::vector<std::string> GuiMoonlight::ParseAppList(const std::vector<std::string>& vec) {
