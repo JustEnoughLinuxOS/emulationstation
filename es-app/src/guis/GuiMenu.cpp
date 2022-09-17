@@ -1267,6 +1267,7 @@ void GuiMenu::openSystemSettings_batocera()
 #if !defined(WIN32) || defined(_DEBUG)
 	s->addGroup(_("HARDWARE"));
 
+
 	if (BrightnessControl::getInstance()->isAvailable())
 	{
 		// brightness
@@ -1454,6 +1455,15 @@ void GuiMenu::openSystemSettings_batocera()
 	});
 
 #endif
+
+	// Provides a mechanism to disable use of the second device
+        bool MountGamesEnabled = SystemConf::getInstance()->getBool("system.mountgames");
+        auto mount_games = std::make_shared<SwitchComponent>(mWindow);
+        mount_games->setState(MountGamesEnabled);
+        s->addWithLabel(_("USE A SECOND DEVICE FOR GAMES"), mount_games);
+        s->addSaveFunc([mount_games] {
+          SystemConf::getInstance()->setBool("system.mountgames", mount_games->getState());
+        });
 
 #ifdef RG552
 
@@ -4122,6 +4132,27 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 	// Hostname
 	s->addInputTextRow(_("HOSTNAME"), "system.hostname", false);
 #endif
+
+//        std::string a;
+//        auto bluetoothd_enabled = std::make_shared<SwitchComponent>(mWindow);
+//                bool btbaseEnabled = SystemConf::getInstance()->get("bluetooth.enabled") == "1";
+//                bluetoothd_enabled->setState(btbaseEnabled);
+//                s->addWithLabel(_("ENABLE BLUETOOTH"), bluetoothd_enabled);
+//                s->addSaveFunc([bluetoothd_enabled] {
+//                        if (bluetoothd_enabled->changed()) {
+//                        if (bluetoothd_enabled->getState() == false) {
+//                                runSystemCommand("systemctl stop bluetooth", "", nullptr);
+//                                runSystemCommand("rm /storage/.cache/services/bluez.conf", "", nullptr);
+//                        } else {
+//                                runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
+//                                runSystemCommand("touch /storage/.cache/services/bluez.conf", "", nullptr);
+//                                runSystemCommand("systemctl start bluetooth", "", nullptr);
+//                        }
+//                bool bluetoothenabled = bluetoothd_enabled->getState();
+//                SystemConf::getInstance()->set("bluetooth.enabled", bluetoothenabled ? "1" : "0");
+//                                SystemConf::getInstance()->saveSystemConf();
+//                        }
+//                });
 
         // Wifi enable
         auto enable_wifi = std::make_shared<SwitchComponent>(mWindow);
