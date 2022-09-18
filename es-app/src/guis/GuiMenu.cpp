@@ -1460,7 +1460,7 @@ void GuiMenu::openSystemSettings_batocera()
         bool MountGamesEnabled = SystemConf::getInstance()->getBool("system.mountgames");
         auto mount_games = std::make_shared<SwitchComponent>(mWindow);
         mount_games->setState(MountGamesEnabled);
-        s->addWithLabel(_("USE A SECOND DEVICE FOR GAMES"), mount_games);
+        s->addWithLabel(_("AUTODETECT GAMES CARD"), mount_games);
         s->addSaveFunc([mount_games] {
           SystemConf::getInstance()->setBool("system.mountgames", mount_games->getState());
         });
