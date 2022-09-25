@@ -1875,9 +1875,9 @@ void GuiMenu::openSystemSettings_batocera()
 			msg += _("Emulationstation will restart")+"\n";
 			msg += _("Do you want to proceed ?");
 			window->pushGui(new GuiMsgBox(window, msg, _("YES"), [selectedLanguage] {
-			SystemConf::getInstance()->set("system.language", selectedLanguage);
-			SystemConf::getInstance()->saveSystemConf();
-					runSystemCommand("systemctl restart emustation", "", nullptr);
+				SystemConf::getInstance()->set("system.language", selectedLanguage);
+				SystemConf::getInstance()->saveSystemConf();
+				quitES(QuitMode::QUIT);
 			}, "NO",nullptr));
 #else
 			if (SystemConf::getInstance()->set("system.language", language_choice->getSelected()))
@@ -3711,9 +3711,9 @@ void GuiMenu::openUISettings()
 			msg += _("Emulationstation will restart")+"\n";
 			msg += _("Do you want to proceed ?");
 			window->pushGui(new GuiMsgBox(window, msg, _("YES"), [selectedLanguage] {
-			SystemConf::getInstance()->set("system.language", selectedLanguage);
-			SystemConf::getInstance()->saveSystemConf();
-					runSystemCommand("systemctl restart emustation", "", nullptr);
+				SystemConf::getInstance()->set("system.language", selectedLanguage);
+				SystemConf::getInstance()->saveSystemConf();
+				quitES(QuitMode::QUIT);
 			}, "NO",nullptr));
 #else
 			if (SystemConf::getInstance()->set("system.language", language_choice->getSelected()))
