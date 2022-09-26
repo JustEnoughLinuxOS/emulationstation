@@ -1457,12 +1457,12 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 
 	// Provides a mechanism to disable use of the second device
-        bool MountGamesEnabled = SystemConf::getInstance()->getBool("system.mountgames");
+        bool MountGamesEnabled = SystemConf::getInstance()->getBool("system.automount");
         auto mount_games = std::make_shared<SwitchComponent>(mWindow);
         mount_games->setState(MountGamesEnabled);
         s->addWithLabel(_("AUTODETECT GAMES CARD"), mount_games);
         s->addSaveFunc([mount_games] {
-          SystemConf::getInstance()->setBool("system.mountgames", mount_games->getState());
+          SystemConf::getInstance()->setBool("system.automount", mount_games->getState());
         });
 
 #ifdef RG552
