@@ -1276,10 +1276,6 @@ void GuiMenu::openSystemSettings_batocera()
 		brightnessComponent->setValue(brightness);
 		brightnessComponent->setOnValueChanged([](const float &newVal) { BrightnessControl::getInstance()->setBrightness((int)Math::round(newVal)); });
 
-		s->addSaveFunc([this, brightnessComponent] {
-				SystemConf::getInstance()->set("system.brightness", std::to_string((int)Math::round(brightnessComponent->getValue())));
-		});
-
 		s->addWithLabel(_("BRIGHTNESS"), brightnessComponent);
 
 		auto brightnessPopup = std::make_shared<SwitchComponent>(mWindow);

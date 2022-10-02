@@ -115,9 +115,11 @@ void BrightnessControl::setBrightness(int value)
     count = write(fd, buffer, strlen(buffer));
     if (count < 0)
         LOG(LogError) << "BrightnessControl::setBrightness failed";
-    SystemConf::getInstance()->set("system.brightness", buffer);
-
     close(fd);
+
+    SystemConf::getInstance()->set("system.brightness", buffer);
+    SystemConf::getInstance()->saveSystemConf();
+
 }
 
 bool BrightnessControl::isAvailable()
