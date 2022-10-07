@@ -401,35 +401,35 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
     dangerZone->addEntry(_("BACKUP CONFIGURATIONS"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL RESTART EMULATIONSTATION!\n\nAFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/JELOS_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n\nBACKUP CURRENT CONFIG AND RESTART?"), _("YES"),
 				[] {
-				runSystemCommand("systemd-run /usr/bin/backuptool backup", "", nullptr);
+				runSystemCommand("/usr/bin/run \"/usr/bin/backuptool backup\"", "", nullptr);
 				}, _("NO"), nullptr));
      });
 
     dangerZone->addEntry(_("RESTORE FROM BACKUP"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL RESTART EMULATIONSTATION AND REBOOT!\n\nYOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n\nRESTORE FROM BACKUP AND RESTART?"), _("YES"),
 				[] {
-				runSystemCommand("systemd-run /usr/bin/backuptool restore", "", nullptr);
+				runSystemCommand("/usr/bin/run \"/usr/bin/backuptool restore\"", "", nullptr);
 				}, _("NO"), nullptr));
      });
 
     dangerZone->addEntry(_("SPLIT ROM SYSTEMS"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL RESTART EMULATIONSTATION!\n\nTHIS SCRIPT WILL LOOK FOR SYSTEMS IN '/STORAGE/ROMS_LOCAL' AND '/STORAGE/ROMS' AND UPDATE EMULATIONSTATION ROM LOCATIONS\n\nSPLIT SYSTEM FOLDERS AND RESTART?"), _("YES"),
 				[] {
-				runSystemCommand("systemd-run /usr/bin/rom_system_split", "", nullptr);
+				runSystemCommand("/usr/bin/run \"/usr/bin/rom_system_split\"", "", nullptr);
 				}, _("NO"), nullptr));
      });
 
     dangerZone->addEntry(_("RESET RETROARCH CONFIG TO DEFAULT"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n\nPER-CORE CONFIGURATIONS WILL NOT BE AFFECTED BUT NO BACKUP WILL BE CREATED!\n\nRESET RETROARCH CONFIG TO DEFAULT?"), _("YES"),
 				[] {
-				runSystemCommand("systemd-run /usr/bin/factoryreset retroarch", "", nullptr);
+				runSystemCommand("/usr/bin/run \"/usr/bin/factoryreset retroarch\"", "", nullptr);
 				}, _("NO"), nullptr));
      });
 
     dangerZone->addEntry(_("FACTORY RESET"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n\nIF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n\nRESET SYSTEM AND RESTART?"), _("YES"),
 				[] {
-				runSystemCommand("systemd-run /usr/bin/factoryreset ALL", "", nullptr);
+				runSystemCommand("/usr/bin/run \"/usr/bin/factoryreset ALL\"", "", nullptr);
 				}, _("NO"), nullptr));
      });
 
