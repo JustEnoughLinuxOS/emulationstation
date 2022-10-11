@@ -1126,7 +1126,8 @@ bool ApiSystem::unzipFile(const std::string fileName, const std::string destFold
 
 std::vector<std::string> ApiSystem::getWifiNetworks(bool scan)
 {
-	return executeEnumerationScript(scan ? "/usr/bin/wifictl scan" : "/usr/bin/wifictl list");
+	executeScriptLegacy("/usr/bin/wifictl scan");
+	return executeEnumerationScript("/usr/bin/wifictl list");
 }
 
 std::vector<std::string> ApiSystem::executeEnumerationScript(const std::string command)
