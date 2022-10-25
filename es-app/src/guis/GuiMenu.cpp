@@ -1461,6 +1461,15 @@ void GuiMenu::openSystemSettings_batocera()
           SystemConf::getInstance()->setBool("system.automount", mount_games->getState());
         });
 
+        // Provides a mechanism to disable automatic hotkey assignment
+        bool HotKeysEnabled = SystemConf::getInstance()->getBool("system.autohotkeys");
+        auto autohotkeys = std::make_shared<SwitchComponent>(mWindow);
+        autohotkeys->setState(HotKeysEnabled);
+        s->addWithLabel(_("AUTOCONFIGURE HOTKEYS"), autohotkeys);
+        s->addSaveFunc([autohotkeys] {
+          SystemConf::getInstance()->setBool("system.autohotkeys", autohotkeys->getState());
+        });
+
 #ifdef RG552
 
 	  // Provides cooling profile switching
