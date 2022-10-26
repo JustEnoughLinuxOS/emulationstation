@@ -1325,7 +1325,6 @@ void GuiMenu::openSystemSettings_batocera()
 	*/
 
 	// audio device
-	/*
 	auto optionsAudio = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AUDIO OUTPUT"), false);
 
 	std::vector<std::string> availableAudio = ApiSystem::getInstance()->getAvailableAudioOutputDevices();
@@ -1372,7 +1371,6 @@ void GuiMenu::openSystemSettings_batocera()
 		}
 		SystemConf::getInstance()->saveSystemConf();
 	});
-	*/
 #endif
 #ifndef _ENABLEEMUELEC
 	// audio profile

@@ -621,7 +621,7 @@ std::vector<std::string> ApiSystem::getAvailableAudioOutputDevices()
 	return res;
 #endif
 
-	return executeEnumerationScript("batocera-audio list");
+	return executeEnumerationScript("set-audio list");
 }
 
 std::string ApiSystem::getCurrentAudioOutputDevice() 
@@ -633,7 +633,7 @@ std::string ApiSystem::getCurrentAudioOutputDevice()
 	LOG(LogDebug) << "ApiSystem::getCurrentAudioOutputDevice";
 
 	std::ostringstream oss;
-	oss << "batocera-audio get";
+	oss << "set-audio get";
 	FILE *pipe = popen(oss.str().c_str(), "r");
 	char line[1024];
 
@@ -656,7 +656,7 @@ bool ApiSystem::setAudioOutputDevice(std::string selected)
 
 	std::ostringstream oss;
 
-	oss << "batocera-audio set" << " '" << selected << "'";
+	oss << "set-audio set" << " '" << selected << "'";
 	int exitcode = system(oss.str().c_str());
 
 	Sound::get("/usr/share/emulationstation/resources/checksound.ogg")->play();
