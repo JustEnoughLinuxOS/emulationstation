@@ -1291,7 +1291,6 @@ void GuiMenu::openSystemSettings_batocera()
 	}
 #endif
 
-#if !defined(WIN32) && !defined(_ENABLEEMUELEC)
 	// video device
 	/*
 	auto optionsVideo = std::make_shared<OptionListComponent<std::string> >(mWindow, _("VIDEO OUTPUT"), false);
@@ -1346,84 +1345,6 @@ void GuiMenu::openSystemSettings_batocera()
 		}
 		SystemConf::getInstance()->saveSystemConf();
 	});
-#endif
-#ifndef _ENABLEEMUELEC
-	// audio profile
-	auto optionsAudioProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AUDIO PROFILE"), false);
-
-	std::vector<std::string> availableAudioProfiles = ApiSystem::getInstance()->getAvailableAudioOutputProfiles();
-	std::string selectedAudioProfile = ApiSystem::getInstance()->getCurrentAudioOutputProfile();
-	if (selectedAudioProfile.empty())
-		selectedAudioProfile = "auto";
-
-	if (SystemConf::getInstance()->get("system.es.menu") != "bartop")
-	{
-		bool vfound = false;
-		for (auto it = availableAudioProfiles.begin(); it != availableAudioProfiles.end(); it++)
-		{
-			std::vector<std::string> tokens = Utils::String::split(*it, ' ');
-
-			if (selectedAudioProfile == tokens.at(0))
-				vfound = true;
-
-			if (tokens.size() >= 2)
-			{
-				// concatenat the ending words
-				std::string vname = "";
-				for (unsigned int i = 1; i < tokens.size(); i++)
-				{
-					if (i > 2) vname += " ";
-					vname += tokens.at(i);
-				}
-				optionsAudioProfile->add(vname, tokens.at(0), selectedAudioProfile == tokens.at(0));
-			}
-			else
-				optionsAudioProfile->add((*it), (*it), selectedAudioProfile == tokens.at(0));
-		}
-
-		if (vfound == false)
-			optionsAudioProfile->add(selectedAudioProfile, selectedAudioProfile, true);
-
-		s->addWithLabel(_("AUDIO PROFILE"), optionsAudioProfile);
-	}
-
-	s->addSaveFunc([this, optionsAudioProfile, selectedAudioProfile]
-	{
-		if (optionsAudioProfile->changed()) {
-			SystemConf::getInstance()->set("audio.profile", optionsAudioProfile->getSelected());
-			ApiSystem::getInstance()->setAudioOutputProfile(optionsAudioProfile->getSelected());
-		}
-		SystemConf::getInstance()->saveSystemConf();
-	});
-
-	// video rotation
-	auto optionsRotation = std::make_shared<OptionListComponent<std::string> >(mWindow, _("SCREEN ROTATION"), false);
-
-	std::string selectedRotation = SystemConf::getInstance()->get("display.rotate");
-	if (selectedRotation.empty())
-		selectedRotation = "auto";
-
-	optionsRotation->add(_("0 DEGREES (AUTO)"),              "auto", selectedRotation == "auto");
-	optionsRotation->add(_("90 DEGREES"),       "1", selectedRotation == "1");
-	optionsRotation->add(_("180 DEGREES"),    "2", selectedRotation == "2");
-	optionsRotation->add(_("270 DEGREES"),        "3", selectedRotation == "3");
-
-	s->addWithLabel(_("SCREEN ROTATION"), optionsRotation);
-
-	s->addSaveFunc([this, optionsRotation, selectedRotation]
-	{
-	  if (optionsRotation->changed()) {
-	    SystemConf::getInstance()->set("display.rotate", optionsRotation->getSelected());
-	    SystemConf::getInstance()->saveSystemConf();
-
-	    mWindow->displayNotificationMessage(_U("\uF011  ") + _("REBOOT REQUIRED TO APPLY THE NEW CONFIGURATION"));
-	    if (Settings::getInstance()->getBool("ExitOnRebootRequired")) {
-	      quitES(QuitMode::QUIT);
-	    }
-	  }
-	});
-
-#endif
 
 	// Provides a mechanism to disable use of the second device
         bool MountGamesEnabled = SystemConf::getInstance()->getBool("system.automount");
