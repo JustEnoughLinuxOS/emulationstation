@@ -1330,44 +1330,19 @@ void GuiMenu::openSystemSettings_batocera()
 	std::vector<std::string> availableAudio = ApiSystem::getInstance()->getAvailableAudioOutputDevices();
 	std::string selectedAudio = ApiSystem::getInstance()->getCurrentAudioOutputDevice();
 	if (selectedAudio.empty())
-		selectedAudio = "auto";
+		selectedAudio = "DEFAULT (SYSTEM PROVIDED)";
 
-	if (SystemConf::getInstance()->get("system.es.menu") != "bartop")
-	{
-		bool vfound = false;
-		for (auto it = availableAudio.begin(); it != availableAudio.end(); it++)
-		{
-			std::vector<std::string> tokens = Utils::String::split(*it, ' ');
-
-			if (selectedAudio == tokens.at(0))
-				vfound = true;
-
-			if (tokens.size() >= 2)
-			{
-				// concatenat the ending words
-				std::string vname = "";
-				for (unsigned int i = 1; i < tokens.size(); i++)
-				{
-					if (i > 2) vname += " ";
-					vname += tokens.at(i);
-				}
-				optionsAudio->add(vname, tokens.at(0), selectedAudio == tokens.at(0));
-			}
-			else
-				optionsAudio->add((*it), (*it), selectedAudio == tokens.at(0));
-		}
-
-		if (vfound == false)
-			optionsAudio->add(selectedAudio, selectedAudio, true);
-
-		s->addWithLabel(_("AUDIO OUTPUT"), optionsAudio);
-	}
+	s->addWithLabel(_("AUDIO OUTPUT"), optionsAudio);
 
 	s->addSaveFunc([this, optionsAudio, selectedAudio]
 	{
 		if (optionsAudio->changed()) {
-			SystemConf::getInstance()->set("audio.device", optionsAudio->getSelected());
-			ApiSystem::getInstance()->setAudioOutputDevice(optionsAudio->getSelected());
+			msg += _("Emulationstation will restart")+"\n";
+			msg += _("Do you want to proceed ?");
+			window->pushGui(new GuiMsgBox(window, msg, _("YES"), [optionsAudio] {
+				ApiSystem::getInstance()->setAudioOutputDevice(optionsAudio->getSelected());
+				quitES(QuitMode::QUIT);
+			}, "NO",nullptr));
 		}
 		SystemConf::getInstance()->saveSystemConf();
 	});
