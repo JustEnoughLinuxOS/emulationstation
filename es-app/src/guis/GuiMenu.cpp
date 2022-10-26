@@ -1328,8 +1328,16 @@ void GuiMenu::openSystemSettings_batocera()
 
 	std::vector<std::string> availableAudio = ApiSystem::getInstance()->getAvailableAudioOutputDevices();
 	std::string selectedAudio = ApiSystem::getInstance()->getCurrentAudioOutputDevice();
-	if (selectedAudio.empty())
-		selectedAudio = "DEFAULT (SYSTEM PROVIDED)";
+
+	bool vfound = false;
+	for (auto it = availableAudio.begin(); it != availableAudio.end(); it++)
+	{
+		optionsAudio->add((*it), (*it), selectedAudio == (*it));
+		if (selectedAudio == (*it))
+			vfound = true;
+	}
+	if (!vfound)
+		optionsAudio->add(selectedAudio, selectedAudio, true);
 
 	s->addWithLabel(_("AUDIO OUTPUT"), optionsAudio);
 
@@ -1359,7 +1367,7 @@ void GuiMenu::openSystemSettings_batocera()
         bool HotKeysEnabled = SystemConf::getInstance()->getBool("system.autohotkeys");
         auto autohotkeys = std::make_shared<SwitchComponent>(mWindow);
         autohotkeys->setState(HotKeysEnabled);
-        s->addWithLabel(_("AUTOCONFIGURE HOTKEYS"), autohotkeys);
+        s->addWithLabel(_("AUTOCONFIGURE RETROARCH HOTKEYS"), autohotkeys);
         s->addSaveFunc([autohotkeys] {
           SystemConf::getInstance()->setBool("system.autohotkeys", autohotkeys->getState());
         });
