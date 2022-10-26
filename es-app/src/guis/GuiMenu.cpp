@@ -1336,9 +1336,9 @@ void GuiMenu::openSystemSettings_batocera()
 	s->addSaveFunc([this, optionsAudio, selectedAudio]
 	{
 		if (optionsAudio->changed()) {
-			msg += _("Emulationstation will restart")+"\n";
+			std::string msg = _("Emulationstation will restart")+"\n";
 			msg += _("Do you want to proceed ?");
-			window->pushGui(new GuiMsgBox(window, msg, _("YES"), [optionsAudio] {
+			mWindow->pushGui(new GuiMsgBox(mWindow, msg, _("YES"), [optionsAudio] {
 				ApiSystem::getInstance()->setAudioOutputDevice(optionsAudio->getSelected());
 				quitES(QuitMode::QUIT);
 			}, "NO",nullptr));
