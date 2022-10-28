@@ -2261,6 +2261,12 @@ void GuiMenu::openGamesSettings_batocera()
 	s->addWithLabel(_("INCREMENTAL SAVESTATES"), incrementalSaveStates);
 	s->addSaveFunc([incrementalSaveStates] { SystemConf::getInstance()->set("global.incrementalsavestates", incrementalSaveStates->getState() ? "1" : "0"); });
 
+        // Automated Cloud Backup
+        auto cloudBackup = std::make_shared<SwitchComponent>(mWindow);
+        cloudBackup->setState(SystemConf::getInstance()->get("cloud.backup") == "0");
+        s->addWithLabel(_("BACKUP TO CLOUD ON GAME EXIT"), cloudBackup);
+        s->addSaveFunc([cloudBackup] { SystemConf::getInstance()->set("cloud.backup", incrementalSaveStates->getState() ? "1" : "0"); });
+
 	// Shaders preset
 #ifndef _ENABLEEMUELEC
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SHADERS))
