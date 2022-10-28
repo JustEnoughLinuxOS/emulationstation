@@ -1264,8 +1264,7 @@ void GuiMenu::openSystemSettings_batocera()
           runSystemCommand("setrootpass " + rootpass, "", nullptr);
         });
 
-#if !defined(WIN32) || defined(_DEBUG)
-	s->addGroup(_("HARDWARE"));
+	s->addGroup(_("DISPLAY"));
 
 
 	if (BrightnessControl::getInstance()->isAvailable())
@@ -1290,6 +1289,7 @@ void GuiMenu::openSystemSettings_batocera()
 		);
 	}
 #endif
+	s->addGroup(_("HARDWARE"));
 
 	// video device
 	/*
@@ -1353,24 +1353,6 @@ void GuiMenu::openSystemSettings_batocera()
 		}
 		SystemConf::getInstance()->saveSystemConf();
 	});
-
-	// Provides a mechanism to disable use of the second device
-        bool MountGamesEnabled = SystemConf::getInstance()->getBool("system.automount");
-        auto mount_games = std::make_shared<SwitchComponent>(mWindow);
-        mount_games->setState(MountGamesEnabled);
-        s->addWithLabel(_("AUTODETECT GAMES CARD"), mount_games);
-        s->addSaveFunc([mount_games] {
-          SystemConf::getInstance()->setBool("system.automount", mount_games->getState());
-        });
-
-        // Provides a mechanism to disable automatic hotkey assignment
-        bool HotKeysEnabled = SystemConf::getInstance()->getBool("system.autohotkeys");
-        auto autohotkeys = std::make_shared<SwitchComponent>(mWindow);
-        autohotkeys->setState(HotKeysEnabled);
-        s->addWithLabel(_("AUTOCONFIGURE RETROARCH HOTKEYS"), autohotkeys);
-        s->addSaveFunc([autohotkeys] {
-          SystemConf::getInstance()->setBool("system.autohotkeys", autohotkeys->getState());
-        });
 
 #ifdef RG552
 
@@ -1521,6 +1503,26 @@ void GuiMenu::openSystemSettings_batocera()
                 bool powersaveenabled = wifi_powersave->getState();
                 SystemConf::getInstance()->set("wifi.powersave", powersaveenabled ? "0" : "1");
                 runSystemCommand("/usr/bin/wifictl setpowersave", "", nullptr);
+        });
+
+        s->addGroup(_("PREFERENCES"));
+
+        // Provides a mechanism to disable use of the second device
+        bool MountGamesEnabled = SystemConf::getInstance()->getBool("system.automount");
+        auto mount_games = std::make_shared<SwitchComponent>(mWindow);
+        mount_games->setState(MountGamesEnabled);
+        s->addWithLabel(_("AUTODETECT GAMES CARD"), mount_games);
+        s->addSaveFunc([mount_games] {
+          SystemConf::getInstance()->setBool("system.automount", mount_games->getState());
+        });
+
+        // Provides a mechanism to disable automatic hotkey assignment
+        bool HotKeysEnabled = SystemConf::getInstance()->getBool("system.autohotkeys");
+        auto autohotkeys = std::make_shared<SwitchComponent>(mWindow);
+        autohotkeys->setState(HotKeysEnabled);
+        s->addWithLabel(_("AUTOCONFIGURE RETROARCH HOTKEYS"), autohotkeys);
+        s->addSaveFunc([autohotkeys] {
+          SystemConf::getInstance()->setBool("system.autohotkeys", autohotkeys->getState());
         });
 
 	s->addGroup(_("SYSTEM UPDATE"));
