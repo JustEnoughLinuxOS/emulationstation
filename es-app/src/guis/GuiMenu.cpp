@@ -1288,7 +1288,7 @@ void GuiMenu::openSystemSettings_batocera()
 			}
 		);
 	}
-#endif
+
 	s->addGroup(_("HARDWARE"));
 
 	// video device
