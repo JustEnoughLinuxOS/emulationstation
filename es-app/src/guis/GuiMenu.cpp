@@ -149,7 +149,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		//addEntry(_("EMULATIONSTATION SETTINGS").c_str(), true, [this] { openEmuELECSettings(); }, "iconEmuelec");
 #endif
 		addEntry(_("UI SETTINGS").c_str(), true, [this] { openUISettings(); }, "iconUI");
-		//addEntry(_("CONTROLLERS SETTINGS").c_str(), true, [this] { openControllersSettings_batocera(); }, "iconControllers");
+		addEntry(controllers_settings_label.c_str(), true, [this] { openControllersSettings_batocera(); }, "iconControllers");
 		addEntry(_("SOUND SETTINGS").c_str(), true, [this] { openSoundSettings(); }, "iconSound");
 
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI)) {
@@ -2771,8 +2771,38 @@ void GuiMenu::openControllersSettings_batocera(int autoSel)
 
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::BLUETOOTH))
 	{
+		// BLUETOOTH TOGGLE
+		auto bluetoothd_enabled = std::make_shared<SwitchComponent>(mWindow);
+		bool btbaseEnabled = SystemConf::getInstance()->get("bluetooth.enabled") == "1";
+		bluetoothd_enabled->setState(btbaseEnabled);
+		s->addWithLabel(_("ENABLE BLUETOOTH"), bluetoothd_enabled);
+		bluetoothd_enabled->setOnChangedCallback([this, s, bluetoothd_enabled]() {
+			if (bluetoothd_enabled->getState() == false) {
+				runSystemCommand("systemctl stop bluetooth", "", nullptr);
+			} else {
+				runSystemCommand("systemctl start bluetooth", "", nullptr);
+				mWindow->pushGui(new GuiLoading<bool>(mWindow, _("ENABLING BLUETOOTH"),
+					[this] {
+						// batocera-bluetooth-agent sleeps 2000 to ensure hardware is
+						// initialised, extra second gives it time to initialise itself.
+						std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+						return true;
+					},
+					[this](bool ret) {}));
+			}
+			bool bluetoothenabled = bluetoothd_enabled->getState();
+			SystemConf::getInstance()->set("bluetooth.enabled", bluetoothenabled ? "1" : "0");
+			SystemConf::getInstance()->saveSystemConf();
+		});
+
 		// PAIR A BLUETOOTH CONTROLLER OR BT AUDIO DEVICE
-		s->addEntry(_("PAIR A BLUETOOTH DEVICE"), false, [window] { ThreadedBluetooth::start(window); });
+		s->addEntry(_("PAIR A BLUETOOTH DEVICE"), false, [window, bluetoothd_enabled] {
+			if (bluetoothd_enabled->getState() == false) {
+				window->pushGui(new GuiMsgBox(window, _("BLUETOOTH IS DISABLED")));
+			} else {
+				ThreadedBluetooth::start(window);
+			}
+		});
 
 		// FORGET BLUETOOTH CONTROLLERS OR BT AUDIO DEVICES
 		s->addEntry(_("FORGET A BLUETOOTH DEVICE"), false, [window, this, s]
