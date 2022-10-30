@@ -149,7 +149,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		//addEntry(_("EMULATIONSTATION SETTINGS").c_str(), true, [this] { openEmuELECSettings(); }, "iconEmuelec");
 #endif
 		addEntry(_("UI SETTINGS").c_str(), true, [this] { openUISettings(); }, "iconUI");
-		addEntry(controllers_settings_label.c_str(), true, [this] { openControllersSettings_batocera(); }, "iconControllers");
+		//addEntry(controllers_settings_label.c_str(), true, [this] { openControllersSettings_batocera(); }, "iconControllers");
 		addEntry(_("SOUND SETTINGS").c_str(), true, [this] { openSoundSettings(); }, "iconSound");
 
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI)) {
