@@ -1409,6 +1409,9 @@ void GuiMenu::openSystemSettings_batocera()
         optionsOCProfile->add(_("TDP - 14w"),"14w", selectedOCProfile == "14w");
         optionsOCProfile->add(_("TDP - 16w"),"16w", selectedOCProfile == "16w");
         optionsOCProfile->add(_("TDP - 18w"),"18w", selectedOCProfile == "18w");
+        optionsOCProfile->add(_("TDP - 20w"),"20w", selectedOCProfile == "20w");
+        optionsOCProfile->add(_("TDP - 22w"),"22w", selectedOCProfile == "22w");
+        optionsOCProfile->add(_("TDP - 24w"),"24w", selectedOCProfile == "24w");
 #endif
 #if defined(RG552) || defined(handheld)
  	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
