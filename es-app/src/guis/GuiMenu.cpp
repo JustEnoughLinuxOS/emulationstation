@@ -2266,7 +2266,7 @@ void GuiMenu::openGamesSettings_batocera()
 
         // Automated Cloud Backup
         auto cloudBackup = std::make_shared<SwitchComponent>(mWindow);
-        cloudBackup->setState(SystemConf::getInstance()->get("cloud.backup") == "0");
+        cloudBackup->setState(SystemConf::getInstance()->get("cloud.backup") == "1");
         s->addWithLabel(_("BACKUP TO CLOUD ON GAME EXIT"), cloudBackup);
         s->addSaveFunc([cloudBackup] { SystemConf::getInstance()->set("cloud.backup", cloudBackup->getState() ? "1" : "0"); });
 
