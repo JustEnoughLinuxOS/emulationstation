@@ -179,6 +179,9 @@ public:
     bool setAudioOutputDevice(std::string device);
     std::vector<std::string> getAvailableAudioOutputDevices();
     std::string getCurrentAudioOutputDevice();
+    bool setAudioOutputPath(std::string device);
+    std::vector<std::string> getAvailableAudioOutputPaths();
+    std::string getCurrentAudioOutputPath();
     bool setAudioOutputProfile(std::string profile);
     std::vector<std::string> getAvailableAudioOutputProfiles();
     std::string getCurrentAudioOutputProfile();

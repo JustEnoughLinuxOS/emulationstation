@@ -664,6 +664,57 @@ bool ApiSystem::setAudioOutputDevice(std::string selected)
 	return exitcode == 0;
 }
 
+std::vector<std::string> ApiSystem::getAvailableAudioOutputPaths()
+{
+#if WIN32
+        std::vector<std::string> res;
+        res.push_back("auto");
+        return res;
+#endif
+
+        return executeEnumerationScript("essound controls");
+}
+
+std::string ApiSystem::getCurrentAudioOutputPath()
+{
+#if WIN32
+        return "auto";
+#endif
+
+        LOG(LogDebug) << "ApiSystem::getCurrentAudioOutputPath";
+
+        std::ostringstream oss;
+        oss << "essound get";
+        FILE *pipe = popen(oss.str().c_str(), "r");
+        char line[1024];
+
+        if (pipe == NULL)
+                return "";
+
+        if (fgets(line, 1024, pipe))
+        {
+                strtok(line, "\n");
+                pclose(pipe);
+                return std::string(line);
+        }
+
+        return "";
+}
+
+bool ApiSystem::setAudioOutputPath(std::string selected)
+{
+        LOG(LogDebug) << "ApiSystem::setAudioOutputPath";
+
+        std::ostringstream oss;
+
+        oss << "essound set" << " '" << selected << "'";
+        int exitcode = system(oss.str().c_str());
+
+        Sound::get("/usr/share/emulationstation/resources/checksound.ogg")->play();
+
+        return exitcode == 0;
+}
+
 std::vector<std::string> ApiSystem::getAvailableAudioOutputProfiles()
 {
 #if WIN32

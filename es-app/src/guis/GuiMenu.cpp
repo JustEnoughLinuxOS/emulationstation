@@ -1317,7 +1317,7 @@ void GuiMenu::openSystemSettings_batocera()
 	*/
 
 	// audio device
-	auto optionsAudio = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AUDIO OUTPUT"), false);
+	auto optionsAudio = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AUDIO DEVICE"), false);
 
 	std::vector<std::string> availableAudio = ApiSystem::getInstance()->getAvailableAudioOutputDevices();
 	std::string selectedAudio = ApiSystem::getInstance()->getCurrentAudioOutputDevice();
@@ -1332,7 +1332,7 @@ void GuiMenu::openSystemSettings_batocera()
 	if (!vfound)
 		optionsAudio->add(selectedAudio, selectedAudio, true);
 
-	s->addWithLabel(_("AUDIO OUTPUT"), optionsAudio);
+	s->addWithLabel(_("AUDIO DEVICE"), optionsAudio);
 
 	s->addSaveFunc([this, optionsAudio, selectedAudio]
 	{
@@ -1346,6 +1346,37 @@ void GuiMenu::openSystemSettings_batocera()
 		}
 		SystemConf::getInstance()->saveSystemConf();
 	});
+
+        // audio path
+        auto AudioPath = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AUDIO PATH"), false);
+
+        std::vector<std::string> availablePaths = ApiSystem::getInstance()->getAvailableAudioOutputPaths();
+        std::string selectedPath = ApiSystem::getInstance()->getCurrentAudioOutputPath();
+
+        bool afound = false;
+        for (auto it = availablePaths.begin(); it != availablePaths.end(); it++)
+        {
+                AudioPath->add((*it), (*it), selectedPath == (*it));
+                if (selectedPath == (*it))
+                        afound = true;
+        }
+        if (!afound)
+                AudioPath->add(selectedPath, selectedPath, true);
+
+        s->addWithLabel(_("AUDIO PATH"), AudioPath);
+
+        s->addSaveFunc([this, AudioPath, selectedPath]
+        {
+                if (AudioPath->changed()) {
+                        std::string msg = _("Emulationstation will restart")+"\n";
+                        msg += _("Do you want to proceed ?");
+                        mWindow->pushGui(new GuiMsgBox(mWindow, msg, _("YES"), [AudioPath] {
+                                ApiSystem::getInstance()->setAudioOutputPath(AudioPath->getSelected());
+                                quitES(QuitMode::QUIT);
+                        }, "NO",nullptr));
+                }
+                SystemConf::getInstance()->saveSystemConf();
+        });
 
 #ifdef RG552
 
