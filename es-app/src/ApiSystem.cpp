@@ -672,7 +672,7 @@ std::vector<std::string> ApiSystem::getAvailableAudioOutputPaths()
         return res;
 #endif
 
-        return executeEnumerationScript("essound controls");
+        return executeEnumerationScript("set-audio controls");
 }
 
 std::string ApiSystem::getCurrentAudioOutputPath()
@@ -684,7 +684,7 @@ std::string ApiSystem::getCurrentAudioOutputPath()
         LOG(LogDebug) << "ApiSystem::getCurrentAudioOutputPath";
 
         std::ostringstream oss;
-        oss << "essound get";
+        oss << "set-audio esget";
         FILE *pipe = popen(oss.str().c_str(), "r");
         char line[1024];
 
@@ -707,7 +707,7 @@ bool ApiSystem::setAudioOutputPath(std::string selected)
 
         std::ostringstream oss;
 
-        oss << "essound set" << " '" << selected << "'";
+        oss << "set-audio esset" << " '" << selected << "'";
         int exitcode = system(oss.str().c_str());
 
         Sound::get("/usr/share/emulationstation/resources/checksound.ogg")->play();
