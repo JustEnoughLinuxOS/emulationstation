@@ -1528,7 +1528,7 @@ void GuiMenu::openSystemSettings_batocera()
         s->addWithLabel(_("ENABLE WIFI POWERSAVE"), wifi_powersave);
         s->addSaveFunc([wifi_powersave] {
                 bool powersaveenabled = wifi_powersave->getState();
-                SystemConf::getInstance()->set("wifi.powersave", powersaveenabled ? "0" : "1");
+                SystemConf::getInstance()->set("wifi.powersave", powersaveenabled ? "1" : "0");
                 runSystemCommand("/usr/bin/wifictl setpowersave", "", nullptr);
         });
 
