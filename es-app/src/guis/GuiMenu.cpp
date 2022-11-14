@@ -1245,11 +1245,11 @@ void GuiMenu::openSystemSettings_batocera()
         s->addWithLabel(_("ROTATE ROOT PASSWORD"), rotate_root_pass);
 
         auto root_password = std::make_shared<TextComponent>(mWindow, SystemConf::getInstance()->get("root.password"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
-        if (SystemConf::getInstance()->getBool("rotate.root.password", true)) {
-          s->addWithLabel(_("ROOT PASSWORD"), root_password);
-        } else {
-          s->addInputTextRow(_("ROOT PASSWORD"), "root.password", false);
-        }
+	if (SystemConf::getInstance()->getBool("rotate.root.password", true)) {
+		s->addWithLabel(_("ROOT PASSWORD"), root_password);
+	} else {
+		s->addInputTextRow(_("ROOT PASSWORD"), "root.password", false);
+	}
 
         s->addSaveFunc([rotate_root_pass, root_password] {
 	  SystemConf::getInstance()->setBool("rotate.root.password", rotate_root_pass->getState());
@@ -1528,7 +1528,7 @@ void GuiMenu::openSystemSettings_batocera()
         s->addWithLabel(_("ENABLE WIFI POWERSAVE"), wifi_powersave);
         s->addSaveFunc([wifi_powersave] {
                 bool powersaveenabled = wifi_powersave->getState();
-                SystemConf::getInstance()->set("wifi.powersave", powersaveenabled ? "0" : "1");
+                SystemConf::getInstance()->set("wifi.powersave", powersaveenabled ? "1" : "0");
                 runSystemCommand("/usr/bin/wifictl setpowersave", "", nullptr);
         });
 
@@ -3813,12 +3813,21 @@ void GuiMenu::openUISettings()
 	auto desktop_enabled = std::make_shared<SwitchComponent>(mWindow);
 	bool desktopEnabled = SystemConf::getInstance()->get("desktop.enabled") == "1";
 	desktop_enabled->setState(desktopEnabled);
-	s->addWithLabel(_("DESKTOP MODE (REBOOT)"), desktop_enabled);
-	s->addSaveFunc([desktop_enabled] {
-	bool desktopenabled = desktop_enabled->getState();
-	SystemConf::getInstance()->set("desktop.enabled", desktopenabled ? "1" : "0");
-			SystemConf::getInstance()->saveSystemConf();
-		});
+	s->addWithLabel(_("DESKTOP MODE"), desktop_enabled);
+	s->addSaveFunc([this,desktop_enabled] {
+		if (desktop_enabled->changed()) {
+	                std::string msg = _("The system will restart")+"\n";
+	                msg += _("Do you want to continue?");
+			mWindow->pushGui(new GuiMsgBox(mWindow,msg, _("YES"), 
+				[this,desktop_enabled] {
+					bool desktopenabled = desktop_enabled->getState();
+					SystemConf::getInstance()->set("desktop.enabled", desktopenabled ? "1" : "0");
+					SystemConf::getInstance()->saveSystemConf();
+					quitES(QuitMode::REBOOT);
+			}, "NO",nullptr));
+		}
+	});
+
 #endif
 
 	s->addGroup(_("DISPLAY OPTIONS"));
