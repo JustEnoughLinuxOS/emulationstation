@@ -1907,7 +1907,7 @@ void GuiMenu::openLatencyReductionConfiguration(Window* mWindow, std::string con
 
 	// audio-latency
 	auto audio_latency = std::make_shared<OptionListComponent<std::string>>(mWindow, _("AUDIO LATENCY MILLISECONDS"));
-	audio_latency->addRange({ { _("DEFAULT"), "default" }, { "0", "0" }, { "8", "8" }, { "16", "16" }, { "24", "24" }, { "32", "32" }, { "40", "40" }, { "48", "48" }, { "56", "56" }, { "64", "64" }, { "72", "72" }, { "80", "80" }, { "88", "88" }, { "96", "96" }, { "104", "104" }, { "112", "112" }, { "120", "120" }, { "128", "128" } }, SystemConf::getInstance()->get(configName + ".audiolatency"));
+	audio_latency->addRange({ { _("DEFAULT"), "" }, { "2", "2" }, { "4", "4" }, { "8", "8" }, { "16", "16" }, { "24", "24" }, { "32", "32" }, { "40", "40" }, { "48", "48" }, { "56", "56" }, { "64", "64" }, { "72", "72" }, { "80", "80" }, { "88", "88" }, { "96", "96" }, { "104", "104" }, { "112", "112" }, { "120", "120" }, { "128", "128" } }, SystemConf::getInstance()->get(configName + ".audiolatency"));
 	guiLatency->addWithLabel(_("AUDIO LATENCY MILLISECONDS"), audio_latency);
 	guiLatency->addSaveFunc([configName, audio_latency] { SystemConf::getInstance()->set(configName + ".audiolatency", audio_latency->getSelected()); });
 	
