@@ -1784,9 +1784,9 @@ void GuiMenu::openLatencyReductionConfiguration(Window* mWindow, std::string con
 
 	// run-ahead
 	auto runahead_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("RUN-AHEAD FRAMES"));
-    runahead_enabled->addRange({ { _("DEFAULT"), "" }, { _("NONE"), "0" }, { "1", "1" }, { "2", "2" }, { "3", "3" }, { "4", "4" }, { "5", "5" }, { "6", "6" } }, SystemConf::getInstance()->get(configName + ".runahead"));
-    guiLatency->addWithLabel(_("USE RUN-AHEAD FRAMES"), runahead_enabled);
-    guiLatency->addSaveFunc([configName, runahead_enabled] { SystemConf::getInstance()->set(configName + ".runahead", runahead_enabled->getSelected()); });
+	runahead_enabled->addRange({ { _("DEFAULT"), "" }, { _("NONE"), "0" }, { "1", "1" }, { "2", "2" }, { "3", "3" }, { "4", "4" }, { "5", "5" }, { "6", "6" } }, SystemConf::getInstance()->get(configName + ".runahead"));
+	guiLatency->addWithLabel(_("USE RUN-AHEAD FRAMES"), runahead_enabled);
+	guiLatency->addSaveFunc([configName, runahead_enabled] { SystemConf::getInstance()->set(configName + ".runahead", runahead_enabled->getSelected()); });
 
 	// second instance
 	auto secondinstance = std::make_shared<OptionListComponent<std::string>>(mWindow, _("RUN-AHEAD USE SECOND INSTANCE"));
@@ -1794,6 +1794,12 @@ void GuiMenu::openLatencyReductionConfiguration(Window* mWindow, std::string con
 	guiLatency->addWithLabel(_("RUN-AHEAD USE SECOND INSTANCE"), secondinstance);
 	guiLatency->addSaveFunc([configName, secondinstance] { SystemConf::getInstance()->set(configName + ".secondinstance", secondinstance->getSelected()); });
 
+	// audio-latency
+	auto audio_latency = std::make_shared<OptionListComponent<std::string>>(mWindow, _("AUDIO LATENCY MILLISECONDS"));
+	audio_latency->addRange({ { _("DEFAULT"), "" }, { "2", "2" }, { "4", "4" }, { "8", "8" }, { "16", "16" }, { "24", "24" }, { "32", "32" }, { "40", "40" }, { "48", "48" }, { "56", "56" }, { "64", "64" }, { "72", "72" }, { "80", "80" }, { "88", "88" }, { "96", "96" }, { "104", "104" }, { "112", "112" }, { "120", "120" }, { "128", "128" } }, SystemConf::getInstance()->get(configName + ".audiolatency"));
+	guiLatency->addWithLabel(_("AUDIO LATENCY MILLISECONDS"), audio_latency);
+	guiLatency->addSaveFunc([configName, audio_latency] { SystemConf::getInstance()->set(configName + ".audiolatency", audio_latency->getSelected()); });
+	
 	mWindow->pushGui(guiLatency);
 }
 
