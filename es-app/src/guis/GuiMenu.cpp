@@ -1441,66 +1441,67 @@ void GuiMenu::openSystemSettings_batocera()
           SystemConf::getInstance()->setBool("system.autohotkeys", autohotkeys->getState());
         });
 
-//	s->addGroup(_("SYSTEM UPDATE"));
+#ifdef _ENABLEUPDATES
+	s->addGroup(_("SYSTEM UPDATE"));
 
         // Enable updates
-//        auto updates_enabled = std::make_shared<SwitchComponent>(mWindow);
-//        updates_enabled->setState(SystemConf::getInstance()->getBool("updates.enabled"));
-//        s->addSaveFunc([updates_enabled] {
-//                bool updatesenabled = updates_enabled->getState();
-//		SystemConf::getInstance()->set("updates.enabled", updatesenabled ? "1" : "0");
-//	});
+        auto updates_enabled = std::make_shared<SwitchComponent>(mWindow);
+        updates_enabled->setState(SystemConf::getInstance()->getBool("updates.enabled"));
+        s->addSaveFunc([updates_enabled] {
+                bool updatesenabled = updates_enabled->getState();
+		SystemConf::getInstance()->set("updates.enabled", updatesenabled ? "1" : "0");
+	});
 
-//        auto optionsUpdates = std::make_shared<OptionListComponent<std::string> >(mWindow, _("UPDATE BRANCH"), false);
+        auto optionsUpdates = std::make_shared<OptionListComponent<std::string> >(mWindow, _("UPDATE BRANCH"), false);
 
-//        std::string selectedBranch = SystemConf::getInstance()->get("updates.branch");
-//        if (selectedBranch.empty())
-//                selectedBranch = "stable";
+        std::string selectedBranch = SystemConf::getInstance()->get("updates.branch");
+        if (selectedBranch.empty())
+                selectedBranch = "stable";
 
-//        optionsUpdates->add(_("STABLE"), "stable", selectedBranch == "stable");
-//        optionsUpdates->add(_("DEVELOPMENT"), "dev", selectedBranch == "dev");
+        optionsUpdates->add(_("STABLE"), "stable", selectedBranch == "stable");
+        optionsUpdates->add(_("DEVELOPMENT"), "dev", selectedBranch == "dev");
 
-//        s->addWithLabel(_("UPDATE BRANCH"), optionsUpdates);
+        s->addWithLabel(_("UPDATE BRANCH"), optionsUpdates);
 
-//        s->addSaveFunc([this, optionsUpdates, selectedBranch]
-//        {
-//          if (optionsUpdates->changed()) {
-//            SystemConf::getInstance()->set("updates.branch", optionsUpdates->getSelected());
-//            SystemConf::getInstance()->saveSystemConf();
-//          }
-//        });
+        s->addSaveFunc([this, optionsUpdates, selectedBranch]
+        {
+          if (optionsUpdates->changed()) {
+            SystemConf::getInstance()->set("updates.branch", optionsUpdates->getSelected());
+            SystemConf::getInstance()->saveSystemConf();
+          }
+        });
 
-//        bool ForceUpdateEnabled = SystemConf::getInstance()->getBool("updates.force");
-//        auto force_update = std::make_shared<SwitchComponent>(mWindow);
-//        force_update->setState(ForceUpdateEnabled);
-//        s->addWithLabel(_("FORCE NEXT UPDATE"), force_update);
-//        s->addSaveFunc([force_update] {
-//                bool forceupdate = force_update->getState();
-//                SystemConf::getInstance()->set("updates.force", forceupdate ? "1" : "0");
-//        });
+        bool ForceUpdateEnabled = SystemConf::getInstance()->getBool("updates.force");
+        auto force_update = std::make_shared<SwitchComponent>(mWindow);
+        force_update->setState(ForceUpdateEnabled);
+        s->addWithLabel(_("FORCE NEXT UPDATE"), force_update);
+        s->addSaveFunc([force_update] {
+                bool forceupdate = force_update->getState();
+                SystemConf::getInstance()->set("updates.force", forceupdate ? "1" : "0");
+        });
 
-//        s->addWithLabel(_("CHECK FOR UPDATES"), updates_enabled);
-//        s->addSaveFunc([updates_enabled]
-//        {
-//                SystemConf::getInstance()->setBool("updates.enabled", updates_enabled->getState());
-//        });
+        s->addWithLabel(_("CHECK FOR UPDATES"), updates_enabled);
+        s->addSaveFunc([updates_enabled]
+        {
+                SystemConf::getInstance()->setBool("updates.enabled", updates_enabled->getState());
+        });
 
                 // Start update
-//        s->addEntry(GuiUpdate::state == GuiUpdateState::State::UPDATE_READY ? _("APPLY UPDATE") : _("START UPDATE"), true, [this]
-//        {
-//                if (GuiUpdate::state == GuiUpdateState::State::UPDATE_READY)
-//                        quitES(QuitMode::RESTART);
-//                else if (GuiUpdate::state == GuiUpdateState::State::UPDATER_RUNNING)
-//                        mWindow->pushGui(new GuiMsgBox(mWindow, _("UPDATER IS ALREADY RUNNING")));
-//                else
-//                {
-//                        if (!checkNetwork())
-//                                return;
-//
-//                        mWindow->pushGui(new GuiUpdate(mWindow));
-//                }
-//        });
+        s->addEntry(GuiUpdate::state == GuiUpdateState::State::UPDATE_READY ? _("APPLY UPDATE") : _("START UPDATE"), true, [this]
+        {
+                if (GuiUpdate::state == GuiUpdateState::State::UPDATE_READY)
+                        quitES(QuitMode::RESTART);
+                else if (GuiUpdate::state == GuiUpdateState::State::UPDATER_RUNNING)
+                        mWindow->pushGui(new GuiMsgBox(mWindow, _("UPDATER IS ALREADY RUNNING")));
+                else
+                {
+                        if (!checkNetwork())
+                                return;
 
+                        mWindow->pushGui(new GuiUpdate(mWindow));
+                }
+        });
+#endif
 
 	if (!ApiSystem::getInstance()->isScriptingSupported(ApiSystem::GAMESETTINGS))
 	{

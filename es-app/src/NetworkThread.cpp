@@ -72,29 +72,30 @@ void NetworkThread::run()
 		}
 		
 		checkPadsBatteryLevel();
+#ifdef _ENABLEUPDATES
+		if (mCheckUpdateTimer >= CHECKUPDATE_MINUTES && SystemConf::getInstance()->getBool("updates.enabled"))
+		{
+			mCheckUpdateTimer = 0;
 
-//		if (mCheckUpdateTimer >= CHECKUPDATE_MINUTES && SystemConf::getInstance()->getBool("updates.enabled"))
-//		{
-//			mCheckUpdateTimer = 0;
-//
-//			LOG(LogDebug) << "NetworkThread : Checking for updates";
-//
-//			std::vector<std::string> msgtbl;
-//			if (ApiSystem::getInstance()->canUpdate(msgtbl))
-//			{
-//				std::string msg = "";
-//				for (int i = 0; i < msgtbl.size(); i++)
-//				{
-//					if (i != 0) msg += "\n";
-//					msg += msgtbl[i];
-//				}
-//
-//				LOG(LogDebug) << "NetworkThread : Update available " << msg.c_str();
-//				mWindow->displayNotificationMessage(_U("\uF019  ") + _("A NEW UPDATE IS AVAILABLE"));
-//				mRunning = false;
-//			}
-//			else
-//				LOG(LogDebug) << "NetworkThread : No update found";
-//		}
+			LOG(LogDebug) << "NetworkThread : Checking for updates";
+
+			std::vector<std::string> msgtbl;
+			if (ApiSystem::getInstance()->canUpdate(msgtbl))
+			{
+				std::string msg = "";
+				for (int i = 0; i < msgtbl.size(); i++)
+				{
+					if (i != 0) msg += "\n";
+					msg += msgtbl[i];
+				}
+
+				LOG(LogDebug) << "NetworkThread : Update available " << msg.c_str();
+				mWindow->displayNotificationMessage(_U("\uF019  ") + _("A NEW UPDATE IS AVAILABLE"));
+				mRunning = false;
+			}
+			else
+				LOG(LogDebug) << "NetworkThread : No update found";
+		}
+#endif
 	}
 }

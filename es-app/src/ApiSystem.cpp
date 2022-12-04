@@ -298,28 +298,30 @@ bool ApiSystem::ping()
 
 bool ApiSystem::canUpdate(std::vector<std::string>& output) 
 {
-//	LOG(LogDebug) << "ApiSystem::canUpdate";
+#ifdef _ENABLEUPDATES
+	LOG(LogDebug) << "ApiSystem::canUpdate";
 
-//	FILE *pipe = popen("updatecheck", "r");
-//	if (pipe == NULL)
-//		return false;
+	FILE *pipe = popen("updatecheck", "r");
+	if (pipe == NULL)
+		return false;
 
-//	char line[1024];
-//	while (fgets(line, 1024, pipe)) 
-//	{
-//		strtok(line, "\n");
-//		output.push_back(std::string(line));
-//	}
+	char line[1024];
+	while (fgets(line, 1024, pipe)) 
+	{
+		strtok(line, "\n");
+		output.push_back(std::string(line));
+	}
 
-//	int res = WEXITSTATUS(pclose(pipe));
-//        bool ForceUpdateEnabled = SystemConf::getInstance()->getBool("updates.force");
-//	if (res == 0 || ForceUpdateEnabled == true) 
-//	{
-//		LOG(LogInfo) << "Can update ";
-//		return true;
-//	}
+	int res = WEXITSTATUS(pclose(pipe));
+        bool ForceUpdateEnabled = SystemConf::getInstance()->getBool("updates.force");
+	if (res == 0 || ForceUpdateEnabled == true) 
+	{
+		LOG(LogInfo) << "Can update ";
+		return true;
+	}
 
-//	LOG(LogInfo) << "Cannot update ";
+	LOG(LogInfo) << "Cannot update ";
+#endif
 	return false;
 }
 

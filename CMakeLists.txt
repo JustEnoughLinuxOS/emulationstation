@@ -13,6 +13,9 @@ option(DISABLE_KODI "Set to ON to disable kodi in menu" OFF)
 option(ENABLE_PULSE "Set to ON to enable pulse audio (versus alsa)" OFF)
 option(ENABLE_TTS "Set to ON to enable text to speech" OFF)
 
+# Online updating
+option(ENABLE_UPDATES "Set to ON to enable online updates." ${ENABLE_UPDATES})
+
 # emuelec
 option(ENABLE_EMUELEC "Set to ON to enable EmuELEC changes" ${ENABLE_EMUELEC})
 option(ENABLE_GAMEFORCE "Set to ON to enable Gameforce specific changes" ${ENABLE_GAMEFORCE})
@@ -32,6 +35,11 @@ LIST(APPEND CMAKE_MODULE_PATH
 if(DEFINED ENV{DEVICE})
     add_definitions(-DHW_DEVICE="$ENV{DEVICE}")
     add_definitions(-D$ENV{DEVICE})
+endif()
+
+# Online updates
+if("${ENABLE_UPDATES}" STREQUAL "1")
+  add_definitions(-D_ENABLEUPDATES)
 endif()
 
 # emuelec
