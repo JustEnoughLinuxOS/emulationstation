@@ -1267,7 +1267,7 @@ void GuiMenu::openSystemSettings_batocera()
                 SystemConf::getInstance()->saveSystemConf();
         });
 
-#ifdef RG552
+#if defined(RG552) || defined(handheld)
 
 	  // Provides cooling profile switching
 	  auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
@@ -4671,7 +4671,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         systemConfiguration->addSaveFunc([cores_used, configName] { SystemConf::getInstance()->set(configName + ".cores", cores_used->getSelected()); });
 #endif
 
-#ifdef RG552
+#if defined(RG552) || defined(handheld)
 
           // Provides cooling profile switching
           auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
