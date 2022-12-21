@@ -1348,11 +1348,12 @@ void GuiMenu::openSystemSettings_batocera()
 
         std::string cpu_governor = SystemConf::getInstance()->get("system.cpugovernor");
         if (cpu_governor.empty())
-                cpu_governor = "interactive";
+                cpu_governor = "schedutil";
 
-        cpuGovUpdate->add(_("INTERACTIVE"), "interactive", cpu_governor == "interactive");
+        cpuGovUpdate->add(_("SCHEDUTIL"), "schedutil", cpu_governor == "schedutil");
         cpuGovUpdate->add(_("ONDEMAND"), "ondemand", cpu_governor == "ondemand");
         cpuGovUpdate->add(_("PERFORMANCE"), "performance", cpu_governor == "performance");
+        cpuGovUpdate->add(_("POWERSAVE"), "powersave", cpu_governor == "powersave");
 
         s->addWithLabel(_("DEFAULT CPU GOVERNOR"), cpuGovUpdate);
 
@@ -4715,9 +4716,10 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
                 cpu_governor = "auto";
 
         cpuGovUpdate->add(_("DEFAULT"), "auto", cpu_governor == "auto");
-        cpuGovUpdate->add(_("INTERACTIVE"), "interactive", cpu_governor == "interactive");
+        cpuGovUpdate->add(_("SCHEDUTIL"), "schedutil", cpu_governor == "schedutil");
         cpuGovUpdate->add(_("ONDEMAND"), "ondemand", cpu_governor == "ondemand");
         cpuGovUpdate->add(_("PERFORMANCE"), "performance", cpu_governor == "performance");
+        cpuGovUpdate->add(_("powersave"), "powersave", cpu_governor == "powersave");
 
         systemConfiguration->addWithLabel(_("DEFAULT CPU GOVERNOR"), cpuGovUpdate);
 
