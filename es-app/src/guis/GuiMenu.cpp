@@ -1414,13 +1414,24 @@ void GuiMenu::openSystemSettings_batocera()
         auto wifi_powersave = std::make_shared<SwitchComponent>(mWindow);
         bool powersaveEnabled = SystemConf::getInstance()->get("wifi.powersave") == "0";
         wifi_powersave->setState(powersaveEnabled);
-        s->addWithLabel(_("ENABLE WIFI POWERSAVE"), wifi_powersave);
+        s->addWithLabel(_("ENABLE WIFI POWER SAVING"), wifi_powersave);
         s->addSaveFunc([wifi_powersave] {
                 bool powersaveenabled = wifi_powersave->getState();
                 SystemConf::getInstance()->set("wifi.powersave", powersaveenabled ? "1" : "0");
                 runSystemCommand("/usr/bin/wifictl setpowersave", "", nullptr);
         });
 
+#if defined(handheld)
+        // Automatically enable or disable GPU power saving mode
+        auto gpu_powersave = std::make_shared<SwitchComponent>(mWindow);
+        bool gpupowersaveEnabled = SystemConf::getInstance()->get("gpu.powersave") == "0";
+        gpu_powersave->setState(gpupowersaveEnabled);
+        s->addWithLabel(_("ENABLE GPU POWER SAVING"), gpu_powersave);
+        s->addSaveFunc([gpu_powersave] {
+                bool gpupowersaveenabled = gpu_powersave->getState();
+                SystemConf::getInstance()->set("gpu.powersave", gpupowersaveenabled ? "1" : "0");
+        });
+#endif
         s->addGroup(_("PREFERENCES"));
 
         // Provides a mechanism to disable use of the second device
