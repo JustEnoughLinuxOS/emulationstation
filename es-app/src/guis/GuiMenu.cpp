@@ -1267,7 +1267,7 @@ void GuiMenu::openSystemSettings_batocera()
                 SystemConf::getInstance()->saveSystemConf();
         });
 
-#if defined(RG552) || defined(handheld)
+#if defined(handheld)
 
 	  // Provides cooling profile switching
 	  auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
@@ -1293,7 +1293,7 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 
 // Prep for additional device support.
-#if defined(RG552) || defined(handheld)
+#if defined(handheld)
 	// Provides overclock profile switching
 	auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
 	std::string selectedOCProfile = SystemConf::getInstance()->get("system.overclock");
@@ -1301,16 +1301,6 @@ void GuiMenu::openSystemSettings_batocera()
 		selectedOCProfile = "off";
 
 	optionsOCProfile->add(_("OFF"),    "off", selectedOCProfile == "off");
-#endif
-#if defined(RG552)
-	optionsOCProfile->add(_("RAM - 933"),"mem", selectedOCProfile == "mem");
-	optionsOCProfile->add(_("GPU - 900/933"),"gpu", selectedOCProfile == "gpu");
-	optionsOCProfile->add(_("CPU - 1992/1512/933"),"cpu-nominal", selectedOCProfile == "cpu-nominal");
-	optionsOCProfile->add(_("CPU - 2088/1608/933"),"cpu-stable", selectedOCProfile == "cpu-stable");
-	optionsOCProfile->add(_("CPU - 2184/1704/933"),"cpu-unstable", selectedOCProfile == "cpu-unstable");
-	optionsOCProfile->add(_("ALL - 1992/1512/900/933"),"max-nominal", selectedOCProfile == "max-nominal");
-	optionsOCProfile->add(_("ALL - 2088/1608/900/933"),"max-stable", selectedOCProfile == "max-stable");
-	optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
 #endif
 #if defined(handheld)
         optionsOCProfile->add(_("TDP - 2w"),"2w", selectedOCProfile == "2w");
@@ -1326,7 +1316,7 @@ void GuiMenu::openSystemSettings_batocera()
         optionsOCProfile->add(_("TDP - 22w"),"22w", selectedOCProfile == "22w");
         optionsOCProfile->add(_("TDP - 24w"),"24w", selectedOCProfile == "24w");
 #endif
-#if defined(RG552) || defined(handheld)
+#if defined(handheld)
  	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
 
 	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
@@ -1366,71 +1356,28 @@ void GuiMenu::openSystemSettings_batocera()
 	  runSystemCommand("/usr/bin/bash -lc \". /etc/profile; "+ cpuGovUpdate->getSelected() + "\"", "", nullptr);
         });
 
-#if defined(RG552) || defined(RG351P) || defined(RG351V) || defined(RG353P) || defined(RG503)
-	// Load or unload the internal WIFI kernel module
-        auto internal_wifi = std::make_shared<SwitchComponent>(mWindow);
-        bool internalmoduleEnabled = SystemConf::getInstance()->get("internal.wifi") == "1";
-        internal_wifi->setState(internalmoduleEnabled);
-        s->addWithLabel(_("ENABLE INTERNAL WIFI DEVICE"), internal_wifi);
-        s->addSaveFunc([internal_wifi] {
-                bool internalenabled = internal_wifi->getState();
-                SystemConf::getInstance()->set("internal.wifi", internalenabled ? "1" : "0");
-                if (internal_wifi->getState() == false) {
-                        runSystemCommand("/usr/bin/internalwifi disable", "", nullptr);
-                } else {
-                        runSystemCommand("/usr/bin/internalwifi enable", "", nullptr);
-                }
-        });
-#endif
-
-#if defined(RG353P)
-        // Switch device dtb to RG353V, gross, hopefully temporary.
-        auto device_switch = std::make_shared<SwitchComponent>(mWindow);
-        bool deviceswitchEnabled = SystemConf::getInstance()->get("system.rg353v") == "1";
-        device_switch->setState(deviceswitchEnabled);
-        s->addWithLabel(_("DEVICE IS RG353V"), device_switch);
-        s->addSaveFunc([this,device_switch] {
-
-                if (device_switch->changed()) {
-		std::string msg = _("The system will restart")+"\n";
-		msg += _("Do you want to continue?");
-
-                        mWindow->pushGui(new GuiMsgBox(mWindow,msg, _("YES"),
-                                [this,device_switch] {
-
-                		bool dswitchenabled = device_switch->getState();
-                		SystemConf::getInstance()->set("system.rg353v", dswitchenabled ? "1" : "0");
-				SystemConf::getInstance()->saveSystemConf();
-                		if (device_switch->getState() == false) {
-                		        runSystemCommand("/usr/bin/device-switch RG353P", "", nullptr);
-                		} else {
-                		        runSystemCommand("/usr/bin/device-switch RG353V", "", nullptr);
-                		}
-			}, "NO",nullptr));
-		}
-        });
-#endif
-
         // Automatically enable or disable WIFI power saving mode
         auto wifi_powersave = std::make_shared<SwitchComponent>(mWindow);
-        bool powersaveEnabled = SystemConf::getInstance()->get("wifi.powersave") == "0";
-        wifi_powersave->setState(powersaveEnabled);
+        bool wifipowersaveEnabled = SystemConf::getInstance()->get("wifi.powersave") == "1";
+        wifi_powersave->setState(wifipowersaveEnabled);
         s->addWithLabel(_("ENABLE WIFI POWER SAVING"), wifi_powersave);
         s->addSaveFunc([wifi_powersave] {
-                bool powersaveenabled = wifi_powersave->getState();
-                SystemConf::getInstance()->set("wifi.powersave", powersaveenabled ? "1" : "0");
+                bool wifipowersaveEnabled = wifi_powersave->getState();
+                SystemConf::getInstance()->set("wifi.powersave", wifipowersaveEnabled ? "1" : "0");
+		SystemConf::getInstance()->saveSystemConf();
                 runSystemCommand("/usr/bin/wifictl setpowersave", "", nullptr);
         });
 
 #if defined(handheld)
         // Automatically enable or disable GPU power saving mode
         auto gpu_powersave = std::make_shared<SwitchComponent>(mWindow);
-        bool gpupowersaveEnabled = SystemConf::getInstance()->get("gpu.powersave") == "0";
+        bool gpupowersaveEnabled = SystemConf::getInstance()->get("gpu.powersave") == "1";
         gpu_powersave->setState(gpupowersaveEnabled);
         s->addWithLabel(_("ENABLE GPU POWER SAVING"), gpu_powersave);
         s->addSaveFunc([gpu_powersave] {
-                bool gpupowersaveenabled = gpu_powersave->getState();
-                SystemConf::getInstance()->set("gpu.powersave", gpupowersaveenabled ? "1" : "0");
+                bool gpupowersaveEnabled = gpu_powersave->getState();
+                SystemConf::getInstance()->set("gpu.powersave", gpupowersaveEnabled ? "1" : "0");
+		SystemConf::getInstance()->saveSystemConf();
         });
 #endif
         s->addGroup(_("PREFERENCES"));
@@ -2156,14 +2103,6 @@ void GuiMenu::openGamesSettings_batocera()
 
 #endif
 
-#ifdef RG552
-        // Core chooser
-        auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
-        cores_used->addRange({ { _("ALL"), "all" },{ _("BIG") , "big" },{ _("LITTLE") , "little" } }, SystemConf::getInstance()->get("global.cores"));
-        s->addWithLabel(_("CORES USED"), cores_used);
-        s->addSaveFunc([cores_used] { SystemConf::getInstance()->set("global.cores", cores_used->getSelected()); });
-#endif
-
 	// rewind
 	auto rewind_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("REWIND"));
 	rewind_enabled->addRange({ { _("DEFAULT"), "auto" },{ _("ON") , "1" },{ _("OFF") , "0" } }, SystemConf::getInstance()->get("global.rewind"));
@@ -2175,14 +2114,6 @@ void GuiMenu::openGamesSettings_batocera()
 	integerscale_enabled->addRange({ { _("DEFAULT"), "auto" },{ _("ON") , "1" },{ _("OFF") , "0" } }, SystemConf::getInstance()->get("global.integerscale"));
 	s->addWithLabel(_("INTEGER SCALING (PIXEL PERFECT)"), integerscale_enabled);
 	s->addSaveFunc([integerscale_enabled] { SystemConf::getInstance()->set("global.integerscale", integerscale_enabled->getSelected()); });
-
-#if defined(RG552) || defined(RG351P)
-	// RGA scale
-	auto rgascale_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("RGA SCALE"));
-	rgascale_enabled->addRange({ { _("DEFAULT"), "auto" },{ _("ON") , "1" },{ _("OFF") , "0" } }, SystemConf::getInstance()->get("global.rgascale"));
-	s->addWithLabel(_("RGA SCALE"), rgascale_enabled);
-	s->addSaveFunc([rgascale_enabled] { SystemConf::getInstance()->set("global.rgascale", rgascale_enabled->getSelected()); });
-#endif
 
 	// autosave/load
 	auto autosave_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("AUTO SAVE/LOAD ON GAME LAUNCH"));
@@ -3711,7 +3642,7 @@ void GuiMenu::openUISettings()
 			SystemConf::getInstance()->saveSystemConf();
 		});
 
-#if defined(RG552) || defined(handheld)
+#if defined(handheld)
 	auto desktop_enabled = std::make_shared<SwitchComponent>(mWindow);
 	bool desktopEnabled = SystemConf::getInstance()->get("desktop.enabled") == "1";
 	desktop_enabled->setState(desktopEnabled);
@@ -4662,28 +4593,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	}
 	*/
 
-#if defined(RG552) || defined(RG351P)
-	// RGA scale
-	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::pixel_perfect))
-	{
-		auto rgascale_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("RGA SCALE"));
-		rgascale_enabled->add(_("DEFAULT"), "auto", SystemConf::getInstance()->get(configName + ".rgascale") != "0" && SystemConf::getInstance()->get(configName + ".rgascale") != "1");
-		rgascale_enabled->add(_("ON"), "1", SystemConf::getInstance()->get(configName + ".rgascale") == "1");
-		rgascale_enabled->add(_("OFF"), "0", SystemConf::getInstance()->get(configName + ".rgascale") == "0");
-		systemConfiguration->addWithLabel(_("RGA SCALE"), rgascale_enabled);
-		systemConfiguration->addSaveFunc([rgascale_enabled, configName] { SystemConf::getInstance()->set(configName + ".rgascale", rgascale_enabled->getSelected()); });
-	}
-#endif
-
-#ifdef RG552
-        // Core chooser
-        auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
-        cores_used->addRange({ { _("ALL"), "all" },{ _("BIG") , "big" },{ _("LITTLE") , "little" } }, SystemConf::getInstance()->get(configName + ".cores"));
-        systemConfiguration->addWithLabel(_("CORES USED"), cores_used);
-        systemConfiguration->addSaveFunc([cores_used, configName] { SystemConf::getInstance()->set(configName + ".cores", cores_used->getSelected()); });
-#endif
-
-#if defined(RG552) || defined(handheld)
+#if defined(handheld)
 
           // Provides cooling profile switching
           auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
@@ -4732,7 +4642,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         });
 
 // Prep for additional device support.
-#if defined(RG552) || defined(handheld)
+#if defined(handheld)
         // Provides overclock profile switching
         auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
         std::string selectedOCProfile = SystemConf::getInstance()->get(configName + ".overclock");
@@ -4741,18 +4651,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
         optionsOCProfile->add(_("DEFAULT"), "system", selectedOCProfile == "system");
         optionsOCProfile->add(_("OFF"), "off", selectedOCProfile == "off");
-#endif
-#if defined(RG552)
-        optionsOCProfile->add(_("RAM - 933"),"mem", selectedOCProfile == "mem");
-        optionsOCProfile->add(_("GPU - 900/933"),"gpu", selectedOCProfile == "gpu");
-        optionsOCProfile->add(_("CPU - 1992/1512/933"),"cpu-nominal", selectedOCProfile == "cpu-nominal");
-        optionsOCProfile->add(_("CPU - 2088/1608/933"),"cpu-stable", selectedOCProfile == "cpu-stable");
-        optionsOCProfile->add(_("CPU - 2184/1704/933"),"cpu-unstable", selectedOCProfile == "cpu-unstable");
-        optionsOCProfile->add(_("ALL - 1992/1512/900/933"),"max-nominal", selectedOCProfile == "max-nominal");
-        optionsOCProfile->add(_("ALL - 2088/1608/900/933"),"max-stable", selectedOCProfile == "max-stable");
-        optionsOCProfile->add(_("ALL - 2184/1704/900/933"),"max-unstable", selectedOCProfile == "max-unstable");
-#endif
-#if defined(handheld)
         optionsOCProfile->add(_("TDP - 2w"),"2w", selectedOCProfile == "2w");
         optionsOCProfile->add(_("TDP - 4w"),"4w", selectedOCProfile == "4w");
         optionsOCProfile->add(_("TDP - 6w"),"6w", selectedOCProfile == "6w");
@@ -4766,7 +4664,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         optionsOCProfile->add(_("TDP - 22w"),"22w", selectedOCProfile == "22w");
         optionsOCProfile->add(_("TDP - 24w"),"24w", selectedOCProfile == "24w");
 #endif
-#if defined(RG552) || defined(handheld)
+#if defined(handheld)
         systemConfiguration->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
 
         systemConfiguration->addSaveFunc([optionsOCProfile, selectedOCProfile, configName, mWindow]
