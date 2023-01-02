@@ -1269,6 +1269,28 @@ void GuiMenu::openSystemSettings_batocera()
 
 #if defined(handheld)
 
+          // Allow offlining all but 2/4/0 cores
+          auto optionsOffline = std::make_shared<OptionListComponent<std::string> >(mWindow, _("ENABLED CPU CORES"), false);
+          std::string selectedOffline = SystemConf::getInstance()->get("system.cores");
+          if (selectedOffline.empty())
+                selectedOffline = "all";
+
+          optionsOffline->add(_("ALL"),"all", selectedOffline == "all");
+          optionsOffline->add(_("FOUR"),"4", selectedOffline == "4");
+          optionsOffline->add(_("TWO"),"2", selectedOffline == "2");
+
+          s->addWithLabel(_("ENABLED CPU CORES"), optionsOffline);
+
+          s->addSaveFunc([optionsOffline, selectedOffline, configName]
+          {
+            if (optionsOffline->changed()) {
+              SystemConf::getInstance()->set("system.cores", optionsOffline->getSelected());
+              SystemConf::getInstance()->saveSystemConf();
+              runSystemCommand("/usr/bin/bash -lc \". /etc/profile; " + "onlinecores" + selectedOffline + "0", "", nullptr);
+            }
+          });
+
+
 	  // Provides cooling profile switching
 	  auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
 	  std::string selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
@@ -4594,6 +4616,25 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	*/
 
 #if defined(handheld)
+          // Allow offlining all but 2/4/0 cores
+          auto optionsOffline = std::make_shared<OptionListComponent<std::string> >(mWindow, _("ENABLED CPU CORES"), false);
+          std::string selectedOffline = SystemConf::getInstance()->get(configName + ".cores");
+          if (selectedOffline.empty())
+                selectedOffline = "all";
+
+          optionsOffline->add(_("ALL"),"all", selectedOffline == "all");
+          optionsOffline->add(_("FOUR"),"4", selectedOffline == "4");
+          optionsOffline->add(_("TWO"),"2", selectedOffline == "2");
+
+          systemConfiguration->addWithLabel(_("ENABLED CPU CORES"), optionsOffline);
+
+          systemConfiguration->addSaveFunc([optionsOffline, selectedOffline, configName]
+          {
+            if (optionsOffline->changed()) {
+              SystemConf::getInstance()->set(configName + ".cores", optionsOffline->getSelected());
+              SystemConf::getInstance()->saveSystemConf();
+            }
+          });
 
           // Provides cooling profile switching
           auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
