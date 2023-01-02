@@ -1281,7 +1281,7 @@ void GuiMenu::openSystemSettings_batocera()
 
           s->addWithLabel(_("ENABLED CPU CORES"), optionsOffline);
 
-          s->addSaveFunc([optionsOffline, selectedOffline, configName]
+          s->addSaveFunc([optionsOffline, selectedOffline]
           {
             if (optionsOffline->changed()) {
               SystemConf::getInstance()->set("system.cores", optionsOffline->getSelected());
