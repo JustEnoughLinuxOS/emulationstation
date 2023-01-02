@@ -1286,7 +1286,7 @@ void GuiMenu::openSystemSettings_batocera()
             if (optionsOffline->changed()) {
               SystemConf::getInstance()->set("system.cores", optionsOffline->getSelected());
               SystemConf::getInstance()->saveSystemConf();
-              runSystemCommand("/usr/bin/bash -lc \". /etc/profile; " + "onlinecores" + selectedOffline + "0", "", nullptr);
+              runSystemCommand("/usr/bin/bash -lc \". /etc/profile; " + "onlinecores" + selectedOffline + "0" + "\"" , "", nullptr);
             }
           });
 
