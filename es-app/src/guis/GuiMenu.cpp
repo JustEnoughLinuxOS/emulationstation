@@ -4620,8 +4620,9 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
           auto optionsOffline = std::make_shared<OptionListComponent<std::string> >(mWindow, _("ENABLED CPU CORES"), false);
           std::string selectedOffline = SystemConf::getInstance()->get(configName + ".cores");
           if (selectedOffline.empty())
-                selectedOffline = "all";
+                selectedOffline = "default";
 
+          optionsOffline->add(_("DEFAULT"),"default", selectedOffline == "default");
           optionsOffline->add(_("ALL"),"all", selectedOffline == "all");
           optionsOffline->add(_("FOUR"),"4", selectedOffline == "4");
           optionsOffline->add(_("TWO"),"2", selectedOffline == "2");
