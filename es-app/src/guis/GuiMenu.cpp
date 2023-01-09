@@ -3664,7 +3664,6 @@ void GuiMenu::openUISettings()
 			SystemConf::getInstance()->saveSystemConf();
 		});
 
-#if defined(handheld)
 	auto desktop_enabled = std::make_shared<SwitchComponent>(mWindow);
 	bool desktopEnabled = SystemConf::getInstance()->get("desktop.enabled") == "1";
 	desktop_enabled->setState(desktopEnabled);
@@ -3683,7 +3682,6 @@ void GuiMenu::openUISettings()
 		}
 	});
 
-#endif
 
 	s->addGroup(_("DISPLAY OPTIONS"));
 
