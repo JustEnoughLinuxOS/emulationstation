@@ -1339,7 +1339,7 @@ void GuiMenu::openSystemSettings_batocera()
         optionsOCProfile->add(_("24w"),"24w", selectedOCProfile == "24w");
 #endif
 #if defined(handheld)
- 	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
+ 	s->addWithLabel(_("CPU Max TDP (AMD Only)"), optionsOCProfile);
 
 	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
 	{
@@ -4705,7 +4705,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         optionsOCProfile->add(_("24w"),"24w", selectedOCProfile == "24w");
 #endif
 #if defined(handheld)
-        systemConfiguration->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
+        systemConfiguration->addWithLabel(_("CPU Max TDP (AMD Only)"), optionsOCProfile);
 
         systemConfiguration->addSaveFunc([optionsOCProfile, selectedOCProfile, configName, mWindow]
         {
