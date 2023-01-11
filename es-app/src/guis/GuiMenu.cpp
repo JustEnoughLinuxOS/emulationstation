@@ -1317,7 +1317,7 @@ void GuiMenu::openSystemSettings_batocera()
 // Prep for additional device support.
 #if defined(handheld)
 	// Provides overclock profile switching
-	auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
+	auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU Max TDP (AMD Only)"), false);
 	std::string selectedOCProfile = SystemConf::getInstance()->get("system.overclock");
 	if (selectedOCProfile.empty())
 		selectedOCProfile = "off";
@@ -1325,18 +1325,18 @@ void GuiMenu::openSystemSettings_batocera()
 	optionsOCProfile->add(_("OFF"),    "off", selectedOCProfile == "off");
 #endif
 #if defined(handheld)
-        optionsOCProfile->add(_("TDP - 2w"),"2w", selectedOCProfile == "2w");
-        optionsOCProfile->add(_("TDP - 4w"),"4w", selectedOCProfile == "4w");
-        optionsOCProfile->add(_("TDP - 6w"),"6w", selectedOCProfile == "6w");
-        optionsOCProfile->add(_("TDP - 8w"),"8w", selectedOCProfile == "8w");
-        optionsOCProfile->add(_("TDP - 10w"),"10w", selectedOCProfile == "10w");
-        optionsOCProfile->add(_("TDP - 12w"),"12w", selectedOCProfile == "12w");
-        optionsOCProfile->add(_("TDP - 14w"),"14w", selectedOCProfile == "14w");
-        optionsOCProfile->add(_("TDP - 16w"),"16w", selectedOCProfile == "16w");
-        optionsOCProfile->add(_("TDP - 18w"),"18w", selectedOCProfile == "18w");
-        optionsOCProfile->add(_("TDP - 20w"),"20w", selectedOCProfile == "20w");
-        optionsOCProfile->add(_("TDP - 22w"),"22w", selectedOCProfile == "22w");
-        optionsOCProfile->add(_("TDP - 24w"),"24w", selectedOCProfile == "24w");
+        optionsOCProfile->add(_("2w"),"2w", selectedOCProfile == "2w");
+        optionsOCProfile->add(_("4w"),"4w", selectedOCProfile == "4w");
+        optionsOCProfile->add(_("6w"),"6w", selectedOCProfile == "6w");
+        optionsOCProfile->add(_("8w"),"8w", selectedOCProfile == "8w");
+        optionsOCProfile->add(_("10w"),"10w", selectedOCProfile == "10w");
+        optionsOCProfile->add(_("12w"),"12w", selectedOCProfile == "12w");
+        optionsOCProfile->add(_("14w"),"14w", selectedOCProfile == "14w");
+        optionsOCProfile->add(_("16w"),"16w", selectedOCProfile == "16w");
+        optionsOCProfile->add(_("18w"),"18w", selectedOCProfile == "18w");
+        optionsOCProfile->add(_("20w"),"20w", selectedOCProfile == "20w");
+        optionsOCProfile->add(_("22w"),"22w", selectedOCProfile == "22w");
+        optionsOCProfile->add(_("24w"),"24w", selectedOCProfile == "24w");
 #endif
 #if defined(handheld)
  	s->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
@@ -4691,18 +4691,18 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
         optionsOCProfile->add(_("DEFAULT"), "system", selectedOCProfile == "system");
         optionsOCProfile->add(_("OFF"), "off", selectedOCProfile == "off");
-        optionsOCProfile->add(_("TDP - 2w"),"2w", selectedOCProfile == "2w");
-        optionsOCProfile->add(_("TDP - 4w"),"4w", selectedOCProfile == "4w");
-        optionsOCProfile->add(_("TDP - 6w"),"6w", selectedOCProfile == "6w");
-        optionsOCProfile->add(_("TDP - 8w"),"8w", selectedOCProfile == "8w");
-        optionsOCProfile->add(_("TDP - 10w"),"10w", selectedOCProfile == "10w");
-        optionsOCProfile->add(_("TDP - 12w"),"12w", selectedOCProfile == "12w");
-        optionsOCProfile->add(_("TDP - 14w"),"14w", selectedOCProfile == "14w");
-        optionsOCProfile->add(_("TDP - 16w"),"16w", selectedOCProfile == "16w");
-        optionsOCProfile->add(_("TDP - 18w"),"18w", selectedOCProfile == "18w");
-        optionsOCProfile->add(_("TDP - 20w"),"20w", selectedOCProfile == "20w");
-        optionsOCProfile->add(_("TDP - 22w"),"22w", selectedOCProfile == "22w");
-        optionsOCProfile->add(_("TDP - 24w"),"24w", selectedOCProfile == "24w");
+        optionsOCProfile->add(_("2w"),"2w", selectedOCProfile == "2w");
+        optionsOCProfile->add(_("4w"),"4w", selectedOCProfile == "4w");
+        optionsOCProfile->add(_("6w"),"6w", selectedOCProfile == "6w");
+        optionsOCProfile->add(_("8w"),"8w", selectedOCProfile == "8w");
+        optionsOCProfile->add(_("10w"),"10w", selectedOCProfile == "10w");
+        optionsOCProfile->add(_("12w"),"12w", selectedOCProfile == "12w");
+        optionsOCProfile->add(_("14w"),"14w", selectedOCProfile == "14w");
+        optionsOCProfile->add(_("16w"),"16w", selectedOCProfile == "16w");
+        optionsOCProfile->add(_("18w"),"18w", selectedOCProfile == "18w");
+        optionsOCProfile->add(_("20w"),"20w", selectedOCProfile == "20w");
+        optionsOCProfile->add(_("22w"),"22w", selectedOCProfile == "22w");
+        optionsOCProfile->add(_("24w"),"24w", selectedOCProfile == "24w");
 #endif
 #if defined(handheld)
         systemConfiguration->addWithLabel(_("OVERCLOCK"), optionsOCProfile);
