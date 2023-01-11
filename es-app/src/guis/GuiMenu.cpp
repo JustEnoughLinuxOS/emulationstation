@@ -4684,7 +4684,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 // Prep for additional device support.
 #if defined(handheld)
         // Provides overclock profile switching
-        auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("OVERCLOCK"), false);
+        auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU Max TDP (AMD Only)"), false);
         std::string selectedOCProfile = SystemConf::getInstance()->get(configName + ".overclock");
         if (selectedOCProfile.empty())
                 selectedOCProfile = "system";
