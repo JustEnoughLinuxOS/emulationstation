@@ -4079,6 +4079,18 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 		}
 	});
 
+        // Enable or disable ipv6
+        auto ipv6_enable = std::make_shared<SwitchComponent>(mWindow);
+        bool ipv6Enabled = SystemConf::getInstance()->get("ipv6.enabled") == "1";
+        ipv6_enable->setState(ipv6Enabled);
+        s->addWithLabel(_("ENABLE IPV6"), ipv6_enable);
+        s->addSaveFunc([ipv6_enable] {
+                bool ipv6Enabled = ipv6_enable->getState();
+                SystemConf::getInstance()->set("ipv6.enabled", ipv6Enabled ? "1" : "0");
+                SystemConf::getInstance()->saveSystemConf();
+                runSystemCommand("/usr/bin/toggle-ipv6", "", nullptr);
+        });
+
        auto sshd_enabled = std::make_shared<SwitchComponent>(mWindow);
                 bool sshbaseEnabled = SystemConf::getInstance()->get("ssh.enabled") == "1";
                 sshd_enabled->setState(sshbaseEnabled);
