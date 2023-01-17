@@ -1493,15 +1493,15 @@ void GuiMenu::openSystemSettings_batocera()
 		if (SystemData::isNetplayActivated() && ApiSystem::getInstance()->isScriptingSupported(ApiSystem::NETPLAY))
 			s->addEntry(_("NETPLAY SETTINGS"), true, [this] { openNetplaySettings(); }, "iconNetplay");
 
-		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::BIOSINFORMATION))
-		{
-			s->addEntry(_("MISSING BIOS CHECK"), true, [this, s] { openMissingBiosSettings(); });
-#ifndef _ENABLEEMUELEC
-			auto checkBiosesAtLaunch = std::make_shared<SwitchComponent>(mWindow);
-			checkBiosesAtLaunch->setState(Settings::getInstance()->getBool("CheckBiosesAtLaunch"));
-			s->addWithLabel(_("CHECK BIOS FILES BEFORE RUNNING A GAME"), checkBiosesAtLaunch);
-			s->addSaveFunc([checkBiosesAtLaunch] { Settings::getInstance()->setBool("CheckBiosesAtLaunch", checkBiosesAtLaunch->getState()); });
-#endif
+//		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::BIOSINFORMATION))
+//		{
+//			s->addEntry(_("MISSING BIOS CHECK"), true, [this, s] { openMissingBiosSettings(); });
+//#ifndef _ENABLEEMUELEC
+//			auto checkBiosesAtLaunch = std::make_shared<SwitchComponent>(mWindow);
+//			checkBiosesAtLaunch->setState(Settings::getInstance()->getBool("CheckBiosesAtLaunch"));
+//			s->addWithLabel(_("CHECK BIOS FILES BEFORE RUNNING A GAME"), checkBiosesAtLaunch);
+//			s->addSaveFunc([checkBiosesAtLaunch] { Settings::getInstance()->setBool("CheckBiosesAtLaunch", checkBiosesAtLaunch->getState()); });
+//#endif
 		}
 
 	}
@@ -2476,13 +2476,13 @@ void GuiMenu::openGamesSettings_batocera()
 		// Missing Bios
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::BIOSINFORMATION))
 		{
-			s->addEntry(_("MISSING BIOS CHECK"), true, [this, s] { openMissingBiosSettings(); });
-#ifndef _ENABLEEMUELEC
-			auto checkBiosesAtLaunch = std::make_shared<SwitchComponent>(mWindow);
-			checkBiosesAtLaunch->setState(Settings::getInstance()->getBool("CheckBiosesAtLaunch"));
-			s->addWithLabel(_("CHECK BIOS FILES BEFORE RUNNING A GAME"), checkBiosesAtLaunch);
-			s->addSaveFunc([checkBiosesAtLaunch] { Settings::getInstance()->setBool("CheckBiosesAtLaunch", checkBiosesAtLaunch->getState()); });
-#endif
+//			s->addEntry(_("MISSING BIOS CHECK"), true, [this, s] { openMissingBiosSettings(); });
+//#ifndef _ENABLEEMUELEC
+//			auto checkBiosesAtLaunch = std::make_shared<SwitchComponent>(mWindow);
+//			checkBiosesAtLaunch->setState(Settings::getInstance()->getBool("CheckBiosesAtLaunch"));
+//			s->addWithLabel(_("CHECK BIOS FILES BEFORE RUNNING A GAME"), checkBiosesAtLaunch);
+//			s->addSaveFunc([checkBiosesAtLaunch] { Settings::getInstance()->setBool("CheckBiosesAtLaunch", checkBiosesAtLaunch->getState()); });
+//#endif
 		}
 
 		// Game List Update
