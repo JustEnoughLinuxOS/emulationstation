@@ -1502,7 +1502,7 @@ void GuiMenu::openSystemSettings_batocera()
 //			s->addWithLabel(_("CHECK BIOS FILES BEFORE RUNNING A GAME"), checkBiosesAtLaunch);
 //			s->addSaveFunc([checkBiosesAtLaunch] { Settings::getInstance()->setBool("CheckBiosesAtLaunch", checkBiosesAtLaunch->getState()); });
 //#endif
-		}
+//		}
 
 	}
 
@@ -2473,9 +2473,9 @@ void GuiMenu::openGamesSettings_batocera()
 		if (SystemData::isNetplayActivated() && ApiSystem::getInstance()->isScriptingSupported(ApiSystem::NETPLAY))
 			s->addEntry(_("NETPLAY SETTINGS"), true, [this] { openNetplaySettings(); }, "iconNetplay");
 
-		// Missing Bios
-		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::BIOSINFORMATION))
-		{
+//		// Missing Bios
+//		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::BIOSINFORMATION))
+//		{
 //			s->addEntry(_("MISSING BIOS CHECK"), true, [this, s] { openMissingBiosSettings(); });
 //#ifndef _ENABLEEMUELEC
 //			auto checkBiosesAtLaunch = std::make_shared<SwitchComponent>(mWindow);
@@ -2483,7 +2483,7 @@ void GuiMenu::openGamesSettings_batocera()
 //			s->addWithLabel(_("CHECK BIOS FILES BEFORE RUNNING A GAME"), checkBiosesAtLaunch);
 //			s->addSaveFunc([checkBiosesAtLaunch] { Settings::getInstance()->setBool("CheckBiosesAtLaunch", checkBiosesAtLaunch->getState()); });
 //#endif
-		}
+//		}
 
 		// Game List Update
 		// s->addEntry(_("UPDATE GAME LISTS"), false, [this, window] { updateGameLists(window); });
