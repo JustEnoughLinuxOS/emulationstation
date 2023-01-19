@@ -1444,7 +1444,7 @@ void GuiMenu::openSystemSettings_batocera()
                 selectedBranch = "stable";
 
         optionsUpdates->add(_("STABLE"), "stable", selectedBranch == "stable");
-        optionsUpdates->add(_("DEVELOPMENT"), "dev", selectedBranch == "dev");
+//        optionsUpdates->add(_("DEVELOPMENT"), "dev", selectedBranch == "dev");
 
         s->addWithLabel(_("UPDATE BRANCH"), optionsUpdates);
 
