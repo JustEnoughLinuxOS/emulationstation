@@ -1395,14 +1395,14 @@ void GuiMenu::openSystemSettings_batocera()
         });
 
 #if defined(handheld)
-        // Automatically enable or disable GPU power saving mode
-        auto gpu_powersave = std::make_shared<SwitchComponent>(mWindow);
-        bool gpupowersaveEnabled = SystemConf::getInstance()->get("gpu.powersave") == "1";
-        gpu_powersave->setState(gpupowersaveEnabled);
-        s->addWithLabel(_("ENABLE GPU POWER SAVING"), gpu_powersave);
-        s->addSaveFunc([gpu_powersave] {
-                bool gpupowersaveEnabled = gpu_powersave->getState();
-                SystemConf::getInstance()->set("gpu.powersave", gpupowersaveEnabled ? "1" : "0");
+        // Automatically enable or disable enhanced power saving mode
+        auto enh_powersave = std::make_shared<SwitchComponent>(mWindow);
+        bool enhpowersaveEnabled = SystemConf::getInstance()->get("system.powersave") == "1";
+        enh_powersave->setState(enhpowersaveEnabled);
+        s->addWithLabel(_("ENHANCED POWER SAVING"), enh_powersave);
+        s->addSaveFunc([enh_powersave] {
+                bool enhpowersaveEnabled = enh_powersave->getState();
+                SystemConf::getInstance()->set("system.powersave", enhpowersaveEnabled ? "1" : "0");
 		SystemConf::getInstance()->saveSystemConf();
         });
 #endif
