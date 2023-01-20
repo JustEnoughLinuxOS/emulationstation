@@ -4159,7 +4159,9 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 		s->addSaveFunc([wireguard, wireguardConfigFile] {
 			if (wireguard->getState() == false) {
 				runSystemCommand("wg-quick down " + wireguardConfigFile, "", nullptr);
+				runSystemCommand("systemctl stop connman-vpn", "", nullptr);
 			} else {
+				runSystemCommand("systemctl start connman-vpn", "", nullptr);
 				runSystemCommand("wg-quick up " + wireguardConfigFile, "", nullptr);
 			}
       SystemConf::getInstance()->set("wireguard.up", wireguard->getState() ? "1" : "0");
