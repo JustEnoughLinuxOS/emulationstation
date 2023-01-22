@@ -3874,16 +3874,15 @@ void GuiMenu::openSoundSettings()
 #endif
 		});
 
-                // preamp
-                auto preamp = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");
-		preamp->setValue(((float)(SystemConf::getInstance()->get("audio.preamp") == "50")));
-                preamp->setOnValueChanged([](const float &newVal) { runSystemCommand("amixer -M set Pre-Amp -- " + std::to_string((int)round(newVal)) + "%","", nullptr); });
-
-                s->addWithLabel(_("VOLUME PREAMP"), preamp);
-                s->addSaveFunc([this, preamp]
-                {
-                        SystemConf::getInstance()->set("audio.preamp", std::to_string((int)round(preamp->getValue())));
-                });
+		// preamp
+		auto preamp = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");
+		preamp->setValue(std::stof(SystemConf::getInstance()->get("audio.preamp")));
+		preamp->setOnValueChanged([](const float &newVal) { SystemConf::getInstance()->set("audio.preamp", std::to_string((int)round(newVal))); });
+		s->addWithLabel(_("VOLUME PREAMP"), preamp);
+		s->addSaveFunc([this, preamp]
+		{
+			runSystemCommand("amixer -M set Pre-Amp -- " + std::to_string((int)round(preamp->getValue())) + "%","", nullptr);
+		});
 
 		// Music Volume
 		auto musicVolume = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");
