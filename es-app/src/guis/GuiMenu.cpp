@@ -4446,6 +4446,8 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	// The system configuration
 	GuiSettings* systemConfiguration = new GuiSettings(mWindow, title.c_str());
 
+	systemConfiguration->addGroup(_("EMULATION"));
+
 	if (fileData != nullptr)
 		systemConfiguration->setSubTitle(systemData->getFullName());
 
@@ -4664,6 +4666,9 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	*/
 
 #if defined(handheld)
+
+		systemConfiguration->addGroup(_("PERFORMANCE"));
+
           // Allow offlining all but 2/4/0 cores
           auto optionsOffline = std::make_shared<OptionListComponent<std::string> >(mWindow, _("ENABLED CPU CORES"), false);
           std::string selectedOffline = SystemConf::getInstance()->get(configName + ".cores");
@@ -4707,30 +4712,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
           });
 #endif
 
-        // Per game/core/emu CPU governor
-
-        auto cpuGovUpdate = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU GOVERNOR"), false);
-
-        std::string cpu_governor = SystemConf::getInstance()->get(configName + ".cpugovernor");
-        if (cpu_governor.empty())
-                cpu_governor = "auto";
-
-        cpuGovUpdate->add(_("DEFAULT"), "auto", cpu_governor == "auto");
-        cpuGovUpdate->add(_("SCHEDUTIL"), "schedutil", cpu_governor == "schedutil");
-        cpuGovUpdate->add(_("ONDEMAND"), "ondemand", cpu_governor == "ondemand");
-        cpuGovUpdate->add(_("PERFORMANCE"), "performance", cpu_governor == "performance");
-        cpuGovUpdate->add(_("powersave"), "powersave", cpu_governor == "powersave");
-
-        systemConfiguration->addWithLabel(_("DEFAULT CPU GOVERNOR"), cpuGovUpdate);
-
-        systemConfiguration->addSaveFunc([configName, cpuGovUpdate, cpu_governor]
-        {
-          if (cpuGovUpdate->changed()) {
-            SystemConf::getInstance()->set(configName + ".cpugovernor", cpuGovUpdate->getSelected());
-            SystemConf::getInstance()->saveSystemConf();
-          }
-        });
-
 // Prep for additional device support.
 #if defined(handheld)
         // Provides overclock profile switching
@@ -4768,6 +4749,30 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
                 }
         });
 #endif
+
+        // Per game/core/emu CPU governor
+
+        auto cpuGovUpdate = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU GOVERNOR"), false);
+
+        std::string cpu_governor = SystemConf::getInstance()->get(configName + ".cpugovernor");
+        if (cpu_governor.empty())
+                cpu_governor = "auto";
+
+        cpuGovUpdate->add(_("DEFAULT"), "auto", cpu_governor == "auto");
+        cpuGovUpdate->add(_("SCHEDUTIL"), "schedutil", cpu_governor == "schedutil");
+        cpuGovUpdate->add(_("ONDEMAND"), "ondemand", cpu_governor == "ondemand");
+        cpuGovUpdate->add(_("PERFORMANCE"), "performance", cpu_governor == "performance");
+        cpuGovUpdate->add(_("powersave"), "powersave", cpu_governor == "powersave");
+
+        systemConfiguration->addWithLabel(_("DEFAULT CPU GOVERNOR"), cpuGovUpdate);
+
+        systemConfiguration->addSaveFunc([configName, cpuGovUpdate, cpu_governor]
+        {
+          if (cpuGovUpdate->changed()) {
+            SystemConf::getInstance()->set(configName + ".cpugovernor", cpuGovUpdate->getSelected());
+            SystemConf::getInstance()->saveSystemConf();
+          }
+        });
 
         if (SystemConf::getInstance()->getBool("system.powersave", true)) {
           // GPU performance mode with enhanced power savings
