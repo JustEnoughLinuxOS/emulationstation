@@ -1382,6 +1382,41 @@ void GuiMenu::openSystemSettings_batocera()
 	  runSystemCommand("/usr/bin/bash -lc \". /etc/profile; "+ cpuGovUpdate->getSelected() + "\"", "", nullptr);
         });
 
+        // Automatically enable or disable enhanced power saving mode
+        auto enh_powersave = std::make_shared<SwitchComponent>(mWindow);
+        bool enhpowersaveEnabled = SystemConf::getInstance()->get("system.powersave") == "1";
+        enh_powersave->setState(enhpowersaveEnabled);
+        s->addWithLabel(_("ENHANCED POWER SAVING"), enh_powersave);
+        s->addSaveFunc([enh_powersave] {
+                bool enhpowersaveEnabled = enh_powersave->getState();
+                SystemConf::getInstance()->set("system.powersave", enhpowersaveEnabled ? "1" : "0");
+                SystemConf::getInstance()->saveSystemConf();
+        });
+
+        if (SystemConf::getInstance()->getBool("system.powersave", true)) {
+          // GPU performance mode with enhanced power savings
+          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE"), false);
+          std::string gpu_performance = SystemConf::getInstance()->get("system.gpuperf");
+          if (gpu_performance.empty())
+                  gpu_performance = "auto";
+
+          gpuPerformance->add(_("AUTO"), "auto", gpu_performance == "auto");
+          gpuPerformance->add(_("LOW"), "low", gpu_performance == "low");
+          gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
+          gpuPerformance->add(_("PEAK"), "profile_peak", gpu_performance == "profile_peak");
+
+          s->addWithLabel(_("GPU POWER SAVINGS MODE"), gpuPerformance);
+
+          s->addSaveFunc([this, gpuPerformance, gpu_performance]
+          {
+            if (gpuPerformance->changed()) {
+              SystemConf::getInstance()->set("system.gpuperf", gpuPerformance->getSelected());
+              SystemConf::getInstance()->saveSystemConf();
+              runSystemCommand("/usr/bin/systemctl restart powerstate", "", nullptr);
+            }
+          });
+        }
+
         // Automatically enable or disable WIFI power saving mode
         auto wifi_powersave = std::make_shared<SwitchComponent>(mWindow);
         bool wifipowersaveEnabled = SystemConf::getInstance()->get("wifi.powersave") == "1";
@@ -1394,18 +1429,6 @@ void GuiMenu::openSystemSettings_batocera()
                 runSystemCommand("/usr/bin/wifictl setpowersave", "", nullptr);
         });
 
-#if defined(handheld)
-        // Automatically enable or disable enhanced power saving mode
-        auto enh_powersave = std::make_shared<SwitchComponent>(mWindow);
-        bool enhpowersaveEnabled = SystemConf::getInstance()->get("system.powersave") == "1";
-        enh_powersave->setState(enhpowersaveEnabled);
-        s->addWithLabel(_("ENHANCED POWER SAVING"), enh_powersave);
-        s->addSaveFunc([enh_powersave] {
-                bool enhpowersaveEnabled = enh_powersave->getState();
-                SystemConf::getInstance()->set("system.powersave", enhpowersaveEnabled ? "1" : "0");
-		SystemConf::getInstance()->saveSystemConf();
-        });
-#endif
         s->addGroup(_("PREFERENCES"));
 
         // Provides a mechanism to disable use of the second device
@@ -4745,6 +4768,29 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
                 }
         });
 #endif
+
+        if (SystemConf::getInstance()->getBool("system.powersave", true)) {
+          // GPU performance mode with enhanced power savings
+          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE"), false);
+          std::string gpu_performance = SystemConf::getInstance()->get(configName + ".gpuperf");
+          if (gpu_performance.empty())
+                  gpu_performance = "auto";
+
+          gpuPerformance->add(_("AUTO"), "auto", gpu_performance == "auto");
+          gpuPerformance->add(_("LOW"), "low", gpu_performance == "low");
+          gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
+          gpuPerformance->add(_("PEAK"), "profile_peak", gpu_performance == "profile_peak");
+
+          systemConfiguration->addWithLabel(_("GPU POWER SAVINGS MODE"), gpuPerformance);
+
+          systemConfiguration->addSaveFunc([configName, gpuPerformance, gpu_performance]
+          {
+            if (gpuPerformance->changed()) {
+              SystemConf::getInstance()->set(configName + ".gpuperf", gpuPerformance->getSelected());
+              SystemConf::getInstance()->saveSystemConf();
+            }
+          });
+        }
 
 #endif
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::latency_reduction))
