@@ -4775,8 +4775,9 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
           auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE"), false);
           std::string gpu_performance = SystemConf::getInstance()->get(configName + ".gpuperf");
           if (gpu_performance.empty())
-                  gpu_performance = "auto";
+                  gpu_performance = "default";
 
+          gpuPerformance->add(_("DEFAULT"), "default", gpu_performance == "default");
           gpuPerformance->add(_("AUTO"), "auto", gpu_performance == "auto");
           gpuPerformance->add(_("LOW"), "low", gpu_performance == "low");
           gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
