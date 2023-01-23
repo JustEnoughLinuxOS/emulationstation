@@ -4446,8 +4446,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	// The system configuration
 	GuiSettings* systemConfiguration = new GuiSettings(mWindow, title.c_str());
 
-	systemConfiguration->addGroup(_("EMULATION"));
-
 	if (fileData != nullptr)
 		systemConfiguration->setSubTitle(systemData->getFullName());
 
@@ -4456,6 +4454,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
 	if (systemData->hasEmulatorSelection())
 	{
+		systemConfiguration->addGroup(_("EMULATION"));
 		auto emulChoice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("Emulator"), false);
 		emulChoice->add(_("DEFAULT"), "", false);
 		for (auto& emul : systemData->getEmulators())
