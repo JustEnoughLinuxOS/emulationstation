@@ -4454,7 +4454,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
 	if (systemData->hasEmulatorSelection())
 	{
-		systemConfiguration->addGroup(_("EMULATION"));
 		auto emulChoice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("Emulator"), false);
 		emulChoice->add(_("DEFAULT"), "", false);
 		for (auto& emul : systemData->getEmulators())
@@ -4665,8 +4664,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	*/
 
 #if defined(handheld)
-
-		systemConfiguration->addGroup(_("PERFORMANCE"));
 
           // Allow offlining all but 2/4/0 cores
           auto optionsOffline = std::make_shared<OptionListComponent<std::string> >(mWindow, _("ENABLED CPU CORES"), false);
