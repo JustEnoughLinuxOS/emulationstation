@@ -246,11 +246,11 @@ void GuiMenu::openEmuELECSettings()
 		s->addSaveFunc([bluetoothd_enabled] {
 			if (bluetoothd_enabled->changed()) {
 			if (bluetoothd_enabled->getState() == false) {
-				runSystemCommand("rfkill block bluetooth", "", nullptr);
 				runSystemCommand("systemctl stop bluealsa", "", nullptr);
-				runSystemCommand("systemctl stop bluetooth-agent", "", nullptr);
 				runSystemCommand("systemctl stop bluetooth", "", nullptr);
+				runSystemCommand("systemctl stop bluetooth-agent", "", nullptr);
 				runSystemCommand("rm /storage/.cache/services/bluez.conf", "", nullptr);
+				runSystemCommand("rfkill block bluetooth", "", nullptr);
 			} else {
 				runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
 				runSystemCommand("touch /storage/.cache/services/bluez.conf", "", nullptr);
@@ -1397,7 +1397,7 @@ void GuiMenu::openSystemSettings_batocera()
 
         if (SystemConf::getInstance()->getBool("system.powersave", true)) {
           // GPU performance mode with enhanced power savings
-          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE"), false);
+          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE (AMD ONLY)"), false);
           std::string gpu_performance = SystemConf::getInstance()->get("system.gpuperf");
           if (gpu_performance.empty())
                   gpu_performance = "auto";
@@ -1407,7 +1407,7 @@ void GuiMenu::openSystemSettings_batocera()
           gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
           gpuPerformance->add(_("PEAK"), "profile_peak", gpu_performance == "profile_peak");
 
-          s->addWithLabel(_("GPU POWER SAVINGS MODE"), gpuPerformance);
+          s->addWithLabel(_("GPU POWER SAVINGS MODE (AMD ONLY)"), gpuPerformance);
 
           s->addSaveFunc([this, gpuPerformance, gpu_performance]
           {
@@ -2695,9 +2695,18 @@ void GuiMenu::openControllersSettings_batocera(int autoSel)
 		s->addWithLabel(_("ENABLE BLUETOOTH"), bluetoothd_enabled);
 		bluetoothd_enabled->setOnChangedCallback([this, s, bluetoothd_enabled]() {
 			if (bluetoothd_enabled->getState() == false) {
-				runSystemCommand("systemctl stop bluetooth", "", nullptr);
+                                runSystemCommand("systemctl stop bluealsa", "", nullptr);
+                                runSystemCommand("systemctl stop bluetooth", "", nullptr);
+                                runSystemCommand("systemctl stop bluetooth-agent", "", nullptr);
+                                runSystemCommand("rm /storage/.cache/services/bluez.conf", "", nullptr);
+                                runSystemCommand("rfkill block bluetooth", "", nullptr);
 			} else {
-				runSystemCommand("systemctl start bluetooth", "", nullptr);
+                                runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
+                                runSystemCommand("touch /storage/.cache/services/bluez.conf", "", nullptr);
+                                runSystemCommand("systemctl start bluetooth", "", nullptr);
+                                runSystemCommand("systemctl start bluetooth-agent", "", nullptr);
+                                runSystemCommand("systemctl start bluealsa", "", nullptr);
+                                runSystemCommand("rfkill unblock bluetooth", "", nullptr);
 				mWindow->pushGui(new GuiLoading<bool>(mWindow, _("ENABLING BLUETOOTH"),
 					[this] {
 						// batocera-bluetooth-agent sleeps 2000 to ensure hardware is
@@ -4774,7 +4783,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
         if (SystemConf::getInstance()->getBool("system.powersave", true)) {
           // GPU performance mode with enhanced power savings
-          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE"), false);
+          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE (AMD ONLY)"), false);
           std::string gpu_performance = SystemConf::getInstance()->get(configName + ".gpuperf");
           if (gpu_performance.empty())
                   gpu_performance = "default";
@@ -4785,7 +4794,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
           gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
           gpuPerformance->add(_("PEAK"), "profile_peak", gpu_performance == "profile_peak");
 
-          systemConfiguration->addWithLabel(_("GPU POWER SAVINGS MODE"), gpuPerformance);
+          systemConfiguration->addWithLabel(_("GPU POWER SAVINGS MODE (AMD ONLY)"), gpuPerformance);
 
           systemConfiguration->addSaveFunc([configName, gpuPerformance, gpu_performance]
           {
