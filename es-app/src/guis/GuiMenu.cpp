@@ -4703,7 +4703,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
         systemConfiguration->addWithLabel(_("AVAILABLE THREADS"), optionsThreads);
 
-        systemConfiguration->addSaveFunc([this, optionsThreads, selectedThreads]
+        systemConfiguration->addSaveFunc([configName, optionsThreads, selectedThreads]
         {
                 if (optionsThreads->changed()) {
                         SystemConf::getInstance()->set(configName +".threads", optionsThreads->getSelected());
