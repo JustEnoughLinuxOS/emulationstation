@@ -178,6 +178,7 @@ public:
     /* audio card */
     bool setAudioOutputDevice(std::string device);
     std::vector<std::string> getAvailableAudioOutputDevices();
+    std::vector<std::string> getAvailableThreads();
     std::string getCurrentAudioOutputDevice();
     bool setAudioOutputPath(std::string device);
     std::vector<std::string> getAvailableAudioOutputPaths();

@@ -1275,27 +1275,34 @@ void GuiMenu::openSystemSettings_batocera()
 
 #if defined(handheld)
 
-          // Allow offlining all but 2/4/0 cores
-          auto optionsOffline = std::make_shared<OptionListComponent<std::string> >(mWindow, _("ENABLED CPU CORES"), false);
-          std::string selectedOffline = SystemConf::getInstance()->get("system.cores");
-          if (selectedOffline.empty())
-                selectedOffline = "all";
+        // Allow offlining all but n threads
+	auto optionsThreads = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AVAILABLE THREADS"), false);
 
-          optionsOffline->add(_("ALL"),"all", selectedOffline == "all");
-          optionsOffline->add(_("FOUR"),"4", selectedOffline == "4");
-          optionsOffline->add(_("TWO"),"2", selectedOffline == "2");
+	std::vector<std::string> availableThreads = ApiSystem::getInstance()->getAvailableThreads();
+	std::string selectedThreads = SystemConf::getInstance()->get("system.threads");
+	if (selectedThreads.empty())
+		selectedThreads = "all";
 
-          s->addWithLabel(_("ENABLED CPU CORES"), optionsOffline);
+	bool wfound = false;
+	for (auto it = availableThreads.begin(); it != availableThreads.end(); it++)
+	{
+		optionsThreads->add((*it), (*it), selectedThreads == (*it));
+		if (selectedThreads == (*it))
+		wfound = true;
+	}
+	if (!wfound)
+		optionsThreads->add(selectedThreads, selectedThreads, true);
 
-          s->addSaveFunc([optionsOffline, selectedOffline]
-          {
-            if (optionsOffline->changed()) {
-              SystemConf::getInstance()->set("system.cores", optionsOffline->getSelected());
-              runSystemCommand("/usr/bin/bash -lc \". /etc/profile; onlinecores " + optionsOffline->getSelected() + " 0" + "\"" , "", nullptr);
-              SystemConf::getInstance()->saveSystemConf();
-            }
-          });
+	s->addWithLabel(_("AVAILABLE THREADS"), optionsThreads);
 
+	s->addSaveFunc([this, optionsThreads, selectedThreads]
+	{
+		if (optionsThreads->changed()) {
+			SystemConf::getInstance()->set("system.threads", optionsThreads->getSelected());
+			runSystemCommand("/usr/bin/bash -lc \". /etc/profile; onlinethreads " + optionsThreads->getSelected() + " 0" + "\"" , "", nullptr);
+			SystemConf::getInstance()->saveSystemConf();
+		}
+	});
 
 	  // Provides cooling profile switching
 	  auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
