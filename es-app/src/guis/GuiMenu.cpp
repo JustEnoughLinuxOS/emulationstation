@@ -2704,6 +2704,7 @@ void GuiMenu::openControllersSettings_batocera(int autoSel)
 			if (bluetoothd_enabled->getState() == false) {
                                 runSystemCommand("systemctl stop bluealsa", "", nullptr);
                                 runSystemCommand("systemctl stop bluetooth", "", nullptr);
+                                runSystemCommand("systemctl stop bluetoothsense", "", nullptr);
                                 runSystemCommand("systemctl stop bluetooth-agent", "", nullptr);
                                 runSystemCommand("rm /storage/.cache/services/bluez.conf", "", nullptr);
                                 runSystemCommand("rfkill block bluetooth", "", nullptr);
@@ -2712,6 +2713,7 @@ void GuiMenu::openControllersSettings_batocera(int autoSel)
                                 runSystemCommand("touch /storage/.cache/services/bluez.conf", "", nullptr);
                                 runSystemCommand("systemctl start bluetooth", "", nullptr);
                                 runSystemCommand("systemctl start bluetooth-agent", "", nullptr);
+                                runSystemCommand("systemctl start bluetoothsense", "", nullptr);
                                 runSystemCommand("systemctl start bluealsa", "", nullptr);
                                 runSystemCommand("rfkill unblock bluetooth", "", nullptr);
 				mWindow->pushGui(new GuiLoading<bool>(mWindow, _("ENABLING BLUETOOTH"),
