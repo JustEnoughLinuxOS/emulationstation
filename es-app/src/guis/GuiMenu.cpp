@@ -1179,6 +1179,30 @@ void GuiMenu::openSystemSettings_batocera()
 
 	s->addGroup(_("HARDWARE"));
 
+	// Provides LED management
+	auto optionsLEDProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CONTROLLER LED (AYANEO ONLY)"), false);
+	std::string selectedLEDProfile = SystemConf::getInstance()->get("led.color");
+	if (selectedLEDProfile.empty())
+		selectedLEDProfile = "default";
+
+	optionsLEDProfile->add(_("DEFAULT (REBOOT)"),"default", selectedLEDProfile == "default");
+	optionsLEDProfile->add(_("OFF"),"off", selectedLEDProfile == "off");
+	optionsLEDProfile->add(_("RED"),"red", selectedLEDProfile == "red");
+	optionsLEDProfile->add(_("GREEN"),"green", selectedLEDProfile == "green");
+	optionsLEDProfile->add(_("BLUE"),"blue", selectedLEDProfile == "blue");
+	optionsLEDProfile->add(_("TEAL"),"teal", selectedLEDProfile == "teal");
+	optionsLEDProfile->add(_("PURPLE"),"purple", selectedLEDProfile == "purple");
+	s->addWithLabel(_("CONTROLLER LED (AYANEO ONLY)"), optionsLEDProfile);
+
+	s->addSaveFunc([this, optionsLEDProfile, selectedLEDProfile]
+	{
+		if (optionsLEDProfile->changed()) {
+			SystemConf::getInstance()->set("led.color", optionsLEDProfile->getSelected());
+			SystemConf::getInstance()->saveSystemConf();
+			runSystemCommand("/usr/bin/led_mgr " + optionsLEDProfile->getSelected(), "", nullptr);
+		}
+	});
+
 	// video device
 	/*
 	auto optionsVideo = std::make_shared<OptionListComponent<std::string> >(mWindow, _("VIDEO OUTPUT"), false);
@@ -1336,8 +1360,6 @@ void GuiMenu::openSystemSettings_batocera()
 		selectedOCProfile = "off";
 
 	optionsOCProfile->add(_("OFF"),    "off", selectedOCProfile == "off");
-#endif
-#if defined(handheld)
         optionsOCProfile->add(_("2w"),"2w", selectedOCProfile == "2w");
         optionsOCProfile->add(_("4w"),"4w", selectedOCProfile == "4w");
         optionsOCProfile->add(_("6w"),"6w", selectedOCProfile == "6w");
@@ -1350,8 +1372,6 @@ void GuiMenu::openSystemSettings_batocera()
         optionsOCProfile->add(_("20w"),"20w", selectedOCProfile == "20w");
         optionsOCProfile->add(_("22w"),"22w", selectedOCProfile == "22w");
         optionsOCProfile->add(_("24w"),"24w", selectedOCProfile == "24w");
-#endif
-#if defined(handheld)
  	s->addWithLabel(_("CPU Max TDP (AMD Only)"), optionsOCProfile);
 
 	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
