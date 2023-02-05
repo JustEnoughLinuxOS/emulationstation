@@ -1199,7 +1199,7 @@ void GuiMenu::openSystemSettings_batocera()
 		if (optionsLEDProfile->changed()) {
 			SystemConf::getInstance()->set("led.color", optionsLEDProfile->getSelected());
 			SystemConf::getInstance()->saveSystemConf();
-			runSystemCommand("/usr/bin/led_mgr " + optionsLEDProfile->getSelected(), "", nullptr);
+			runSystemCommand("/usr/bin/led_mgr " + optionsLEDProfile->getSelected() + " ff", "", nullptr);
 		}
 	});
 
