@@ -1179,6 +1179,7 @@ void GuiMenu::openSystemSettings_batocera()
 
 	s->addGroup(_("HARDWARE"));
 
+#if defined(handheld)
 	// Provides LED management
 	auto optionsLEDProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CONTROLLER LED (AYANEO ONLY)"), false);
 	std::string selectedLEDProfile = SystemConf::getInstance()->get("led.color");
@@ -1202,6 +1203,7 @@ void GuiMenu::openSystemSettings_batocera()
 			runSystemCommand("/usr/bin/led_mgr " + optionsLEDProfile->getSelected() + " ff", "", nullptr);
 		}
 	});
+#endif
 
 	// video device
 	/*
