@@ -1179,9 +1179,9 @@ void GuiMenu::openSystemSettings_batocera()
 
 
 #if defined(handheld)
-	s->addGroup(_("DEVICE LEDS"));
+	s->addGroup(_("DEVICE LEDS (AYANEO ONLY)"));
 	// Provides LED management
-	auto optionsLEDProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CONTROLLER LED (AYANEO ONLY)"), false);
+	auto optionsLEDProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED COLOR"), false);
 	std::string selectedLEDProfile = SystemConf::getInstance()->get("led.color");
 	if (selectedLEDProfile.empty())
 		selectedLEDProfile = "default";
@@ -1193,16 +1193,36 @@ void GuiMenu::openSystemSettings_batocera()
 	optionsLEDProfile->add(_("BLUE"),"blue", selectedLEDProfile == "blue");
 	optionsLEDProfile->add(_("TEAL"),"teal", selectedLEDProfile == "teal");
 	optionsLEDProfile->add(_("PURPLE"),"purple", selectedLEDProfile == "purple");
-	s->addWithLabel(_("CONTROLLER LED (AYANEO ONLY)"), optionsLEDProfile);
+	s->addWithLabel(_("LED COLOR"), optionsLEDProfile);
 
 	s->addSaveFunc([this, optionsLEDProfile, selectedLEDProfile]
 	{
 		if (optionsLEDProfile->changed()) {
 			SystemConf::getInstance()->set("led.color", optionsLEDProfile->getSelected());
 			SystemConf::getInstance()->saveSystemConf();
-			runSystemCommand("/usr/bin/led_mgr " + optionsLEDProfile->getSelected() + " ff", "", nullptr);
+			runSystemCommand("/usr/bin/ledcontrol " + optionsLEDProfile->getSelected(), "", nullptr);
 		}
 	});
+
+        // Sets LED brightness
+        auto optionsLEDBrightness = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED BRIGHTNESS"), false);
+        std::string selectedLEDBrightness = SystemConf::getInstance()->get("led.brightness");
+        if (selectedLEDBrightness.empty())
+                selectedLEDBrightness = "MAX";
+
+        optionsLEDBrightness->add(_("MAX"),"max", selectedLEDBrightness == "max");
+        optionsLEDBrightness->add(_("MID"),"mid", selectedLEDBrightness == "mid");
+        optionsLEDBrightness->add(_("LOW"),"low", selectedLEDBrightness == "low");
+        s->addWithLabel(_("LED BRIGHTNESS"), optionsLEDBrightness);
+
+        s->addSaveFunc([this, optionsLEDBrightness, selectedLEDBrightness]
+        {
+                if (optionsLEDBrightness->changed()) {
+                        SystemConf::getInstance()->set("led.brightness", optionsLEDBrightness->getSelected());
+                        SystemConf::getInstance()->saveSystemConf();
+                        runSystemCommand("/usr/bin/ledcontrol brightness " + optionsLEDBrightness->getSelected(), "", nullptr);
+                }
+        });
 
 #endif
 	s->addGroup(_("HARDWARE / AUDIO"));
