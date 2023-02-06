@@ -1208,7 +1208,7 @@ void GuiMenu::openSystemSettings_batocera()
         auto optionsLEDBrightness = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED BRIGHTNESS"), false);
         std::string selectedLEDBrightness = SystemConf::getInstance()->get("led.brightness");
         if (selectedLEDBrightness.empty())
-                selectedLEDBrightness = "MAX";
+                selectedLEDBrightness = "max";
 
         optionsLEDBrightness->add(_("MAX"),"max", selectedLEDBrightness == "max");
         optionsLEDBrightness->add(_("MID"),"mid", selectedLEDBrightness == "mid");
