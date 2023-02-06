@@ -1212,7 +1212,7 @@ void GuiMenu::openSystemSettings_batocera()
 
         optionsLEDBrightness->add(_("MAX"),"max", selectedLEDBrightness == "max");
         optionsLEDBrightness->add(_("MID"),"mid", selectedLEDBrightness == "mid");
-        optionsLEDBrightness->add(_("LOW"),"low", selectedLEDBrightness == "low");
+        optionsLEDBrightness->add(_("MIN"),"min", selectedLEDBrightness == "min");
         s->addWithLabel(_("LED BRIGHTNESS"), optionsLEDBrightness);
 
         s->addSaveFunc([this, optionsLEDBrightness, selectedLEDBrightness]
