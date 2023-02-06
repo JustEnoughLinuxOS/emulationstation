@@ -1177,9 +1177,9 @@ void GuiMenu::openSystemSettings_batocera()
 		);
 	}
 
-	s->addGroup(_("HARDWARE"));
 
 #if defined(handheld)
+	s->addGroup(_("DEVICE LEDS"));
 	// Provides LED management
 	auto optionsLEDProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CONTROLLER LED (AYANEO ONLY)"), false);
 	std::string selectedLEDProfile = SystemConf::getInstance()->get("led.color");
@@ -1203,39 +1203,9 @@ void GuiMenu::openSystemSettings_batocera()
 			runSystemCommand("/usr/bin/led_mgr " + optionsLEDProfile->getSelected() + " ff", "", nullptr);
 		}
 	});
+
 #endif
-
-	// video device
-	/*
-	auto optionsVideo = std::make_shared<OptionListComponent<std::string> >(mWindow, _("VIDEO OUTPUT"), false);
-	std::string currentDevice = SystemConf::getInstance()->get("global.videooutput");
-	if (currentDevice.empty()) currentDevice = "auto";
-
-	std::vector<std::string> availableVideo = ApiSystem::getInstance()->getAvailableVideoOutputDevices();
-
-	bool vfound = false;
-	for (auto it = availableVideo.begin(); it != availableVideo.end(); it++)
-	{
-		optionsVideo->add((*it), (*it), currentDevice == (*it));
-		if (currentDevice == (*it))
-			vfound = true;
-	}
-
-	if (!vfound)
-		optionsVideo->add(currentDevice, currentDevice, true);
-
-	s->addWithLabel(_("VIDEO OUTPUT"), optionsVideo);
-	s->addSaveFunc([this, optionsVideo, currentDevice] {
-		if (optionsVideo->changed()) {
-			SystemConf::getInstance()->set("global.videooutput", optionsVideo->getSelected());
-			SystemConf::getInstance()->saveSystemConf();
-			mWindow->displayNotificationMessage(_U("\uF011  ") + _("REBOOT REQUIRED TO APPLY THE NEW CONFIGURATION"));
-			if (Settings::getInstance()->getBool("ExitOnRebootRequired")) {
-			  quitES(QuitMode::QUIT);
-			}
-		}
-	});
-	*/
+	s->addGroup(_("HARDWARE / AUDIO"));
 
 	// audio device
 	auto optionsAudio = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AUDIO DEVICE"), false);
@@ -1300,6 +1270,7 @@ void GuiMenu::openSystemSettings_batocera()
         });
 
 #if defined(handheld)
+	s->addGroup(_("HARDWARE / CPU"));
 
         // Allow offlining all but n threads
 	auto optionsThreads = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AVAILABLE THREADS"), false);
@@ -1436,6 +1407,8 @@ void GuiMenu::openSystemSettings_batocera()
           gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
           gpuPerformance->add(_("PEAK"), "profile_peak", gpu_performance == "profile_peak");
 
+	  s->addGroup(_("HARDWARE / GPU"));
+
           s->addWithLabel(_("GPU POWER SAVINGS MODE (AMD ONLY)"), gpuPerformance);
 
           s->addSaveFunc([this, gpuPerformance, gpu_performance]
@@ -1447,6 +1420,8 @@ void GuiMenu::openSystemSettings_batocera()
             }
           });
         }
+
+	s->addGroup(_("HARDWARE / WIFI"));
 
         // Automatically enable or disable WIFI power saving mode
         auto wifi_powersave = std::make_shared<SwitchComponent>(mWindow);
