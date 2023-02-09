@@ -4214,8 +4214,8 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
                         } else {
                                 runSystemCommand("systemctl start syncthing", "", nullptr);
                         }
-                bool sambaenabled = enable_syncthing->getState();
-                SystemConf::getInstance()->set("syncthing.enabled", sambaenabled ? "1" : "0");
+                bool syncthingenabled = enable_syncthing->getState();
+                SystemConf::getInstance()->set("syncthing.enabled", syncthingenabled ? "1" : "0");
                                 SystemConf::getInstance()->saveSystemConf();
                 });
 
