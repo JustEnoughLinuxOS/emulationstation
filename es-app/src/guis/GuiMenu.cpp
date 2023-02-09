@@ -4204,6 +4204,21 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
                                 SystemConf::getInstance()->saveSystemConf();
                 });
 
+       auto enable_syncthing = std::make_shared<SwitchComponent>(mWindow);
+                bool syncthingEnabled = SystemConf::getInstance()->get("syncthing.enabled") == "1";
+                enable_syncthing->setState(syncthingEnabled);
+                s->addWithLabel(_("ENABLE SYNCTHING"), enable_syncthing);
+                s->addSaveFunc([enable_syncthing] {
+                        if (enable_syncthing->getState() == false) {
+                                runSystemCommand("systemctl stop syncthing", "", nullptr);
+                        } else {
+                                runSystemCommand("systemctl start syncthing", "", nullptr);
+                        }
+                bool sambaenabled = enable_syncthing->getState();
+                SystemConf::getInstance()->set("syncthing.enabled", sambaenabled ? "1" : "0");
+                                SystemConf::getInstance()->saveSystemConf();
+                });
+
        auto mount_cloud = std::make_shared<SwitchComponent>(mWindow);
                 bool mntcloudEnabled = SystemConf::getInstance()->get("clouddrive.mounted") == "1";
                 mount_cloud->setState(mntcloudEnabled);
