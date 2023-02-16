@@ -38,7 +38,7 @@ static std::map<std::string, std::string> defaults =
 	{ "kodi.enabled", "1" },
 	{ "kodi.atstartup", "0" },
 	{ "audio.bgmusic", "1" },
-	{ "wifi.enabled", "0" },
+	{ "network.enabled", "0" },
 	{ "system.hostname", "BATOCERA" },
 	{ "global.retroachievements", "0" },
 	{ "global.retroachievements.hardcore", "0" },

@@ -322,7 +322,7 @@ void Settings::setDefaults()
 
 	mBoolMap["kodi.enabled"] = false;
 	mBoolMap["kodi.atstartup"] = false;
-	mBoolMap["wifi.enabled"] = false;
+	mBoolMap["network.enabled"] = false;
 #endif
 
 	mDefaultBoolMap = mBoolMap;

@@ -1133,23 +1133,25 @@ void GuiMenu::openSystemSettings_batocera()
 	}
 #endif
 
-	s->addGroup(_("AUTHENTICATION"));
+        s->addGroup(_("AUTHENTICATION"));
         bool rotateRootPassEnabled = SystemConf::getInstance()->getBool("rotate.root.password");
         auto rotate_root_pass = std::make_shared<SwitchComponent>(mWindow);
         rotate_root_pass->setState(rotateRootPassEnabled);
         s->addWithLabel(_("ROTATE ROOT PASSWORD"), rotate_root_pass);
 
-        auto root_password = std::make_shared<TextComponent>(mWindow, SystemConf::getInstance()->get("root.password"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
-	if (SystemConf::getInstance()->getBool("rotate.root.password", true)) {
-		s->addWithLabel(_("ROOT PASSWORD"), root_password);
-	} else {
-		s->addInputTextRow(_("ROOT PASSWORD"), "root.password", false);
-	}
+        s->addSaveFunc([this, rotate_root_pass]
+        {
+                SystemConf::getInstance()->setBool("rotate.root.password", rotate_root_pass->getState());
+                SystemConf::getInstance()->saveSystemConf();
+        });
 
-        s->addSaveFunc([rotate_root_pass, root_password] {
-	  SystemConf::getInstance()->setBool("rotate.root.password", rotate_root_pass->getState());
-          const std::string rootpass = SystemConf::getInstance()->get("root.password");
-          runSystemCommand("setrootpass " + rootpass, "", nullptr);
+        auto root_password = std::make_shared<TextComponent>(mWindow, SystemConf::getInstance()->get("root.password"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
+        s->addInputTextRow(_("ROOT PASSWORD"), "root.password", false);
+
+        s->addSaveFunc([this, root_password] {
+                SystemConf::getInstance()->saveSystemConf();
+                const std::string rootpass = SystemConf::getInstance()->get("root.password");
+                runSystemCommand("setrootpass " + rootpass, "", nullptr);
         });
 
 	s->addGroup(_("DISPLAY"));
@@ -4049,7 +4051,7 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 
 void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 {
-	bool baseWifiEnabled = SystemConf::getInstance()->getBool("wifi.enabled");
+	bool baseNetworkEnabled = SystemConf::getInstance()->getBool("network.enabled");
 
 	auto theme = ThemeData::getMenuTheme();
 	std::shared_ptr<Font> font = theme->Text.font;
@@ -4101,32 +4103,32 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 //                });
 
         // Wifi enable
-        auto enable_wifi = std::make_shared<SwitchComponent>(mWindow);
-        enable_wifi->setState(baseWifiEnabled);
-        s->addWithLabel(_("ENABLE WIFI"), enable_wifi, selectWifiEnable);
+        auto enable_net = std::make_shared<SwitchComponent>(mWindow);
+        enable_net->setState(baseNetworkEnabled);
+        s->addWithLabel(_("ENABLE NETWORK"), enable_net, selectWifiEnable);
 
 	// window, title, settingstring,
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
 	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
 
-	if (baseWifiEnabled)
+	if (baseNetworkEnabled)
 	{
 		s->addInputTextRow(_("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
 		s->addInputTextRow(_("WIFI KEY"), "wifi.key", true);
 	}
 
-	s->addSaveFunc([baseWifiEnabled, baseSSID, baseKEY, enable_wifi, window]
+	s->addSaveFunc([baseNetworkEnabled, baseSSID, baseKEY, enable_net, window]
 	{
-		bool wifienabled = enable_wifi->getState();
+		bool networkenabled = enable_net->getState();
 
-		SystemConf::getInstance()->setBool("wifi.enabled", wifienabled);
+		SystemConf::getInstance()->setBool("network.enabled", networkenabled);
 
-		if (wifienabled)
+		if (networkenabled)
 		{
 			std::string newSSID = SystemConf::getInstance()->get("wifi.ssid");
 			std::string newKey = SystemConf::getInstance()->get("wifi.key");
 
-			if (baseSSID != newSSID || baseKEY != newKey || !baseWifiEnabled)
+			if (baseSSID != newSSID || baseKEY != newKey || !baseNetworkEnabled)
 			{
 				if (ApiSystem::getInstance()->enableWifi(newSSID, newKey))
 					window->pushGui(new GuiMsgBox(window, _("WIFI ENABLED")));
@@ -4134,18 +4136,18 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 					window->pushGui(new GuiMsgBox(window, _("WIFI CONFIGURATION ERROR")));
 			}
 		}
-		else if (baseWifiEnabled)
+		else if (baseNetworkEnabled)
 			ApiSystem::getInstance()->disableWifi();
 	});
 
-	enable_wifi->setOnChangedCallback([this, s, baseWifiEnabled, enable_wifi]()
+	enable_net->setOnChangedCallback([this, s, baseNetworkEnabled, enable_net]()
 	{
-		bool wifienabled = enable_wifi->getState();
-		if (baseWifiEnabled != wifienabled)
+		bool networkenabled = enable_net->getState();
+		if (baseNetworkEnabled != networkenabled)
 		{
-			SystemConf::getInstance()->setBool("wifi.enabled", wifienabled);
+			SystemConf::getInstance()->setBool("network.enabled", networkenabled);
 
-			if (wifienabled)
+			if (networkenabled)
 				ApiSystem::getInstance()->enableWifi(SystemConf::getInstance()->get("wifi.ssid"), SystemConf::getInstance()->get("wifi.key"));
 			else
 				ApiSystem::getInstance()->disableWifi();
