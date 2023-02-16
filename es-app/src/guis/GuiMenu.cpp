@@ -1226,33 +1226,6 @@ void GuiMenu::openSystemSettings_batocera()
 
 #endif
 
-#if defined(RG353P)
-	s->addGroup(_("HARDWARE / DEVICE"));
-	// Switch device dtb to RG353V, gross, hopefully temporary.
-	auto device_switch = std::make_shared<SwitchComponent>(mWindow);
-	bool deviceswitchEnabled = SystemConf::getInstance()->get("system.rg353v") == "1";
-	device_switch->setState(deviceswitchEnabled);
-	s->addWithLabel(_("DEVICE IS RG353V"), device_switch);
-	s->addSaveFunc([this,device_switch] {
-		if (device_switch->changed()) {
-			std::string msg = _("The system will restart")+"\n";
-			msg += _("Do you want to continue?");
-
-			mWindow->pushGui(new GuiMsgBox(mWindow,msg, _("YES"),
-				[this,device_switch] {
-
-				bool dswitchenabled = device_switch->getState();
-				SystemConf::getInstance()->set("system.rg353v", dswitchenabled ? "1" : "0");
-				SystemConf::getInstance()->saveSystemConf();
-				if (device_switch->getState() == false) {
-					runSystemCommand("/usr/bin/device-switch RG353P", "", nullptr);
-				} else {
-					runSystemCommand("/usr/bin/device-switch RG353V", "", nullptr);
-				}
-			}, "NO",nullptr));
-		}
-	});
-#endif
 	s->addGroup(_("HARDWARE / AUDIO"));
 
 	// audio device
