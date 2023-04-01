@@ -1177,8 +1177,61 @@ void GuiMenu::openSystemSettings_batocera()
 					Settings::getInstance()->setBool("BrightnessPopup", brightnessPopup->getState());
 			}
 		);
-	}
 
+                // gamma
+                auto gamma = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
+                gamma->setValue(std::stof(SystemConf::getInstance()->get("display.brightness")));
+                gamma->setOnValueChanged([](const float &newVal) {
+                        runSystemCommand("display brightness " + std::to_string((int)round(newVal)),"", nullptr);
+                });
+                s->addWithLabel(_("GAMMA"), gamma);
+                s->addSaveFunc([this, gamma]
+                {
+                        SystemConf::getInstance()->set("display.brightness", std::to_string((int)round(gamma->getValue())));
+                        SystemConf::getInstance()->saveSystemConf();
+                });
+
+
+                // contrast
+                auto contrast = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
+                contrast->setValue(std::stof(SystemConf::getInstance()->get("display.contrast")));
+                contrast->setOnValueChanged([](const float &newVal) {
+			runSystemCommand("display contrast " + std::to_string((int)round(newVal)),"", nullptr);
+		});
+                s->addWithLabel(_("CONTRAST"), contrast);
+                s->addSaveFunc([this, contrast]
+                {
+                        SystemConf::getInstance()->set("display.contrast", std::to_string((int)round(contrast->getValue())));
+                        SystemConf::getInstance()->saveSystemConf();
+                });
+
+                // saturation
+                auto saturation = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
+                saturation->setValue(std::stof(SystemConf::getInstance()->get("display.saturation")));
+                saturation->setOnValueChanged([](const float &newVal) { 
+			runSystemCommand("display saturation " + std::to_string((int)round(newVal)),"", nullptr);
+		});
+                s->addWithLabel(_("SATURATION"), saturation);
+                s->addSaveFunc([this, saturation]
+                {
+                        SystemConf::getInstance()->set("display.saturation", std::to_string((int)round(saturation->getValue())));
+                        SystemConf::getInstance()->saveSystemConf();
+                });
+
+                // hue
+                auto hue = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
+                hue->setValue(std::stof(SystemConf::getInstance()->get("display.hue")));
+                hue->setOnValueChanged([](const float &newVal) { 
+			runSystemCommand("display hue " + std::to_string((int)round(newVal)),"", nullptr);
+		});
+                s->addWithLabel(_("HUE"), hue);
+                s->addSaveFunc([this, hue]
+                {
+                        SystemConf::getInstance()->set("display.hue", std::to_string((int)round(hue->getValue())));
+                        SystemConf::getInstance()->saveSystemConf();
+                });
+
+	}
 
 #if defined(handheld)
 	s->addGroup(_("DEVICE LEDS (AYANEO ONLY)"));
@@ -4074,7 +4127,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 	s->addWithLabel(_("SHOW NETWORK INDICATOR"), networkIndicator);
 	s->addSaveFunc([networkIndicator] { Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState()); });
 
-	s->addGroup(_("SETTINGS"));
+	s->addGroup(_("NETWORK SETTINGS"));
 
 #if !WIN32
 	// Hostname
@@ -4169,6 +4222,8 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
                 runSystemCommand("/usr/bin/toggle-ipv6", "", nullptr);
         });
 
+	s->addGroup(_("NETWORK SERVICES"));
+
        auto sshd_enabled = std::make_shared<SwitchComponent>(mWindow);
                 bool sshbaseEnabled = SystemConf::getInstance()->get("ssh.enabled") == "1";
                 sshd_enabled->setState(sshbaseEnabled);
@@ -4209,6 +4264,9 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
                                 SystemConf::getInstance()->saveSystemConf();
                 });
 
+
+	s->addGroup(_("CLOUD SERVICES"));
+
        auto enable_syncthing = std::make_shared<SwitchComponent>(mWindow);
                 bool syncthingEnabled = SystemConf::getInstance()->get("syncthing.enabled") == "1";
                 enable_syncthing->setState(syncthingEnabled);
@@ -4238,6 +4296,8 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
                 SystemConf::getInstance()->set("clouddrive.mounted", cloudenabled ? "1" : "0");
                                 SystemConf::getInstance()->saveSystemConf();
                 });
+
+	s->addGroup(_("VPN SERVICES"));
 
 	const std::string wireguardConfigFile = "/storage/.config/wireguard/wg0.conf";
 	if (Utils::FileSystem::exists(wireguardConfigFile)) {
