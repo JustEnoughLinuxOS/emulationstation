@@ -1178,6 +1178,8 @@ void GuiMenu::openSystemSettings_batocera()
 			}
 		);
 
+#if defined(handheld) || defined(RK3566)
+
                 // gamma
                 auto gamma = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
                 gamma->setValue(std::stof(SystemConf::getInstance()->get("display.brightness")));
@@ -1230,7 +1232,7 @@ void GuiMenu::openSystemSettings_batocera()
                         SystemConf::getInstance()->set("display.hue", std::to_string((int)round(hue->getValue())));
                         SystemConf::getInstance()->saveSystemConf();
                 });
-
+#endif
 	}
 
 #if defined(handheld)
