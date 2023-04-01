@@ -1178,7 +1178,7 @@ void GuiMenu::openSystemSettings_batocera()
 			}
 		);
 
-#if defined(handheld) || defined(RK3566)
+#if defined(RK3566)
 
                 // gamma
                 auto gamma = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
