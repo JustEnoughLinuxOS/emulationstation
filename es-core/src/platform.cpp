@@ -440,8 +440,8 @@ std::string getArchString()
 	return "rg552";
 #endif
 
-#if handheld
-	return "handheld";
+#if AMD64
+	return "AMD64";
 #endif
 
 #if ODROIDGOA

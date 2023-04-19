@@ -1235,7 +1235,7 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 	}
 
-#if defined(handheld)
+#if defined(AMD64)
 	s->addGroup(_("DEVICE LEDS (AYANEO ONLY)"));
 	// Provides LED management
 	auto optionsLEDProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED COLOR"), false);
@@ -1347,7 +1347,7 @@ void GuiMenu::openSystemSettings_batocera()
                 SystemConf::getInstance()->saveSystemConf();
         });
 
-#if defined(handheld)
+#if defined(AMD64)
 	s->addGroup(_("HARDWARE / CPU"));
 
         // Allow offlining all but n threads
@@ -1403,7 +1403,7 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 
 // Prep for additional device support.
-#if defined(handheld)
+#if defined(AMD64)
 	// Provides overclock profile switching
 	auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU Max TDP (AMD Only)"), false);
 	std::string selectedOCProfile = SystemConf::getInstance()->get("system.overclock");
@@ -1473,7 +1473,7 @@ void GuiMenu::openSystemSettings_batocera()
                 SystemConf::getInstance()->saveSystemConf();
         });
 
-#if defined(handheld)
+#if defined(AMD64)
         if (SystemConf::getInstance()->getBool("system.powersave", true)) {
           // GPU performance mode with enhanced power savings
           auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE (AMD ONLY)"), false);
@@ -4782,7 +4782,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	}
 	*/
 
-#if defined(handheld)
+#if defined(AMD64)
 
         // Allow offlining all but n threads
         auto optionsThreads = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AVAILABLE THREADS"), false);
@@ -4836,7 +4836,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 #endif
 
 // Prep for additional device support.
-#if defined(handheld)
+#if defined(AMD64)
         // Provides overclock profile switching
         auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU Max TDP (AMD Only)"), false);
         std::string selectedOCProfile = SystemConf::getInstance()->get(configName + ".overclock");
@@ -4858,7 +4858,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         optionsOCProfile->add(_("22w"),"22w", selectedOCProfile == "22w");
         optionsOCProfile->add(_("24w"),"24w", selectedOCProfile == "24w");
 #endif
-#if defined(handheld)
+#if defined(AMD64)
         systemConfiguration->addWithLabel(_("CPU Max TDP (AMD Only)"), optionsOCProfile);
 
         systemConfiguration->addSaveFunc([optionsOCProfile, selectedOCProfile, configName, mWindow]
