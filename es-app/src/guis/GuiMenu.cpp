@@ -1184,7 +1184,7 @@ void GuiMenu::openSystemSettings_batocera()
                 auto gamma = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
                 gamma->setValue(std::stof(SystemConf::getInstance()->get("display.brightness")));
                 gamma->setOnValueChanged([](const float &newVal) {
-                        runSystemCommand("display brightness " + std::to_string((int)round(newVal)),"", nullptr);
+                        runSystemCommand("paneladj brightness " + std::to_string((int)round(newVal)),"", nullptr);
                 });
                 s->addWithLabel(_("GAMMA"), gamma);
                 s->addSaveFunc([this, gamma]
@@ -1198,7 +1198,7 @@ void GuiMenu::openSystemSettings_batocera()
                 auto contrast = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
                 contrast->setValue(std::stof(SystemConf::getInstance()->get("display.contrast")));
                 contrast->setOnValueChanged([](const float &newVal) {
-			runSystemCommand("display contrast " + std::to_string((int)round(newVal)),"", nullptr);
+			runSystemCommand("paneladj contrast " + std::to_string((int)round(newVal)),"", nullptr);
 		});
                 s->addWithLabel(_("CONTRAST"), contrast);
                 s->addSaveFunc([this, contrast]
@@ -1211,7 +1211,7 @@ void GuiMenu::openSystemSettings_batocera()
                 auto saturation = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
                 saturation->setValue(std::stof(SystemConf::getInstance()->get("display.saturation")));
                 saturation->setOnValueChanged([](const float &newVal) { 
-			runSystemCommand("display saturation " + std::to_string((int)round(newVal)),"", nullptr);
+			runSystemCommand("paneladj saturation " + std::to_string((int)round(newVal)),"", nullptr);
 		});
                 s->addWithLabel(_("SATURATION"), saturation);
                 s->addSaveFunc([this, saturation]
@@ -1224,7 +1224,7 @@ void GuiMenu::openSystemSettings_batocera()
                 auto hue = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
                 hue->setValue(std::stof(SystemConf::getInstance()->get("display.hue")));
                 hue->setOnValueChanged([](const float &newVal) { 
-			runSystemCommand("display hue " + std::to_string((int)round(newVal)),"", nullptr);
+			runSystemCommand("paneladj hue " + std::to_string((int)round(newVal)),"", nullptr);
 		});
                 s->addWithLabel(_("HUE"), hue);
                 s->addSaveFunc([this, hue]
