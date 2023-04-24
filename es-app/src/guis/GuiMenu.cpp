@@ -2238,6 +2238,14 @@ void GuiMenu::openGamesSettings_batocera()
 
 #endif
 
+#if defined(S922X) || defined(RK3588)
+        // Core chooser
+        auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
+        cores_used->addRange({ { _("ALL"), "all" },{ _("BIG") , "big" },{ _("LITTLE") , "little" } }, SystemConf::getInstance()->get("global.cores"));
+        s->addWithLabel(_("CORES USED"), cores_used);
+        s->addSaveFunc([cores_used] { SystemConf::getInstance()->set("global.cores", cores_used->getSelected()); });
+#endif
+	
 	// rewind
 	auto rewind_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("REWIND"));
 	rewind_enabled->addRange({ { _("DEFAULT"), "auto" },{ _("ON") , "1" },{ _("OFF") , "0" } }, SystemConf::getInstance()->get("global.rewind"));
@@ -4782,6 +4790,14 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	}
 	*/
 
+#if defined(S922X) || defined(RK3588)
+        // Core chooser
+        auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
+        cores_used->addRange({ { _("ALL"), "all" },{ _("BIG") , "big" },{ _("LITTLE") , "little" } }, SystemConf::getInstance()->get(configName + ".cores"));
+        systemConfiguration->addWithLabel(_("CORES USED"), cores_used);
+        systemConfiguration->addSaveFunc([cores_used, configName] { SystemConf::getInstance()->set(configName + ".cores", cores_used->getSelected()); });
+#endif
+	
 #if defined(AMD64)
 
         // Allow offlining all but n threads
