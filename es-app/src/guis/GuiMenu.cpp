@@ -4372,6 +4372,22 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 		s->addGroup(tsUrl);
 	}
 
+    auto zerotier = std::make_shared<SwitchComponent>(mWindow);
+	bool ztUp = SystemConf::getInstance()->get("zerotier.up") == "1";
+	zerotier->setState(ztUp);
+	s->addWithLabel(_("ZeroTier One"), zerotier);
+	s->addSaveFunc([zerotier] {
+	bool ztEnabled = zerotier->getState();
+	    if(ztEnabled) {
+			runSystemCommand("systemctl start zerotier-one", "", nullptr);
+			ztEnabled = IsZeroTierUp();
+		} else {
+			runSystemCommand("systemctl stop zerotier-one", "", nullptr);
+		}
+		SystemConf::getInstance()->set("zerotier.up", ztEnabled ? "1" : "0");
+		SystemConf::getInstance()->saveSystemConf();
+	});
+
 	mWindow->pushGui(s);
 }
 
@@ -4385,6 +4401,15 @@ bool GuiMenu::IsTailscaleUp(std::string* loginUrl) {
 		 if (line.find("Logged out.") != std::string::npos) loggedOut = true;
 	});
 	return !loggedOut;
+}
+
+bool GuiMenu::IsZeroTierUp(std::string* networkId) {
+	bool running = false;
+      ApiSystem::executeScript("zerotier-cli -D/storage/.config/zerotier/ info", [networkId, &running](std::string line) {
+          if (line.find("Error connecting to the ZeroTier") != std::string::npos ) running = false;
+          else running = true;
+      });
+	 return running;
 }
 
 void GuiMenu::openQuitMenu_batocera()
