@@ -1501,6 +1501,26 @@ void GuiMenu::openSystemSettings_batocera()
         }
 #endif
 
+        // Allow user control over how the device sleeps
+        s->addGroup(_("HARDWARE / SUSPEND"));
+        auto systemSuspend = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEVICE SUSPEND MODE"), false);
+        std::string sys_suspend = SystemConf::getInstance()->get("system.suspendmode");
+        if (sys_suspend.empty())
+                sys_suspend = "auto";
+
+        systemSuspend->add(_("FREEZE (S0)"), "freeze", sys_suspend == "freeze");
+        systemSuspend->add(_("DEEP (S3)"), "mem", sys_suspend == "mem");
+        s->addWithLabel(_("DEVICE SUSPEND MODE"), systemSuspend);
+
+        s->addSaveFunc([this, systemSuspend, sys_suspend]
+        {
+          if (systemSuspend->changed()) {
+            SystemConf::getInstance()->set("system.suspendmode", systemSuspend->getSelected());
+            runSystemCommand("/usr/bin/setsuspendmode " + systemSuspend->getSelected(), "", nullptr);
+            SystemConf::getInstance()->saveSystemConf();
+          }
+        });
+
 	s->addGroup(_("HARDWARE / WIFI"));
 
         // Automatically enable or disable WIFI power saving mode
