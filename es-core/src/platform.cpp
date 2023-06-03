@@ -420,6 +420,10 @@ std::string getArchString()
 	return "rk3566";
 #endif
 
+#if RK3566-X55
+	return "rk3566-x55";
+#endif
+
 #if RK3588
 	return "rk3588";
 #endif
