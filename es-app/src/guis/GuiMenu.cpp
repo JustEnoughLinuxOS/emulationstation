@@ -1178,7 +1178,7 @@ void GuiMenu::openSystemSettings_batocera()
 			}
 		);
 
-#if defined(RK3566) || defined(RK3566-X55)
+#if defined(RK3566) || defined(RK3566_X55)
 
                 // gamma
                 auto gamma = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
@@ -1502,7 +1502,7 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 
 // Do not show on S922X devices yet.
-#if defined(AMD64) || defined(RK3326) || defined(RK3566) || defined(RK3566-X55) || defined(RK3588)
+#if defined(AMD64) || defined(RK3326) || defined(RK3566) || defined(RK3566_X55) || defined(RK3588)
         // Allow user control over how the device sleeps
         s->addGroup(_("HARDWARE / SUSPEND"));
         auto systemSuspend = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEVICE SUSPEND MODE"), false);
