@@ -1501,6 +1501,8 @@ void GuiMenu::openSystemSettings_batocera()
         }
 #endif
 
+// Do not show on S922X devices yet.
+#if defined(AMD64) || defined(RK3326) || defined(RK3566) || defined(RK3588)
         // Allow user control over how the device sleeps
         s->addGroup(_("HARDWARE / SUSPEND"));
         auto systemSuspend = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEVICE SUSPEND MODE"), false);
@@ -1520,6 +1522,7 @@ void GuiMenu::openSystemSettings_batocera()
             SystemConf::getInstance()->saveSystemConf();
           }
         });
+#endif
 
 	s->addGroup(_("HARDWARE / WIFI"));
 

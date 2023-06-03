@@ -416,28 +416,20 @@ std::string getArchString()
 	return "rpi4";
 #endif
 
-#if RG351P
-	return "rg351p";
+#if RK3566
+	return "rk3566";
 #endif
 
-#if RG351V
-	return "rg351v";
+#if RK3588
+	return "rk3588";
 #endif
 
-#if RG351MP
-	return "rg351mp";
+#if S922X
+	return "s922x";
 #endif
 
-#if RG353P
-        return "rg353p";
-#endif
-
-#if RG503
-	return "rg503";
-#endif
-
-#if RG552
-	return "rg552";
+#if RK3326
+        return "rk3326";
 #endif
 
 #if AMD64
