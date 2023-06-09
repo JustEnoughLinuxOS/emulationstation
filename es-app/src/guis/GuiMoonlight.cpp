@@ -149,6 +149,8 @@ bool MoonlightClient::UpdateMoonlightGames() {
     // Write bash script
     std::ofstream app_file("/storage/roms/moonlight/" + filename + ".sh");
     app_file << "#!/bin/bash" << std::endl;
+    app_file << ". /etc/profile" << std::endl;
+    app_file << "jslisten set \"moonlight\"" << std::endl;
     app_file << "moonlight stream -app \"" << title << "\" -platform sdl " << server_ip_ << std::endl;
     app_file.close();
 
