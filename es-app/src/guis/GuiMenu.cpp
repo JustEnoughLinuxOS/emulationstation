@@ -1236,50 +1236,54 @@ void GuiMenu::openSystemSettings_batocera()
 	}
 
 #if defined(AMD64)
-	s->addGroup(_("DEVICE LEDS (AYANEO ONLY)"));
-	// Provides LED management
-	auto optionsLEDProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED COLOR"), false);
-	std::string selectedLEDProfile = SystemConf::getInstance()->get("led.color");
-	if (selectedLEDProfile.empty())
-		selectedLEDProfile = "default";
 
-	optionsLEDProfile->add(_("DEFAULT (REBOOT)"),"default", selectedLEDProfile == "default");
-	optionsLEDProfile->add(_("OFF"),"off", selectedLEDProfile == "off");
-	optionsLEDProfile->add(_("RED"),"red", selectedLEDProfile == "red");
-	optionsLEDProfile->add(_("GREEN"),"green", selectedLEDProfile == "green");
-	optionsLEDProfile->add(_("BLUE"),"blue", selectedLEDProfile == "blue");
-	optionsLEDProfile->add(_("TEAL"),"teal", selectedLEDProfile == "teal");
-	optionsLEDProfile->add(_("PURPLE"),"purple", selectedLEDProfile == "purple");
-	s->addWithLabel(_("LED COLOR"), optionsLEDProfile);
+        char* deviceLedControl = getenv("DEVICE_LED_CONTROL");
+        if (deviceLedControl) {
+		s->addGroup(_("DEVICE LEDS"));
+		// Provides LED management
+		auto optionsLEDProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED COLOR"), false);
+		std::string selectedLEDProfile = SystemConf::getInstance()->get("led.color");
+		if (selectedLEDProfile.empty())
+			selectedLEDProfile = "default";
 
-	s->addSaveFunc([this, optionsLEDProfile, selectedLEDProfile]
-	{
-		if (optionsLEDProfile->changed()) {
-			SystemConf::getInstance()->set("led.color", optionsLEDProfile->getSelected());
-			SystemConf::getInstance()->saveSystemConf();
-			runSystemCommand("/usr/bin/ledcontrol " + optionsLEDProfile->getSelected(), "", nullptr);
-		}
-	});
+		optionsLEDProfile->add(_("DEFAULT (REBOOT)"),"default", selectedLEDProfile == "default");
+		optionsLEDProfile->add(_("OFF"),"off", selectedLEDProfile == "off");
+		optionsLEDProfile->add(_("RED"),"red", selectedLEDProfile == "red");
+		optionsLEDProfile->add(_("GREEN"),"green", selectedLEDProfile == "green");
+		optionsLEDProfile->add(_("BLUE"),"blue", selectedLEDProfile == "blue");
+		optionsLEDProfile->add(_("TEAL"),"teal", selectedLEDProfile == "teal");
+		optionsLEDProfile->add(_("PURPLE"),"purple", selectedLEDProfile == "purple");
+		s->addWithLabel(_("LED COLOR"), optionsLEDProfile);
 
-        // Sets LED brightness
-        auto optionsLEDBrightness = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED BRIGHTNESS"), false);
-        std::string selectedLEDBrightness = SystemConf::getInstance()->get("led.brightness");
-        if (selectedLEDBrightness.empty())
-                selectedLEDBrightness = "max";
+		s->addSaveFunc([this, optionsLEDProfile, selectedLEDProfile]
+		{
+			if (optionsLEDProfile->changed()) {
+				SystemConf::getInstance()->set("led.color", optionsLEDProfile->getSelected());
+				SystemConf::getInstance()->saveSystemConf();
+				runSystemCommand("/usr/bin/ledcontrol " + optionsLEDProfile->getSelected(), "", nullptr);
+			}
+		});
 
-        optionsLEDBrightness->add(_("MAX"),"max", selectedLEDBrightness == "max");
-        optionsLEDBrightness->add(_("MID"),"mid", selectedLEDBrightness == "mid");
-        optionsLEDBrightness->add(_("MIN"),"min", selectedLEDBrightness == "min");
-        s->addWithLabel(_("LED BRIGHTNESS"), optionsLEDBrightness);
+	        // Sets LED brightness
+	        auto optionsLEDBrightness = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED BRIGHTNESS"), false);
+	        std::string selectedLEDBrightness = SystemConf::getInstance()->get("led.brightness");
+	        if (selectedLEDBrightness.empty())
+	                selectedLEDBrightness = "max";
 
-        s->addSaveFunc([this, optionsLEDBrightness, selectedLEDBrightness]
-        {
-                if (optionsLEDBrightness->changed()) {
-                        SystemConf::getInstance()->set("led.brightness", optionsLEDBrightness->getSelected());
-                        SystemConf::getInstance()->saveSystemConf();
-                        runSystemCommand("/usr/bin/ledcontrol brightness " + optionsLEDBrightness->getSelected(), "", nullptr);
-                }
-        });
+	        optionsLEDBrightness->add(_("MAX"),"max", selectedLEDBrightness == "max");
+	        optionsLEDBrightness->add(_("MID"),"mid", selectedLEDBrightness == "mid");
+	        optionsLEDBrightness->add(_("MIN"),"min", selectedLEDBrightness == "min");
+	        s->addWithLabel(_("LED BRIGHTNESS"), optionsLEDBrightness);
+	
+	        s->addSaveFunc([this, optionsLEDBrightness, selectedLEDBrightness]
+	        {
+	                if (optionsLEDBrightness->changed()) {
+	                        SystemConf::getInstance()->set("led.brightness", optionsLEDBrightness->getSelected());
+	                        SystemConf::getInstance()->saveSystemConf();
+	                        runSystemCommand("/usr/bin/ledcontrol brightness " + optionsLEDBrightness->getSelected(), "", nullptr);
+	                }
+	        });
+	}
 
 #endif
 
@@ -1379,6 +1383,9 @@ void GuiMenu::openSystemSettings_batocera()
 		}
 	});
 
+
+	char* deviceHasFan = getenv("DEVICE_HAS_FAN");
+	if (deviceHasFan) {
 	  // Provides cooling profile switching
 	  auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
 	  std::string selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
@@ -1400,6 +1407,7 @@ void GuiMenu::openSystemSettings_batocera()
 	      runSystemCommand("systemctl restart fancontrol", "", nullptr);
 	    }
 	  });
+	}
 #endif
 
 // Prep for additional device support.
@@ -4897,6 +4905,8 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
                 }
         });
 
+        char* deviceHasFan = getenv("DEVICE_HAS_FAN");
+        if (deviceHasFan) {
           // Provides cooling profile switching
           auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
           std::string selectedFanProfile = SystemConf::getInstance()->get(configName + ".cooling.profile");
@@ -4917,6 +4927,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
               SystemConf::getInstance()->saveSystemConf();
             }
           });
+	}
 #endif
 
 // Prep for additional device support.
