@@ -1503,7 +1503,7 @@ void GuiMenu::openSystemSettings_batocera()
             if (gpuPerformance->changed()) {
               SystemConf::getInstance()->set("system.gpuperf", gpuPerformance->getSelected());
               SystemConf::getInstance()->saveSystemConf();
-              runSystemCommand("/usr/bin/systemctl restart powerstate", "", nullptr);
+              runSystemCommand("/usr/bin/bash -lc \". /etc/profile; gpu_performance_level "+ gpuPerformance->getSelected() + "\"", "", nullptr);
             }
           });
         }
