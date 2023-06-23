@@ -162,7 +162,7 @@ bool SystemConf::saveSystemConf()
 			if (idx == 0 || (idx == 1 && (fc == ';' || fc == '#')))
 			{
 				std::string val = it.second;
-				if ((!val.empty() && val != "auto") || dontRemoveValue.find(it.first) != dontRemoveValue.cend())
+				if ((!val.empty() && val != "default") || dontRemoveValue.find(it.first) != dontRemoveValue.cend())
 				{
 					auto defaultValue = defaults.find(key);
 					if (defaultValue != defaults.cend() && defaultValue->second == val)
@@ -180,7 +180,7 @@ bool SystemConf::saveSystemConf()
 		if (!lineFound)
 		{
 			std::string val = it.second;
-			if (!val.empty() && val != "auto")
+			if (!val.empty() && val != "default")
 				fileLines.push_back(key + val);
 		}
 	}
@@ -234,7 +234,7 @@ std::string SystemConf::get(const std::string &name)
 bool SystemConf::set(const std::string &name, const std::string &value) 
 {
 #ifdef NOBATOCERACONF
-	return Settings::getInstance()->setString(mapSettingsName(name), value == "auto" ? "" : value);
+	return Settings::getInstance()->setString(mapSettingsName(name), value == "default" ? "" : value);
 #endif
 
 	if (confMap.count(name) == 0 || confMap[name] != value)
