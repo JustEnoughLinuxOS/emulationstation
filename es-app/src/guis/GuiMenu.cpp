@@ -1470,6 +1470,7 @@ void GuiMenu::openSystemSettings_batocera()
 	  runSystemCommand("/usr/bin/bash -lc \". /etc/profile; "+ cpuGovUpdate->getSelected() + "\"", "", nullptr);
         });
 
+	s->addGroup(_("HARDWARE / GPU"));
         // Automatically enable or disable enhanced power saving mode
         auto enh_powersave = std::make_shared<SwitchComponent>(mWindow);
         bool enhpowersaveEnabled = SystemConf::getInstance()->get("system.powersave") == "1";
@@ -1478,6 +1479,17 @@ void GuiMenu::openSystemSettings_batocera()
         s->addSaveFunc([enh_powersave] {
                 bool enhpowersaveEnabled = enh_powersave->getState();
                 SystemConf::getInstance()->set("system.powersave", enhpowersaveEnabled ? "1" : "0");
+                SystemConf::getInstance()->saveSystemConf();
+        });
+
+        // Options for enhanced power savings mode
+        auto enh_cpupowersave = std::make_shared<SwitchComponent>(mWindow);
+        bool enhcpupowersaveEnabled = SystemConf::getInstance()->get("system.cpu.powersave") == "1";
+        enh_cpupowersave->setState(enhcpupowersaveEnabled);
+        s->addWithLabel(_("CPU POWER SAVING"), enh_cpupowersave);
+        s->addSaveFunc([enh_cpupowersave] {
+                bool enhcpupowersaveEnabled = enh_cpupowersave->getState();
+                SystemConf::getInstance()->set("system.cpu.powersave", enhcpupowersaveEnabled ? "1" : "0");
                 SystemConf::getInstance()->saveSystemConf();
         });
 
@@ -1494,7 +1506,6 @@ void GuiMenu::openSystemSettings_batocera()
           gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
           gpuPerformance->add(_("PEAK"), "profile_peak", gpu_performance == "profile_peak");
 
-	  s->addGroup(_("HARDWARE / GPU"));
 
           s->addWithLabel(_("GPU POWER SAVINGS MODE (AMD ONLY)"), gpuPerformance);
 
@@ -1506,8 +1517,36 @@ void GuiMenu::openSystemSettings_batocera()
               runSystemCommand("/usr/bin/bash -lc \". /etc/profile; gpu_performance_level "+ gpuPerformance->getSelected() + "\"", "", nullptr);
             }
           });
-        }
 #endif
+
+        auto enh_audiopowersave = std::make_shared<SwitchComponent>(mWindow);
+        bool enhaudiopowersaveEnabled = SystemConf::getInstance()->get("system.audio.powersave") == "1";
+        enh_audiopowersave->setState(enhaudiopowersaveEnabled);
+        s->addWithLabel(_("AUDIO POWER SAVING"), enh_audiopowersave);
+        s->addSaveFunc([enh_audiopowersave] {
+                bool enhaudiopowersaveEnabled = enh_audiopowersave->getState();
+                SystemConf::getInstance()->set("system.audio.powersave", enhaudiopowersaveEnabled ? "1" : "0");
+                SystemConf::getInstance()->saveSystemConf();
+        });
+        auto enh_pciepowersave = std::make_shared<SwitchComponent>(mWindow);
+        bool enhpciepowersaveEnabled = SystemConf::getInstance()->get("system.pcie.powersave") == "1";
+        enh_pciepowersave->setState(enhpciepowersaveEnabled);
+        s->addWithLabel(_("PCIE POWER SAVING"), enh_pciepowersave);
+        s->addSaveFunc([enh_pciepowersave] {
+                bool enhpciepowersaveEnabled = enh_pciepowersave->getState();
+                SystemConf::getInstance()->set("system.pcie.powersave", enhpciepowersaveEnabled ? "1" : "0");
+                SystemConf::getInstance()->saveSystemConf();
+        });
+        auto enh_usbpowersave = std::make_shared<SwitchComponent>(mWindow);
+        bool enhusbpowersaveEnabled = SystemConf::getInstance()->get("system.usb.powersave") == "1";
+        enh_usbpowersave->setState(enhusbpowersaveEnabled);
+        s->addWithLabel(_("USB POWER SAVING"), enh_usbpowersave);
+        s->addSaveFunc([enh_usbpowersave] {
+                bool enhusbpowersaveEnabled = enh_usbpowersave->getState();
+                SystemConf::getInstance()->set("system.usb.powersave", enhusbpowersaveEnabled ? "1" : "0");
+                SystemConf::getInstance()->saveSystemConf();
+        });
+        }
 
 // Do not show on S922X devices yet.
 #if defined(AMD64) || defined(RK3326) || defined(RK3566) || defined(RK3566_X55) || defined(RK3588)
