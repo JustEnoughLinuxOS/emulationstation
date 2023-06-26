@@ -1517,6 +1517,7 @@ void GuiMenu::openSystemSettings_batocera()
               runSystemCommand("/usr/bin/bash -lc \". /etc/profile; gpu_performance_level "+ gpuPerformance->getSelected() + "\"", "", nullptr);
             }
           });
+	}
 #endif
 
         auto enh_audiopowersave = std::make_shared<SwitchComponent>(mWindow);
@@ -1546,7 +1547,6 @@ void GuiMenu::openSystemSettings_batocera()
                 SystemConf::getInstance()->set("system.usb.powersave", enhusbpowersaveEnabled ? "1" : "0");
                 SystemConf::getInstance()->saveSystemConf();
         });
-        }
 
 // Do not show on S922X devices yet.
 #if defined(AMD64) || defined(RK3326) || defined(RK3566) || defined(RK3566_X55) || defined(RK3588)
