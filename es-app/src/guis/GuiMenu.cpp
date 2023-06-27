@@ -5051,9 +5051,9 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 	mangoUpdate->add(_("DEV"), "dev", mangohud == "dev");
 	mangoUpdate->add(_("OFF"), "off", mangohud == "off");
 
-	systemConfiguration->addWithLabel(_("DEFAULT MANGOHUD MODE"), cpuGovUpdate);
+	systemConfiguration->addWithLabel(_("DEFAULT MANGOHUD MODE"), mangoUpdate);
 
-	systemConfiguration->addSaveFunc([configName, cpuGovUpdate, mangoUpdate]
+	systemConfiguration->addSaveFunc([configName, mangoUpdate, mangoUpdate]
 									 {
           if (mangoUpdate->changed()) {
             SystemConf::getInstance()->set(configName + ".mangohud", mangoUpdate->getSelected());
