@@ -195,10 +195,6 @@ void GuiMenu::addQuitEntry(bool isKidUI)
 			{ openQuitMenu_batocera(); },
 			"iconQuit");
 	}
-	addEntry(
-		_("QUIT").c_str(), true, [this]
-		{ openQuitMenu_batocera(); },
-		"iconQuit");
 }
 
 void GuiMenu::finalizeMenu(bool animate)
