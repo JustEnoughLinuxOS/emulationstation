@@ -1480,7 +1480,7 @@ void GuiMenu::openSystemSettings_batocera()
 
 	// Default MangoHud Mode
 
-	auto cpuGovUpdate = std::make_shared<OptionListComponent<std::string>>(mWindow, _("DEFAULT MANGOHUD MODE"), false);
+	auto mangoUpdate = std::make_shared<OptionListComponent<std::string>>(mWindow, _("DEFAULT MANGOHUD MODE"), false);
 
 	std::string mangohud = SystemConf::getInstance()->get("system.mangohud");
 	if (mangohud.empty())
@@ -5036,6 +5036,27 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 									 {
           if (cpuGovUpdate->changed()) {
             SystemConf::getInstance()->set(configName + ".cpugovernor", cpuGovUpdate->getSelected());
+            SystemConf::getInstance()->saveSystemConf();
+          } });
+
+	// Per game/core/emu MangoHud mode
+
+	auto mangoUpdate = std::make_shared<OptionListComponent<std::string>>(mWindow, _("MANGOHUD MODE"), false);
+
+	std::string mangohud = SystemConf::getInstance()->get(configName + ".mangohud");
+	if (mangohud.empty())
+		mangohud = "basic";
+
+	mangoUpdate->add(_("BASIC"), "basic", mangohud == "basic");
+	mangoUpdate->add(_("DEV"), "dev", mangohud == "dev");
+	mangoUpdate->add(_("OFF"), "off", mangohud == "off");
+
+	systemConfiguration->addWithLabel(_("DEFAULT MANGOHUD MODE"), cpuGovUpdate);
+
+	systemConfiguration->addSaveFunc([configName, cpuGovUpdate, mangoUpdate]
+									 {
+          if (mangoUpdate->changed()) {
+            SystemConf::getInstance()->set(configName + ".mangohud", mangoUpdate->getSelected());
             SystemConf::getInstance()->saveSystemConf();
           } });
 
