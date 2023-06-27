@@ -1383,6 +1383,7 @@ void GuiMenu::openSystemSettings_batocera()
 		}
 	});
 
+#endif
 
 	char* deviceHasFan = getenv("DEVICE_HAS_FAN");
 	if (deviceHasFan) {
@@ -1408,7 +1409,6 @@ void GuiMenu::openSystemSettings_batocera()
 	    }
 	  });
 	}
-#endif
 
 // Prep for additional device support.
 #if defined(AMD64)
@@ -4954,6 +4954,8 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
                 }
         });
 
+#endif
+
         char* deviceHasFan = getenv("DEVICE_HAS_FAN");
         if (deviceHasFan) {
           // Provides cooling profile switching
@@ -4977,7 +4979,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
             }
           });
 	}
-#endif
 
 // Prep for additional device support.
 #if defined(AMD64)
