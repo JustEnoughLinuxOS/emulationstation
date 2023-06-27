@@ -55,6 +55,12 @@ public:
 
 private:
 	void addEntry(std::string name, bool add_arrow, const std::function<void()>& func, const std::string iconName = "");
+	void addFullUIEntries();
+    void addRestrictedUIEntries();
+    void addQuitEntry(bool isKidUI);
+    void finalizeMenu(bool animate);
+    void animateMenuPosition();
+    void setMenuPosition();
 	void addVersionInfo();
 	void openCollectionSystemSettings();
 	void openConfigInput();	
