@@ -107,8 +107,27 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		addRestrictedUIEntries();
 	}
 
-	addQuitEntry(isKidUI);
-	finalizeMenu(animate);
+	if (!isKidUI)
+	{
+		addEntry(
+			_("QUIT").c_str(), true, [this]
+			{ openQuitMenu_batocera(); },
+			"iconQuit");
+	}
+
+	addChild(&mMenu);
+	addVersionInfo();
+
+	setSize(mMenu.getSize());
+
+	if (animate)
+	{
+		animateMenuPosition();
+	}
+	else
+	{
+		setMenuPosition();
+	}
 }
 
 void GuiMenu::addFullUIEntries()
@@ -184,34 +203,6 @@ void GuiMenu::addRestrictedUIEntries()
 		_("UNLOCK UI MODE").c_str(), true, [this]
 		{ exitKidMode(); },
 		"iconAdvanced");
-}
-
-void GuiMenu::addQuitEntry(bool isKidUI)
-{
-	if (!isKidUI)
-	{
-		addEntry(
-			_("QUIT").c_str(), true, [this]
-			{ openQuitMenu_batocera(); },
-			"iconQuit");
-	}
-}
-
-void GuiMenu::finalizeMenu(bool animate)
-{
-	addChild(&mMenu);
-	addVersionInfo();
-
-	setSize(mMenu.getSize());
-
-	if (animate)
-	{
-		animateMenuPosition();
-	}
-	else
-	{
-		setMenuPosition();
-	}
 }
 
 void GuiMenu::animateMenuPosition()
