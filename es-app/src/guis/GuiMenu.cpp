@@ -1483,82 +1483,77 @@ void GuiMenu::openSystemSettings_batocera()
                 SystemConf::getInstance()->saveSystemConf();
         });
 
-        // Options for enhanced power savings mode
-        auto enh_cpupowersave = std::make_shared<SwitchComponent>(mWindow);
-        bool enhcpupowersaveEnabled = SystemConf::getInstance()->get("system.power.cpu") == "1";
-        enh_cpupowersave->setState(enhcpupowersaveEnabled);
-        s->addWithLabel(_("CPU POWER SAVING"), enh_cpupowersave);
-        s->addSaveFunc([enh_cpupowersave] {
-                bool enhcpupowersaveEnabled = enh_cpupowersave->getState();
-                SystemConf::getInstance()->set("system.power.cpu", enhcpupowersaveEnabled ? "1" : "0");
-                SystemConf::getInstance()->saveSystemConf();
-        });
+        if (SystemConf::getInstance()->getBool("system.powersave", true)) {
+        	// Options for enhanced power savings mode
+        	auto enh_cpupowersave = std::make_shared<SwitchComponent>(mWindow);
+        	bool enhcpupowersaveEnabled = SystemConf::getInstance()->get("system.power.cpu") == "1";
+        	enh_cpupowersave->setState(enhcpupowersaveEnabled);
+        	s->addWithLabel(_("CPU POWER SAVING"), enh_cpupowersave);
+        	s->addSaveFunc([enh_cpupowersave] {
+        	        bool enhcpupowersaveEnabled = enh_cpupowersave->getState();
+               	 SystemConf::getInstance()->set("system.power.cpu", enhcpupowersaveEnabled ? "1" : "0");
+               	 SystemConf::getInstance()->saveSystemConf();
+        	});
 
 #if defined(AMD64)
-        if (SystemConf::getInstance()->getBool("system.powersave", true)) {
-          // GPU performance mode with enhanced power savings
-          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE (AMD ONLY)"), false);
-          std::string gpu_performance = SystemConf::getInstance()->get("system.gpuperf");
-          if (gpu_performance.empty())
-                  gpu_performance = "auto";
+	          // GPU performance mode with enhanced power savings
+	          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE (AMD ONLY)"), false);
+	          std::string gpu_performance = SystemConf::getInstance()->get("system.gpuperf");
+	          if (gpu_performance.empty())
+	                  gpu_performance = "auto";
+	
+	          gpuPerformance->add(_("AUTO"), "auto", gpu_performance == "auto");
+	          gpuPerformance->add(_("LOW"), "low", gpu_performance == "low");
+	          gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
+	          gpuPerformance->add(_("PEAK"), "profile_peak", gpu_performance == "profile_peak");
 
-          gpuPerformance->add(_("AUTO"), "auto", gpu_performance == "auto");
-          gpuPerformance->add(_("LOW"), "low", gpu_performance == "low");
-          gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
-          gpuPerformance->add(_("PEAK"), "profile_peak", gpu_performance == "profile_peak");
-
-
-          s->addWithLabel(_("GPU POWER SAVINGS MODE (AMD ONLY)"), gpuPerformance);
-
-          s->addSaveFunc([this, gpuPerformance, gpu_performance]
-          {
-            if (gpuPerformance->changed()) {
-              SystemConf::getInstance()->set("system.gpuperf", gpuPerformance->getSelected());
-              SystemConf::getInstance()->saveSystemConf();
-              runSystemCommand("/usr/bin/bash -lc \". /etc/profile; gpu_performance_level "+ gpuPerformance->getSelected() + "\"", "", nullptr);
-            }
-          });
-	}
+	          s->addWithLabel(_("GPU POWER SAVINGS MODE (AMD ONLY)"), gpuPerformance);
+	          s->addSaveFunc([this, gpuPerformance, gpu_performance]
+	          {
+	            if (gpuPerformance->changed()) {
+	              SystemConf::getInstance()->set("system.gpuperf", gpuPerformance->getSelected());
+	              SystemConf::getInstance()->saveSystemConf();
+	              runSystemCommand("/usr/bin/bash -lc \". /etc/profile; gpu_performance_level "+ gpuPerformance->getSelected() + "\"", "", nullptr);
+	            }
+	          });
 #endif
-
-        auto enh_audiopowersave = std::make_shared<SwitchComponent>(mWindow);
-        bool enhaudiopowersaveEnabled = SystemConf::getInstance()->get("system.power.audio") == "1";
-        enh_audiopowersave->setState(enhaudiopowersaveEnabled);
-        s->addWithLabel(_("AUDIO POWER SAVING"), enh_audiopowersave);
-        s->addSaveFunc([enh_audiopowersave] {
-                bool enhaudiopowersaveEnabled = enh_audiopowersave->getState();
-                SystemConf::getInstance()->set("system.power.audio", enhaudiopowersaveEnabled ? "1" : "0");
-                SystemConf::getInstance()->saveSystemConf();
-        });
-        auto enh_pciepowersave = std::make_shared<SwitchComponent>(mWindow);
-        bool enhpciepowersaveEnabled = SystemConf::getInstance()->get("system.power.pcie") == "1";
-        enh_pciepowersave->setState(enhpciepowersaveEnabled);
-        s->addWithLabel(_("PCIE ACTIVE STATE POWER MANAGEMENT"), enh_pciepowersave);
-        s->addSaveFunc([enh_pciepowersave] {
-                bool enhpciepowersaveEnabled = enh_pciepowersave->getState();
-                SystemConf::getInstance()->set("system.power.pcie", enhpciepowersaveEnabled ? "1" : "0");
-                SystemConf::getInstance()->saveSystemConf();
-        });
-
-        auto wakeevents = std::make_shared<SwitchComponent>(mWindow);
-        bool wakeeventsEnabled = SystemConf::getInstance()->get("system.power.wakeevents") == "1";
-        wakeevents->setState(wakeeventsEnabled);
-        s->addWithLabel(_("ENABLE WAKE EVENTS"), wakeevents);
-        s->addSaveFunc([wakeevents] {
-                bool wakeeventsEnabled = wakeevents->getState();
-                SystemConf::getInstance()->set("system.power.wakeevents", wakeeventsEnabled ? "1" : "0");
-                SystemConf::getInstance()->saveSystemConf();
-        });
-
-        auto rtpm = std::make_shared<SwitchComponent>(mWindow);
-        bool rtpmEnabled = SystemConf::getInstance()->get("system.power.rtpm") == "1";
-        rtpm->setState(rtpmEnabled);
-        s->addWithLabel(_("RUNTIME POWER MANAGEMENT"), rtpm);
-        s->addSaveFunc([rtpm] {
-                bool rtpmEnabled = rtpm->getState();
-                SystemConf::getInstance()->set("system.power.rtpm", rtpmEnabled ? "1" : "0");
-                SystemConf::getInstance()->saveSystemConf();
-        });
+	        auto enh_audiopowersave = std::make_shared<SwitchComponent>(mWindow);
+	        bool enhaudiopowersaveEnabled = SystemConf::getInstance()->get("system.power.audio") == "1";
+	        enh_audiopowersave->setState(enhaudiopowersaveEnabled);
+	        s->addWithLabel(_("AUDIO POWER SAVING"), enh_audiopowersave);
+	        s->addSaveFunc([enh_audiopowersave] {
+	                bool enhaudiopowersaveEnabled = enh_audiopowersave->getState();
+	                SystemConf::getInstance()->set("system.power.audio", enhaudiopowersaveEnabled ? "1" : "0");
+	                SystemConf::getInstance()->saveSystemConf();
+	        });
+	        auto enh_pciepowersave = std::make_shared<SwitchComponent>(mWindow);
+	        bool enhpciepowersaveEnabled = SystemConf::getInstance()->get("system.power.pcie") == "1";
+	        enh_pciepowersave->setState(enhpciepowersaveEnabled);
+	        s->addWithLabel(_("PCIE ACTIVE STATE POWER MANAGEMENT"), enh_pciepowersave);
+	        s->addSaveFunc([enh_pciepowersave] {
+	                bool enhpciepowersaveEnabled = enh_pciepowersave->getState();
+	                SystemConf::getInstance()->set("system.power.pcie", enhpciepowersaveEnabled ? "1" : "0");
+	                SystemConf::getInstance()->saveSystemConf();
+	        });
+	        auto wakeevents = std::make_shared<SwitchComponent>(mWindow);
+	        bool wakeeventsEnabled = SystemConf::getInstance()->get("system.power.wakeevents") == "1";
+	        wakeevents->setState(wakeeventsEnabled);
+	        s->addWithLabel(_("ENABLE WAKE EVENTS"), wakeevents);
+	        s->addSaveFunc([wakeevents] {
+	                bool wakeeventsEnabled = wakeevents->getState();
+	                SystemConf::getInstance()->set("system.power.wakeevents", wakeeventsEnabled ? "1" : "0");
+	                SystemConf::getInstance()->saveSystemConf();
+	        });
+	        auto rtpm = std::make_shared<SwitchComponent>(mWindow);
+	        bool rtpmEnabled = SystemConf::getInstance()->get("system.power.rtpm") == "1";
+	        rtpm->setState(rtpmEnabled);
+	        s->addWithLabel(_("RUNTIME POWER MANAGEMENT"), rtpm);
+	        s->addSaveFunc([rtpm] {
+	                bool rtpmEnabled = rtpm->getState();
+	                SystemConf::getInstance()->set("system.power.rtpm", rtpmEnabled ? "1" : "0");
+	                SystemConf::getInstance()->saveSystemConf();
+	        });
+	}
 
 // Do not show on S922X devices yet.
 #if defined(AMD64) || defined(RK3326) || defined(RK3566) || defined(RK3566_X55) || defined(RK3588) || defined(RK3399)
