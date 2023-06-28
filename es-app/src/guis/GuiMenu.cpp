@@ -1586,12 +1586,12 @@ void GuiMenu::openSystemSettings_batocera()
 
         // Automatically enable or disable WIFI power saving mode
         auto wifi_powersave = std::make_shared<SwitchComponent>(mWindow);
-        bool wifipowersaveEnabled = SystemConf::getInstance()->get("wifi.powersave") == "1";
+        bool wifipowersaveEnabled = SystemConf::getInstance()->get("system.power.wifi") == "1";
         wifi_powersave->setState(wifipowersaveEnabled);
         s->addWithLabel(_("ENABLE WIFI POWER SAVING"), wifi_powersave);
         s->addSaveFunc([wifi_powersave] {
                 bool wifipowersaveEnabled = wifi_powersave->getState();
-                SystemConf::getInstance()->set("wifi.powersave", wifipowersaveEnabled ? "1" : "0");
+                SystemConf::getInstance()->set("system.power.wifi", wifipowersaveEnabled ? "1" : "0");
 		SystemConf::getInstance()->saveSystemConf();
                 runSystemCommand("/usr/bin/wifictl setpowersave", "", nullptr);
         });
