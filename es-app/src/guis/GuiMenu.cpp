@@ -1521,21 +1521,21 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 
         auto enh_audiopowersave = std::make_shared<SwitchComponent>(mWindow);
-        bool enhaudiopowersaveEnabled = SystemConf::getInstance()->get("system.audio.powersave") == "1";
+        bool enhaudiopowersaveEnabled = SystemConf::getInstance()->get("system.power.audio") == "1";
         enh_audiopowersave->setState(enhaudiopowersaveEnabled);
         s->addWithLabel(_("AUDIO POWER SAVING"), enh_audiopowersave);
         s->addSaveFunc([enh_audiopowersave] {
                 bool enhaudiopowersaveEnabled = enh_audiopowersave->getState();
-                SystemConf::getInstance()->set("system.audio.powersave", enhaudiopowersaveEnabled ? "1" : "0");
+                SystemConf::getInstance()->set("system.power.audio", enhaudiopowersaveEnabled ? "1" : "0");
                 SystemConf::getInstance()->saveSystemConf();
         });
         auto enh_pciepowersave = std::make_shared<SwitchComponent>(mWindow);
-        bool enhpciepowersaveEnabled = SystemConf::getInstance()->get("system.pcie.powersave") == "1";
+        bool enhpciepowersaveEnabled = SystemConf::getInstance()->get("system.power.audio") == "1";
         enh_pciepowersave->setState(enhpciepowersaveEnabled);
-        s->addWithLabel(_("PCIE POWER SAVING"), enh_pciepowersave);
+        s->addWithLabel(_("PCIE ACTIVE STATE POWER MANAGEMENT"), enh_pciepowersave);
         s->addSaveFunc([enh_pciepowersave] {
                 bool enhpciepowersaveEnabled = enh_pciepowersave->getState();
-                SystemConf::getInstance()->set("system.pcie.powersave", enhpciepowersaveEnabled ? "1" : "0");
+                SystemConf::getInstance()->set("system.power.audio", enhpciepowersaveEnabled ? "1" : "0");
                 SystemConf::getInstance()->saveSystemConf();
         });
 
