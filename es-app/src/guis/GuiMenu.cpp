@@ -1538,6 +1538,15 @@ void GuiMenu::openSystemSettings_batocera()
                 SystemConf::getInstance()->set("system.pcie.powersave", enhpciepowersaveEnabled ? "1" : "0");
                 SystemConf::getInstance()->saveSystemConf();
         });
+        auto enh_pcipowersave = std::make_shared<SwitchComponent>(mWindow);
+        bool enhpcipowersaveEnabled = SystemConf::getInstance()->get("system.pci.powersave") == "1";
+        enh_pcipowersave->setState(enhpcipowersaveEnabled);
+        s->addWithLabel(_("PCI POWER SAVING"), enh_pcipowersave);
+        s->addSaveFunc([enh_pcipowersave] {
+                bool enhpcipowersaveEnabled = enh_pcipowersave->getState();
+                SystemConf::getInstance()->set("system.pci.powersave", enhpcipowersaveEnabled ? "1" : "0");
+                SystemConf::getInstance()->saveSystemConf();
+        });
         auto enh_usbpowersave = std::make_shared<SwitchComponent>(mWindow);
         bool enhusbpowersaveEnabled = SystemConf::getInstance()->get("system.usb.powersave") == "1";
         enh_usbpowersave->setState(enhusbpowersaveEnabled);
