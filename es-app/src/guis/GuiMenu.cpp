@@ -1530,12 +1530,12 @@ void GuiMenu::openSystemSettings_batocera()
                 SystemConf::getInstance()->saveSystemConf();
         });
         auto enh_pciepowersave = std::make_shared<SwitchComponent>(mWindow);
-        bool enhpciepowersaveEnabled = SystemConf::getInstance()->get("system.power.audio") == "1";
+        bool enhpciepowersaveEnabled = SystemConf::getInstance()->get("system.power.pcie") == "1";
         enh_pciepowersave->setState(enhpciepowersaveEnabled);
         s->addWithLabel(_("PCIE ACTIVE STATE POWER MANAGEMENT"), enh_pciepowersave);
         s->addSaveFunc([enh_pciepowersave] {
                 bool enhpciepowersaveEnabled = enh_pciepowersave->getState();
-                SystemConf::getInstance()->set("system.power.audio", enhpciepowersaveEnabled ? "1" : "0");
+                SystemConf::getInstance()->set("system.power.pcie", enhpciepowersaveEnabled ? "1" : "0");
                 SystemConf::getInstance()->saveSystemConf();
         });
 
