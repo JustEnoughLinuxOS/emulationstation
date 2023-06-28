@@ -1517,7 +1517,7 @@ void GuiMenu::openSystemSettings_batocera()
               runSystemCommand("/usr/bin/bash -lc \". /etc/profile; gpu_performance_level "+ gpuPerformance->getSelected() + "\"", "", nullptr);
             }
           });
-	}
+	}å
 #endif
 
         auto enh_audiopowersave = std::make_shared<SwitchComponent>(mWindow);
@@ -1538,22 +1538,24 @@ void GuiMenu::openSystemSettings_batocera()
                 SystemConf::getInstance()->set("system.pcie.powersave", enhpciepowersaveEnabled ? "1" : "0");
                 SystemConf::getInstance()->saveSystemConf();
         });
-        auto enh_pcipowersave = std::make_shared<SwitchComponent>(mWindow);
-        bool enhpcipowersaveEnabled = SystemConf::getInstance()->get("system.pci.powersave") == "1";
-        enh_pcipowersave->setState(enhpcipowersaveEnabled);
-        s->addWithLabel(_("PCI POWER SAVING"), enh_pcipowersave);
-        s->addSaveFunc([enh_pcipowersave] {
-                bool enhpcipowersaveEnabled = enh_pcipowersave->getState();
-                SystemConf::getInstance()->set("system.pci.powersave", enhpcipowersaveEnabled ? "1" : "0");
+
+        auto wakeevents = std::make_shared<SwitchComponent>(mWindow);
+        bool wakeeventsEnabled = SystemConf::getInstance()->get("system.power.wakeevents") == "1";
+        wakeevents->setState(wakeeventsEnabled);
+        s->addWithLabel(_("ENABLE WAKE EVENTS"), wakeevents);
+        s->addSaveFunc([wakeevents] {
+                bool wakeeventsEnabled = wakeevents->getState();
+                SystemConf::getInstance()->set("system.power.wakeevents", wakeeventsEnabled ? "1" : "0");
                 SystemConf::getInstance()->saveSystemConf();
         });
-        auto enh_usbpowersave = std::make_shared<SwitchComponent>(mWindow);
-        bool enhusbpowersaveEnabled = SystemConf::getInstance()->get("system.usb.powersave") == "1";
-        enh_usbpowersave->setState(enhusbpowersaveEnabled);
-        s->addWithLabel(_("USB POWER SAVING"), enh_usbpowersave);
-        s->addSaveFunc([enh_usbpowersave] {
-                bool enhusbpowersaveEnabled = enh_usbpowersave->getState();
-                SystemConf::getInstance()->set("system.usb.powersave", enhusbpowersaveEnabled ? "1" : "0");
+
+        auto rtpm = std::make_shared<SwitchComponent>(mWindow);
+        bool rtpmEnabled = SystemConf::getInstance()->get("system.power.rtpm") == "1";
+        rtpm->setState(rtpmEnabled);
+        s->addWithLabel(_("RUNTIME POWER MANAGEMENT"), rtpm);
+        s->addSaveFunc([rtpm] {
+                bool rtpmEnabled = rtpm->getState();
+                SystemConf::getInstance()->set("system.power.rtpm", rtpmEnabled ? "1" : "0");
                 SystemConf::getInstance()->saveSystemConf();
         });
 
