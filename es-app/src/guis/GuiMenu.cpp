@@ -1351,9 +1351,10 @@ void GuiMenu::openSystemSettings_batocera()
                 SystemConf::getInstance()->saveSystemConf();
         });
 
-#if defined(AMD64)
-	s->addGroup(_("HARDWARE / CPU"));
 
+	s->addGroup(_("HARDWARE / CPU"));
+	
+#if defined(AMD64)
         // Allow offlining all but n threads
 	auto optionsThreads = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AVAILABLE THREADS"), false);
 
@@ -1560,7 +1561,7 @@ void GuiMenu::openSystemSettings_batocera()
         });
 
 // Do not show on S922X devices yet.
-#if defined(AMD64) || defined(RK3326) || defined(RK3566) || defined(RK3566_X55) || defined(RK3588)
+#if defined(AMD64) || defined(RK3326) || defined(RK3566) || defined(RK3566_X55) || defined(RK3588) || defined(RK3399)
         // Allow user control over how the device sleeps
         s->addGroup(_("HARDWARE / SUSPEND"));
         auto systemSuspend = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEVICE SUSPEND MODE"), false);
@@ -2319,7 +2320,7 @@ void GuiMenu::openGamesSettings_batocera()
 
 #endif
 
-#if defined(S922X) || defined(RK3588)
+#if defined(S922X) || defined(RK3588)  || defined(RK3399)
         // Core chooser
         auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
         cores_used->addRange({ { _("ALL"), "all" },{ _("BIG") , "big" },{ _("LITTLE") , "little" } }, SystemConf::getInstance()->get("global.cores"));
@@ -4926,7 +4927,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	}
 	*/
 
-#if defined(S922X) || defined(RK3588)
+#if defined(S922X) || defined(RK3588)  || defined(RK3399)
         // Core chooser
         auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
         cores_used->addRange({ { _("ALL"), "all" },{ _("BIG") , "big" },{ _("LITTLE") , "little" } }, SystemConf::getInstance()->get(configName + ".cores"));
