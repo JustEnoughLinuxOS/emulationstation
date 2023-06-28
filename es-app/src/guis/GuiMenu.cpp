@@ -1517,7 +1517,7 @@ void GuiMenu::openSystemSettings_batocera()
               runSystemCommand("/usr/bin/bash -lc \". /etc/profile; gpu_performance_level "+ gpuPerformance->getSelected() + "\"", "", nullptr);
             }
           });
-	}å
+	}
 #endif
 
         auto enh_audiopowersave = std::make_shared<SwitchComponent>(mWindow);
