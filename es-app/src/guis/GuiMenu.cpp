@@ -1484,12 +1484,12 @@ void GuiMenu::openSystemSettings_batocera()
 
         // Options for enhanced power savings mode
         auto enh_cpupowersave = std::make_shared<SwitchComponent>(mWindow);
-        bool enhcpupowersaveEnabled = SystemConf::getInstance()->get("system.cpu.powersave") == "1";
+        bool enhcpupowersaveEnabled = SystemConf::getInstance()->get("system.power.cpu") == "1";
         enh_cpupowersave->setState(enhcpupowersaveEnabled);
         s->addWithLabel(_("CPU POWER SAVING"), enh_cpupowersave);
         s->addSaveFunc([enh_cpupowersave] {
                 bool enhcpupowersaveEnabled = enh_cpupowersave->getState();
-                SystemConf::getInstance()->set("system.cpu.powersave", enhcpupowersaveEnabled ? "1" : "0");
+                SystemConf::getInstance()->set("system.power.cpu", enhcpupowersaveEnabled ? "1" : "0");
                 SystemConf::getInstance()->saveSystemConf();
         });
 
