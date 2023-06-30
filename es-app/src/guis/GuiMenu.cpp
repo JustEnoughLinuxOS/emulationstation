@@ -1473,7 +1473,7 @@ void GuiMenu::openSystemSettings_batocera()
 
 	std::string mangohud = SystemConf::getInstance()->get("system.mangohud");
 	if (mangohud.empty())
-		mangohud = "basic";
+		mangohud = "off";
 
 	mangoUpdate->add(_("BASIC"), "basic", mangohud == "basic");
 	mangoUpdate->add(_("DEV"), "dev", mangohud == "dev");
@@ -5087,7 +5087,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 
 	std::string mangohud = SystemConf::getInstance()->get(configName + ".mangohud");
 	if (mangohud.empty())
-		mangohud = "basic";
+		mangohud = "off";
 
 	mangoUpdate->add(_("BASIC"), "basic", mangohud == "basic");
 	mangoUpdate->add(_("DEV"), "dev", mangohud == "dev");
