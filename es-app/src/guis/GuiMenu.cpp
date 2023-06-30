@@ -1350,11 +1350,12 @@ void GuiMenu::openSystemSettings_batocera()
                 }
                 SystemConf::getInstance()->saveSystemConf(); });
 
-#if defined(AMD64)
-	s->addGroup(_("HARDWARE / CPU"));
 
-	// Allow offlining all but n threads
-	auto optionsThreads = std::make_shared<OptionListComponent<std::string>>(mWindow, _("AVAILABLE THREADS"), false);
+	s->addGroup(_("HARDWARE / CPU"));
+	
+#if defined(AMD64)
+        // Allow offlining all but n threads
+	auto optionsThreads = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AVAILABLE THREADS"), false);
 
 	std::vector<std::string> availableThreads = ApiSystem::getInstance()->getAvailableThreads();
 	std::string selectedThreads = SystemConf::getInstance()->get("system.threads");
@@ -1381,14 +1382,15 @@ void GuiMenu::openSystemSettings_batocera()
 			SystemConf::getInstance()->saveSystemConf();
 		} });
 
-	char *deviceHasFan = getenv("DEVICE_HAS_FAN");
-	if (deviceHasFan)
-	{
-		// Provides cooling profile switching
-		auto optionsFanProfile = std::make_shared<OptionListComponent<std::string>>(mWindow, _("COOLING PROFILE"), false);
-		std::string selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
-		if (selectedFanProfile.empty())
-			selectedFanProfile = "quiet";
+#endif
+
+	char* deviceHasFan = getenv("DEVICE_HAS_FAN");
+	if (deviceHasFan) {
+	  // Provides cooling profile switching
+	  auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
+	  std::string selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
+	  if (selectedFanProfile.empty())
+		selectedFanProfile = "quiet";
 
 		optionsFanProfile->add(_("QUIET"), "quiet", selectedFanProfile == "quiet");
 		optionsFanProfile->add(_("MODERATE"), "moderate", selectedFanProfile == "moderate");
@@ -1403,9 +1405,9 @@ void GuiMenu::openSystemSettings_batocera()
 	      SystemConf::getInstance()->set("cooling.profile", optionsFanProfile->getSelected());
 	      SystemConf::getInstance()->saveSystemConf();
 	      runSystemCommand("systemctl restart fancontrol", "", nullptr);
-	    } });
+	    }
+	  });
 	}
-#endif
 
 // Prep for additional device support.
 #if defined(AMD64)
@@ -1487,53 +1489,97 @@ void GuiMenu::openSystemSettings_batocera()
           }
 	  runSystemCommand("/usr/bin/bash -lc \". /etc/profile; "+ mangoUpdate->getSelected() + "\"", "", nullptr); });
 
-	// Automatically enable or disable enhanced power saving mode
-	auto enh_powersave = std::make_shared<SwitchComponent>(mWindow);
-	bool enhpowersaveEnabled = SystemConf::getInstance()->get("system.powersave") == "1";
-	enh_powersave->setState(enhpowersaveEnabled);
-	s->addWithLabel(_("ENHANCED POWER SAVING"), enh_powersave);
-	s->addSaveFunc([enh_powersave]
-				   {
+	s->addGroup(_("HARDWARE / GPU"));
+        // Automatically enable or disable enhanced power saving mode
+        auto enh_powersave = std::make_shared<SwitchComponent>(mWindow);
+        bool enhpowersaveEnabled = SystemConf::getInstance()->get("system.powersave") == "1";
+        enh_powersave->setState(enhpowersaveEnabled);
+        s->addWithLabel(_("ENHANCED POWER SAVING"), enh_powersave);
+        s->addSaveFunc([enh_powersave] {
                 bool enhpowersaveEnabled = enh_powersave->getState();
                 SystemConf::getInstance()->set("system.powersave", enhpowersaveEnabled ? "1" : "0");
                 SystemConf::getInstance()->saveSystemConf(); });
 
+        if (SystemConf::getInstance()->getBool("system.powersave", true)) {
+        	// Options for enhanced power savings mode
+        	auto enh_cpupowersave = std::make_shared<SwitchComponent>(mWindow);
+        	bool enhcpupowersaveEnabled = SystemConf::getInstance()->get("system.power.cpu") == "1";
+        	enh_cpupowersave->setState(enhcpupowersaveEnabled);
+        	s->addWithLabel(_("CPU POWER SAVING"), enh_cpupowersave);
+        	s->addSaveFunc([enh_cpupowersave] {
+        	        bool enhcpupowersaveEnabled = enh_cpupowersave->getState();
+               	 SystemConf::getInstance()->set("system.power.cpu", enhcpupowersaveEnabled ? "1" : "0");
+               	 SystemConf::getInstance()->saveSystemConf();
+        	});
+
 #if defined(AMD64)
-	if (SystemConf::getInstance()->getBool("system.powersave", true))
-	{
-		// GPU performance mode with enhanced power savings
-		auto gpuPerformance = std::make_shared<OptionListComponent<std::string>>(mWindow, _("GPU POWER SAVINGS MODE (AMD ONLY)"), false);
-		std::string gpu_performance = SystemConf::getInstance()->get("system.gpuperf");
-		if (gpu_performance.empty())
-			gpu_performance = "auto";
+	          // GPU performance mode with enhanced power savings
+	          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE (AMD ONLY)"), false);
+	          std::string gpu_performance = SystemConf::getInstance()->get("system.gpuperf");
+	          if (gpu_performance.empty())
+	                  gpu_performance = "auto";
+	
+	          gpuPerformance->add(_("AUTO"), "auto", gpu_performance == "auto");
+	          gpuPerformance->add(_("LOW"), "low", gpu_performance == "low");
+	          gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
+	          gpuPerformance->add(_("PEAK"), "profile_peak", gpu_performance == "profile_peak");
 
-		gpuPerformance->add(_("AUTO"), "auto", gpu_performance == "auto");
-		gpuPerformance->add(_("LOW"), "low", gpu_performance == "low");
-		gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
-		gpuPerformance->add(_("PEAK"), "profile_peak", gpu_performance == "profile_peak");
-
-		s->addGroup(_("HARDWARE / GPU"));
-
-		s->addWithLabel(_("GPU POWER SAVINGS MODE (AMD ONLY)"), gpuPerformance);
-
-		s->addSaveFunc([this, gpuPerformance, gpu_performance]
-					   {
-            if (gpuPerformance->changed()) {
-              SystemConf::getInstance()->set("system.gpuperf", gpuPerformance->getSelected());
-              SystemConf::getInstance()->saveSystemConf();
-              runSystemCommand("/usr/bin/bash -lc \". /etc/profile; gpu_performance_level "+ gpuPerformance->getSelected() + "\"", "", nullptr);
-            } });
-	}
+	          s->addWithLabel(_("GPU POWER SAVINGS MODE (AMD ONLY)"), gpuPerformance);
+	          s->addSaveFunc([this, gpuPerformance, gpu_performance]
+	          {
+	            if (gpuPerformance->changed()) {
+	              SystemConf::getInstance()->set("system.gpuperf", gpuPerformance->getSelected());
+	              SystemConf::getInstance()->saveSystemConf();
+	              runSystemCommand("/usr/bin/bash -lc \". /etc/profile; gpu_performance_level "+ gpuPerformance->getSelected() + "\"", "", nullptr);
+	            }
+	          });
 #endif
+	        auto enh_audiopowersave = std::make_shared<SwitchComponent>(mWindow);
+	        bool enhaudiopowersaveEnabled = SystemConf::getInstance()->get("system.power.audio") == "1";
+	        enh_audiopowersave->setState(enhaudiopowersaveEnabled);
+	        s->addWithLabel(_("AUDIO POWER SAVING"), enh_audiopowersave);
+	        s->addSaveFunc([enh_audiopowersave] {
+	                bool enhaudiopowersaveEnabled = enh_audiopowersave->getState();
+	                SystemConf::getInstance()->set("system.power.audio", enhaudiopowersaveEnabled ? "1" : "0");
+	                SystemConf::getInstance()->saveSystemConf();
+	        });
+	        auto enh_pciepowersave = std::make_shared<SwitchComponent>(mWindow);
+	        bool enhpciepowersaveEnabled = SystemConf::getInstance()->get("system.power.pcie") == "1";
+	        enh_pciepowersave->setState(enhpciepowersaveEnabled);
+	        s->addWithLabel(_("PCIE ACTIVE STATE POWER MANAGEMENT"), enh_pciepowersave);
+	        s->addSaveFunc([enh_pciepowersave] {
+	                bool enhpciepowersaveEnabled = enh_pciepowersave->getState();
+	                SystemConf::getInstance()->set("system.power.pcie", enhpciepowersaveEnabled ? "1" : "0");
+	                SystemConf::getInstance()->saveSystemConf();
+	        });
+	        auto wakeevents = std::make_shared<SwitchComponent>(mWindow);
+	        bool wakeeventsEnabled = SystemConf::getInstance()->get("system.power.wakeevents") == "1";
+	        wakeevents->setState(wakeeventsEnabled);
+	        s->addWithLabel(_("ENABLE WAKE EVENTS"), wakeevents);
+	        s->addSaveFunc([wakeevents] {
+	                bool wakeeventsEnabled = wakeevents->getState();
+	                SystemConf::getInstance()->set("system.power.wakeevents", wakeeventsEnabled ? "1" : "0");
+	                SystemConf::getInstance()->saveSystemConf();
+	        });
+	        auto rtpm = std::make_shared<SwitchComponent>(mWindow);
+	        bool rtpmEnabled = SystemConf::getInstance()->get("system.power.rtpm") == "1";
+	        rtpm->setState(rtpmEnabled);
+	        s->addWithLabel(_("RUNTIME POWER MANAGEMENT"), rtpm);
+	        s->addSaveFunc([rtpm] {
+	                bool rtpmEnabled = rtpm->getState();
+	                SystemConf::getInstance()->set("system.power.rtpm", rtpmEnabled ? "1" : "0");
+	                SystemConf::getInstance()->saveSystemConf();
+	        });
+	}
 
 // Do not show on S922X devices yet.
-#if defined(AMD64) || defined(RK3326) || defined(RK3566) || defined(RK3566_X55) || defined(RK3588)
-	// Allow user control over how the device sleeps
-	s->addGroup(_("HARDWARE / SUSPEND"));
-	auto systemSuspend = std::make_shared<OptionListComponent<std::string>>(mWindow, _("DEVICE SUSPEND MODE"), false);
-	std::string sys_suspend = SystemConf::getInstance()->get("system.suspendmode");
-	if (sys_suspend.empty())
-		sys_suspend = "auto";
+#if defined(AMD64) || defined(RK3326) || defined(RK3566) || defined(RK3566_X55) || defined(RK3588) || defined(RK3399)
+        // Allow user control over how the device sleeps
+        s->addGroup(_("HARDWARE / SUSPEND"));
+        auto systemSuspend = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEVICE SUSPEND MODE"), false);
+        std::string sys_suspend = SystemConf::getInstance()->get("system.suspendmode");
+        if (sys_suspend.empty())
+                sys_suspend = "auto";
 
 	systemSuspend->add(_("FREEZE (S0)"), "freeze", sys_suspend == "freeze");
 	systemSuspend->add(_("DEEP (S3)"), "mem", sys_suspend == "mem");
@@ -1550,15 +1596,14 @@ void GuiMenu::openSystemSettings_batocera()
 
 	s->addGroup(_("HARDWARE / WIFI"));
 
-	// Automatically enable or disable WIFI power saving mode
-	auto wifi_powersave = std::make_shared<SwitchComponent>(mWindow);
-	bool wifipowersaveEnabled = SystemConf::getInstance()->get("wifi.powersave") == "1";
-	wifi_powersave->setState(wifipowersaveEnabled);
-	s->addWithLabel(_("ENABLE WIFI POWER SAVING"), wifi_powersave);
-	s->addSaveFunc([wifi_powersave]
-				   {
+        // Automatically enable or disable WIFI power saving mode
+        auto wifi_powersave = std::make_shared<SwitchComponent>(mWindow);
+        bool wifipowersaveEnabled = SystemConf::getInstance()->get("system.power.wifi") == "1";
+        wifi_powersave->setState(wifipowersaveEnabled);
+        s->addWithLabel(_("ENABLE WIFI POWER SAVING"), wifi_powersave);
+        s->addSaveFunc([wifi_powersave] {
                 bool wifipowersaveEnabled = wifi_powersave->getState();
-                SystemConf::getInstance()->set("wifi.powersave", wifipowersaveEnabled ? "1" : "0");
+                SystemConf::getInstance()->set("system.power.wifi", wifipowersaveEnabled ? "1" : "0");
 		SystemConf::getInstance()->saveSystemConf();
                 runSystemCommand("/usr/bin/wifictl setpowersave", "", nullptr); });
 
@@ -2297,13 +2342,12 @@ void GuiMenu::openGamesSettings_batocera()
 
 #endif
 
-#if defined(S922X) || defined(RK3588)
-	// Core chooser
-	auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
-	cores_used->addRange({{_("ALL"), "all"}, {_("BIG"), "big"}, {_("LITTLE"), "little"}}, SystemConf::getInstance()->get("global.cores"));
-	s->addWithLabel(_("CORES USED"), cores_used);
-	s->addSaveFunc([cores_used]
-				   { SystemConf::getInstance()->set("global.cores", cores_used->getSelected()); });
+#if defined(S922X) || defined(RK3588)  || defined(RK3399)
+        // Core chooser
+        auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
+        cores_used->addRange({ { _("ALL"), "all" },{ _("BIG") , "big" },{ _("LITTLE") , "little" } }, SystemConf::getInstance()->get("global.cores"));
+        s->addWithLabel(_("CORES USED"), cores_used);
+        s->addSaveFunc([cores_used] { SystemConf::getInstance()->set("global.cores", cores_used->getSelected()); });
 #endif
 
 	// rewind
@@ -4153,7 +4197,18 @@ void GuiMenu::openSoundSettings()
 			Settings::getInstance()->setPowerSaverMode("default");
 			PowerSaver::init();
 		}
-	    Settings::getInstance()->setBool("EnableSounds", sounds_enabled->getState()); });
+	    Settings::getInstance()->setBool("EnableSounds", sounds_enabled->getState());
+	  });
+
+        auto batteryWarning = std::make_shared<SwitchComponent>(mWindow);
+        bool batteryWarningEnabled = SystemConf::getInstance()->get("system.battery.warning") == "1";
+        batteryWarning->setState(batteryWarningEnabled);
+        s->addWithLabel(_("ENABLE AUDIBLE BATTERY WARNING"), batteryWarning);
+        s->addSaveFunc([batteryWarning] {
+                bool batteryWarningEnabled = batteryWarning->getState();
+                SystemConf::getInstance()->set("system.battery.warning", batteryWarningEnabled ? "1" : "0");
+                SystemConf::getInstance()->saveSystemConf();
+        });
 
 	auto video_audio = std::make_shared<SwitchComponent>(mWindow);
 	video_audio->setState(Settings::getInstance()->getBool("VideoAudio"));
@@ -4902,13 +4957,12 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 	}
 	*/
 
-#if defined(S922X) || defined(RK3588)
-	// Core chooser
-	auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
-	cores_used->addRange({{_("ALL"), "all"}, {_("BIG"), "big"}, {_("LITTLE"), "little"}}, SystemConf::getInstance()->get(configName + ".cores"));
-	systemConfiguration->addWithLabel(_("CORES USED"), cores_used);
-	systemConfiguration->addSaveFunc([cores_used, configName]
-									 { SystemConf::getInstance()->set(configName + ".cores", cores_used->getSelected()); });
+#if defined(S922X) || defined(RK3588)  || defined(RK3399)
+        // Core chooser
+        auto cores_used = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORES USED"));
+        cores_used->addRange({ { _("ALL"), "all" },{ _("BIG") , "big" },{ _("LITTLE") , "little" } }, SystemConf::getInstance()->get(configName + ".cores"));
+        systemConfiguration->addWithLabel(_("CORES USED"), cores_used);
+        systemConfiguration->addSaveFunc([cores_used, configName] { SystemConf::getInstance()->set(configName + ".cores", cores_used->getSelected()); });
 #endif
 
 #if defined(AMD64)
@@ -4941,14 +4995,15 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
                         SystemConf::getInstance()->saveSystemConf();
                 } });
 
-	char *deviceHasFan = getenv("DEVICE_HAS_FAN");
-	if (deviceHasFan)
-	{
-		// Provides cooling profile switching
-		auto optionsFanProfile = std::make_shared<OptionListComponent<std::string>>(mWindow, _("COOLING PROFILE"), false);
-		std::string selectedFanProfile = SystemConf::getInstance()->get(configName + ".cooling.profile");
-		if (selectedFanProfile.empty())
-			selectedFanProfile = "quiet";
+#endif
+
+        char* deviceHasFan = getenv("DEVICE_HAS_FAN");
+        if (deviceHasFan) {
+          // Provides cooling profile switching
+          auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
+          std::string selectedFanProfile = SystemConf::getInstance()->get(configName + ".cooling.profile");
+          if (selectedFanProfile.empty())
+                selectedFanProfile = "quiet";
 
 		optionsFanProfile->add(_("QUIET"), "quiet", selectedFanProfile == "quiet");
 		optionsFanProfile->add(_("MODERATE"), "moderate", selectedFanProfile == "moderate");
@@ -4962,9 +5017,9 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
             if (optionsFanProfile->changed()) {
               SystemConf::getInstance()->set(configName + ".cooling.profile", optionsFanProfile->getSelected());
               SystemConf::getInstance()->saveSystemConf();
-            } });
+            }
+          });
 	}
-#endif
 
 // Prep for additional device support.
 #if defined(AMD64)
