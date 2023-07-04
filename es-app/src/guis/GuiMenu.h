@@ -55,6 +55,10 @@ public:
 
 private:
 	void addEntry(std::string name, bool add_arrow, const std::function<void()>& func, const std::string iconName = "");
+	void addFullUIEntries();
+    void addRestrictedUIEntries();
+    void animateMenuPosition();
+    void setMenuPosition();
 	void addVersionInfo();
 	void openCollectionSystemSettings();
 	void openConfigInput();	
@@ -62,13 +66,8 @@ private:
 	void openScreensaverOptions();	
 	void openSoundSettings();
 	void openUISettings();
-	void openUpdatesSettings();
-
-#ifdef _ENABLEEMUELEC
 	void openEmuELECSettings(); /* < emuelec */
     static void openDangerZone(Window* mWindow, std::string configName);
-#endif
-	// batocera	
 	void openSystemSettings_batocera();
 	void openGamesSettings_batocera();
 	void openControllersSettings_batocera(int autoSel = 0);
@@ -92,9 +91,7 @@ private:
 	TextComponent mVersion;
 
 	static std::shared_ptr<OptionListComponent<std::string>> createRatioOptionList(Window *window, std::string configname);
-#ifdef _ENABLEEMUELEC
-  static std::shared_ptr<OptionListComponent<std::string>> createNativeVideoResolutionModeOptionList(Window *window, std::string configname);
-#endif
+  	static std::shared_ptr<OptionListComponent<std::string>> createNativeVideoResolutionModeOptionList(Window *window, std::string configname);
 	static std::shared_ptr<OptionListComponent<std::string>> createVideoResolutionModeOptionList(Window *window, std::string configname);
 	static void popSpecificConfigurationGui(Window* mWindow, std::string title, std::string configName, SystemData *systemData, FileData* fileData, bool selectCoreLine = false);
 
