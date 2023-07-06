@@ -4998,7 +4998,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 #endif
 
         char* deviceHasFan = getenv("DEVICE_HAS_FAN");
-        if (deviceHasFan) {
+        if (deviceHasFan == "true") {
           // Provides cooling profile switching
           auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
           std::string selectedFanProfile = SystemConf::getInstance()->get(configName + ".cooling.profile");
