@@ -1384,8 +1384,8 @@ void GuiMenu::openSystemSettings_batocera()
 
 #endif
 
-	char* deviceHasFan = getenv("DEVICE_HAS_FAN");
-	if (deviceHasFan == "true") {
+	bool deviceHasFan = getenv("DEVICE_HAS_FAN");
+	if (deviceHasFan == true) {
 	  // Provides cooling profile switching
 	  auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
 	  std::string selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
@@ -4997,8 +4997,8 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 
 #endif
 
-        char* deviceHasFan = getenv("DEVICE_HAS_FAN");
-        if (deviceHasFan == "true") {
+        bool deviceHasFan = getenv("DEVICE_HAS_FAN");
+        if (deviceHasFan == true) {
           // Provides cooling profile switching
           auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
           std::string selectedFanProfile = SystemConf::getInstance()->get(configName + ".cooling.profile");
