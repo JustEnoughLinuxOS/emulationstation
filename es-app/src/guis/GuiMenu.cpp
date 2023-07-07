@@ -4068,25 +4068,26 @@ void GuiMenu::openSoundSettings()
 {
 	auto s = new GuiSettings(mWindow, _("SOUND SETTINGS").c_str());
 
-#if defined(S922X)
+	bool deviceSWHP = getenv("DEVICE_SW_HP_SWITCH");
+	if (deviceSWHP == true) {
 	s->addGroup(_("OUTPUT"));
 
-	// ogu headphone enable
-	auto s922x_hp_enabled = std::make_shared<SwitchComponent>(mWindow);
+	// sw headphone enable
+	auto sw_hp_enabled = std::make_shared<SwitchComponent>(mWindow);
 	bool hpbaseEnabled = SystemConf::getInstance()->get("headphone.enabled") == "1";
-	s922x_hp_enabled->setState(hpbaseEnabled);
-	s->addWithLabel(_("ENABLE HEADPHONE JACK"), s922x_hp_enabled);
-	s->addSaveFunc([s922x_hp_enabled]
+	sw_hp_enabled->setState(hpbaseEnabled);
+	s->addWithLabel(_("ENABLE HEADPHONE JACK"), sw_hp_enabled);
+	s->addSaveFunc([sw_hp_enabled]
 				   {
-		if (s922x_hp_enabled->getState() == false) {
+		if (sw_hp_enabled->getState() == false) {
 			runSystemCommand("amixer -c0 sset \"Playback Mux\" \"SPK\"", "", nullptr);
 		} else {
 			runSystemCommand("amixer -c0 sset \"Playback Mux\" \"HP\"", "", nullptr);
 		}
-	bool s922xhpenabled = s922x_hp_enabled->getState();
-	SystemConf::getInstance()->set("headphone.enabled", s922xhpenabled ? "1" : "0");
+	bool swhpenabled = sw_hp_enabled->getState();
+	SystemConf::getInstance()->set("headphone.enabled", swhpenabled ? "1" : "0");
 		SystemConf::getInstance()->saveSystemConf(); });
-#endif
+    }
 
 	if (VolumeControl::getInstance()->isAvailable())
 	{
