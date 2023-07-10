@@ -349,14 +349,14 @@ void GuiMenu::openEmuELECSettings()
 
 	auto emuelec_retroarch_menu_def = std::make_shared<OptionListComponent<std::string>>(mWindow, "RETROARCH MENU", false);
 	std::vector<std::string> ramenuoptions;
-	ramenuoptions.push_back("auto");
+	ramenuoptions.push_back("default");
 	ramenuoptions.push_back("ozone");
 	ramenuoptions.push_back("xmb");
 	ramenuoptions.push_back("rgui");
 
 	auto ramenuoptionsS = SystemConf::getInstance()->get("global.retroarch.menu_driver");
 	if (ramenuoptionsS.empty())
-		ramenuoptionsS = "auto";
+		ramenuoptionsS = "default";
 
 	for (auto it = ramenuoptions.cbegin(); it != ramenuoptions.cend(); it++)
 		emuelec_retroarch_menu_def->add(*it, *it, ramenuoptionsS == *it);
@@ -1579,7 +1579,7 @@ void GuiMenu::openSystemSettings_batocera()
         auto systemSuspend = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEVICE SUSPEND MODE"), false);
         std::string sys_suspend = SystemConf::getInstance()->get("system.suspendmode");
         if (sys_suspend.empty())
-                sys_suspend = "auto";
+                sys_suspend = "default";
 
 	systemSuspend->add(_("FREEZE (S0)"), "freeze", sys_suspend == "freeze");
 	systemSuspend->add(_("DEEP (S3)"), "mem", sys_suspend == "mem");
@@ -1713,7 +1713,7 @@ void GuiMenu::openSystemSettings_batocera()
 #if defined(ODROIDGOA) && !defined(_ENABLEEMUELEC)
 	// multimedia keys
 	auto multimediakeys_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("MULTIMEDIA KEYS"));
-	multimediakeys_enabled->add(_("DEFAULT"), "auto", SystemConf::getInstance()->get("system.multimediakeys.enabled") != "0" && SystemConf::getInstance()->get("system.multimediakeys.enabled") != "1");
+	multimediakeys_enabled->add(_("DEFAULT"), "default", SystemConf::getInstance()->get("system.multimediakeys.enabled") != "0" && SystemConf::getInstance()->get("system.multimediakeys.enabled") != "1");
 	multimediakeys_enabled->add(_("ON"), "1", SystemConf::getInstance()->get("system.multimediakeys.enabled") == "1");
 	multimediakeys_enabled->add(_("OFF"), "0", SystemConf::getInstance()->get("system.multimediakeys.enabled") == "0");
 	s->addWithLabel(_("MULTIMEDIA KEYS"), multimediakeys_enabled);
@@ -2324,7 +2324,7 @@ void GuiMenu::openGamesSettings_batocera()
 
 	// bilinear filtering
 	auto smoothing_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("BILINEAR FILTERING"));
-	smoothing_enabled->addRange({{_("DEFAULT"), "auto"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get("global.smooth"));
+	smoothing_enabled->addRange({{_("DEFAULT"), "default"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get("global.smooth"));
 	s->addWithLabel(_("BILINEAR FILTERING"), smoothing_enabled);
 	s->addSaveFunc([smoothing_enabled]
 				   { SystemConf::getInstance()->set("global.smooth", smoothing_enabled->getSelected()); });
@@ -2352,21 +2352,21 @@ void GuiMenu::openGamesSettings_batocera()
 
 	// rewind
 	auto rewind_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("REWIND"));
-	rewind_enabled->addRange({{_("DEFAULT"), "auto"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get("global.rewind"));
+	rewind_enabled->addRange({{_("DEFAULT"), "default"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get("global.rewind"));
 	s->addWithLabel(_("REWIND"), rewind_enabled);
 	s->addSaveFunc([rewind_enabled]
 				   { SystemConf::getInstance()->set("global.rewind", rewind_enabled->getSelected()); });
 
 	// Integer scale
 	auto integerscale_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("INTEGER SCALING (PIXEL PERFECT)"));
-	integerscale_enabled->addRange({{_("DEFAULT"), "auto"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get("global.integerscale"));
+	integerscale_enabled->addRange({{_("DEFAULT"), "default"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get("global.integerscale"));
 	s->addWithLabel(_("INTEGER SCALING (PIXEL PERFECT)"), integerscale_enabled);
 	s->addSaveFunc([integerscale_enabled]
 				   { SystemConf::getInstance()->set("global.integerscale", integerscale_enabled->getSelected()); });
 
 	// autosave/load
 	auto autosave_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("AUTO SAVE/LOAD ON GAME LAUNCH"));
-	autosave_enabled->addRange({{_("OFF"), "auto"}, {_("ON"), "1"}, {_("SHOW SAVE STATES"), "2"}, {_("SHOW SAVE STATES IF NOT EMPTY"), "3"}}, SystemConf::getInstance()->get("global.autosave"));
+	autosave_enabled->addRange({{_("OFF"), "default"}, {_("ON"), "1"}, {_("SHOW SAVE STATES"), "2"}, {_("SHOW SAVE STATES IF NOT EMPTY"), "3"}}, SystemConf::getInstance()->get("global.autosave"));
 	s->addWithLabel(_("AUTO SAVE/LOAD ON GAME LAUNCH"), autosave_enabled);
 	s->addSaveFunc([autosave_enabled]
 				   { SystemConf::getInstance()->set("global.autosave", autosave_enabled->getSelected()); });
@@ -2396,7 +2396,7 @@ void GuiMenu::openGamesSettings_batocera()
 			std::string currentShader = SystemConf::getInstance()->get("global.shaderset");
 
 			auto shaders_choices = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SHADER SET"), false);
-			shaders_choices->add(_("DEFAULT"), "auto", currentShader.empty() || currentShader == "auto");
+			shaders_choices->add(_("DEFAULT"), "default", currentShader.empty() || currentShader == "default");
 			shaders_choices->add(_("NONE"), "none", currentShader == "none");
 
 #ifdef _ENABLEEMUELEC
@@ -2422,7 +2422,7 @@ void GuiMenu::openGamesSettings_batocera()
 	// Filters preset
 	std::string currentFilter = SystemConf::getInstance()->get("global.filterset");
 	auto filters_choices = std::make_shared<OptionListComponent<std::string>>(mWindow, _("FILTER SET"), false);
-	filters_choices->add(_("DEFAULT"), "auto", currentFilter.empty() || currentFilter == "auto");
+	filters_choices->add(_("DEFAULT"), "default", currentFilter.empty() || currentFilter == "default");
 	filters_choices->add(_("NONE"), "none", currentFilter == "none");
 	std::string filterList;
 	for (std::stringstream ss(getShOutput(R"(/usr/bin/getfilters)")); getline(ss, filterList, ',');)
@@ -2457,7 +2457,7 @@ void GuiMenu::openGamesSettings_batocera()
 
 			decorations->setSelectedChangedCallback([decorations](std::string value)
 													{
-				if (Utils::String::toLower(value) == "auto") {
+				if (Utils::String::toLower(value) == "default") {
 					value = "";
 				}
 				LOG(LogDebug) << "Setting bezel on change to: " << value;
@@ -2472,7 +2472,7 @@ void GuiMenu::openGamesSettings_batocera()
 #ifndef _ENABLEEMUELEC
 			// stretch bezels
 			auto bezel_stretch_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("STRETCH BEZELS (4K & ULTRAWIDE)"));
-			bezel_stretch_enabled->add(_("DEFAULT"), "auto", SystemConf::getInstance()->get("global.bezel_stretch") != "0" && SystemConf::getInstance()->get("global.bezel_stretch") != "1");
+			bezel_stretch_enabled->add(_("DEFAULT"), "default", SystemConf::getInstance()->get("global.bezel_stretch") != "0" && SystemConf::getInstance()->get("global.bezel_stretch") != "1");
 			bezel_stretch_enabled->add(_("ON"), "1", SystemConf::getInstance()->get("global.bezel_stretch") == "1");
 			bezel_stretch_enabled->add(_("OFF"), "0", SystemConf::getInstance()->get("global.bezel_stretch") == "0");
 			decorations_window->addWithLabel(_("STRETCH BEZELS (4K & ULTRAWIDE)"), bezel_stretch_enabled);
@@ -2485,7 +2485,7 @@ void GuiMenu::openGamesSettings_batocera()
 
 			// tattoo and controller overlays
 			auto bezel_tattoo = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SHOW CONTROLLER OVERLAYS"));
-			bezel_tattoo->add(_("DEFAULT"), "auto", SystemConf::getInstance()->get("global.bezel.tattoo") != "0" && SystemConf::getInstance()->get("global.bezel.tattoo") != "system" && SystemConf::getInstance()->get("global.bezel.tattoo") != "custom");
+			bezel_tattoo->add(_("DEFAULT"), "default", SystemConf::getInstance()->get("global.bezel.tattoo") != "0" && SystemConf::getInstance()->get("global.bezel.tattoo") != "system" && SystemConf::getInstance()->get("global.bezel.tattoo") != "custom");
 			bezel_tattoo->add(_("NO"), "0", SystemConf::getInstance()->get("global.bezel.tattoo") == "0");
 			bezel_tattoo->add(_("SYSTEM CONTROLLERS"), "system", SystemConf::getInstance()->get("global.bezel.tattoo") == "system");
 			bezel_tattoo->add(_("CUSTOM .PNG IMAGE"), "custom", SystemConf::getInstance()->get("global.bezel.tattoo") == "custom");
@@ -2498,7 +2498,7 @@ void GuiMenu::openGamesSettings_batocera()
 						} });
 
 			auto bezel_tattoo_corner = std::make_shared<OptionListComponent<std::string>>(mWindow, _("OVERLAY CORNER"));
-			bezel_tattoo_corner->add(_("DEFAULT"), "auto", SystemConf::getInstance()->get("global.bezel.tattoo_corner") != "NW" && SystemConf::getInstance()->get("global.bezel.tattoo_corner") != "NE" && SystemConf::getInstance()->get("global.bezel.tattoo_corner") != "SE" && SystemConf::getInstance()->get("global.bezel.tattoo_corner") != "SW");
+			bezel_tattoo_corner->add(_("DEFAULT"), "default", SystemConf::getInstance()->get("global.bezel.tattoo_corner") != "NW" && SystemConf::getInstance()->get("global.bezel.tattoo_corner") != "NE" && SystemConf::getInstance()->get("global.bezel.tattoo_corner") != "SE" && SystemConf::getInstance()->get("global.bezel.tattoo_corner") != "SW");
 			bezel_tattoo_corner->add(_("NORTH WEST"), "NW", SystemConf::getInstance()->get("global.bezel.tattoo_corner") == "NW");
 			bezel_tattoo_corner->add(_("NORTH EAST"), "NE", SystemConf::getInstance()->get("global.bezel.tattoo_corner") == "NE");
 			bezel_tattoo_corner->add(_("SOUTH EAST"), "SE", SystemConf::getInstance()->get("global.bezel.tattoo_corner") == "SE");
@@ -2603,7 +2603,7 @@ for (auto group : groups)
 					std::string storedValue = SystemConf::getInstance()->get(storageName);
 
 					auto cf = std::make_shared<OptionListComponent<std::string>>(mWindow, _(feat.name.c_str()));
-					cf->add(_("DEFAULT"), "", storedValue.empty() || storedValue == "auto");
+					cf->add(_("DEFAULT"), "", storedValue.empty() || storedValue == "default");
 
 					for (auto fval : feat.choices)
 						cf->add(_(fval.name.c_str()), fval.value, storedValue == fval.value);
@@ -2630,7 +2630,7 @@ for (auto group : groups)
 			std::string storedValue = SystemConf::getInstance()->get(storageName);
 
 			auto cf = std::make_shared<OptionListComponent<std::string>>(mWindow, _(feat.name.c_str()));
-			cf->add(_("DEFAULT"), "", storedValue.empty() || storedValue == "auto");
+			cf->add(_("DEFAULT"), "", storedValue.empty() || storedValue == "default");
 
 			for (auto fval : feat.choices)
 				cf->add(_(fval.name.c_str()), fval.value, storedValue == fval.value);
@@ -3335,7 +3335,7 @@ void GuiMenu::openThemeConfiguration(Window *mWindow, GuiComponent *s, std::shar
 		auto fav = Settings::getInstance()->getString(system->getName() + ".FavoritesFirst");
 		auto favoritesFirst = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SHOW FAVORITES ON TOP"), false);
 		std::string defFav = Settings::getInstance()->getBool("FavoritesFirst") ? _("YES") : _("NO");
-		favoritesFirst->add(_("DEFAULT"), "", fav == "" || fav == "auto");
+		favoritesFirst->add(_("DEFAULT"), "", fav == "" || fav == "default");
 		favoritesFirst->add(_("YES"), "1", fav == "1");
 		favoritesFirst->add(_("NO"), "0", fav == "0");
 		themeconfig->addWithDescription(_("SHOW FAVORITES ON TOP"), _("DEFAULT VALUE") + " : " + defFav, favoritesFirst);
@@ -3348,7 +3348,7 @@ void GuiMenu::openThemeConfiguration(Window *mWindow, GuiComponent *s, std::shar
 		auto defHid = Settings::ShowHiddenFiles() ? _("YES") : _("NO");
 		auto curhid = Settings::getInstance()->getString(system->getName() + ".ShowHiddenFiles");
 		auto hiddenFiles = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SHOW HIDDEN FILES"), false);
-		hiddenFiles->add(_("DEFAULT"), "", curhid == "" || curhid == "auto");
+		hiddenFiles->add(_("DEFAULT"), "", curhid == "" || curhid == "default");
 		hiddenFiles->add(_("YES"), "1", curhid == "1");
 		hiddenFiles->add(_("NO"), "0", curhid == "0");
 		themeconfig->addWithDescription(_("SHOW HIDDEN FILES"), _("DEFAULT VALUE") + " : " + defHid, hiddenFiles);
@@ -3363,7 +3363,7 @@ void GuiMenu::openThemeConfiguration(Window *mWindow, GuiComponent *s, std::shar
 		auto curFol = Settings::getInstance()->getString(system->getName() + ".FolderViewMode");
 
 		auto foldersBehavior = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SHOW FOLDERS"), false);
-		foldersBehavior->add(_("DEFAULT"), "", curFol == "" || curFol == "auto"); //  + " (" + defFol + ")"
+		foldersBehavior->add(_("DEFAULT"), "", curFol == "" || curFol == "default"); //  + " (" + defFol + ")"
 		foldersBehavior->add(_("always"), "always", curFol == "always");
 		foldersBehavior->add(_("never"), "never", curFol == "never");
 		foldersBehavior->add(_("having multiple games"), "having multiple games", curFol == "having multiple games");
@@ -3378,7 +3378,7 @@ void GuiMenu::openThemeConfiguration(Window *mWindow, GuiComponent *s, std::shar
 		auto defPf = Settings::getInstance()->getBool("ShowParentFolder") ? _("YES") : _("NO");
 		auto curPf = Settings::getInstance()->getString(system->getName() + ".ShowParentFolder");
 		auto parentFolder = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SHOW '..' PARENT FOLDER"), false);
-		parentFolder->add(_("DEFAULT"), "", curPf == "" || curPf == "auto");
+		parentFolder->add(_("DEFAULT"), "", curPf == "" || curPf == "default");
 		parentFolder->add(_("YES"), "1", curPf == "1");
 		parentFolder->add(_("NO"), "0", curPf == "0");
 		themeconfig->addWithDescription(_("SHOW '..' PARENT FOLDER"), _("DEFAULT VALUE") + " : " + defPf, parentFolder);
@@ -3400,7 +3400,7 @@ void GuiMenu::openThemeConfiguration(Window *mWindow, GuiComponent *s, std::shar
 		auto curSF = Settings::getInstance()->getString(system->getName() + ".ShowFlags");
 		auto showRegionFlags = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SHOW REGION FLAG"), false);
 
-		showRegionFlags->addRange({{_("DEFAULT"), "auto"},
+		showRegionFlags->addRange({{_("DEFAULT"), "default"},
 								   {_("NO"), "0"},
 								   {_("BEFORE NAME"), "1"},
 								   {_("AFTER NAME"), "2"}},
@@ -3416,7 +3416,7 @@ void GuiMenu::openThemeConfiguration(Window *mWindow, GuiComponent *s, std::shar
 		auto defSS = Settings::getInstance()->getBool("ShowSaveStates") ? _("YES") : _("NO");
 		auto curSS = Settings::getInstance()->getString(system->getName() + ".ShowSaveStates");
 		auto showSaveStates = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SHOW SAVESTATE ICON"), false);
-		showSaveStates->add(_("DEFAULT"), "", curSS == "" || curSS == "auto");
+		showSaveStates->add(_("DEFAULT"), "", curSS == "" || curSS == "default");
 		showSaveStates->add(_("YES"), "1", curSS == "1");
 		showSaveStates->add(_("NO"), "0", curSS == "0");
 		themeconfig->addWithDescription(_("SHOW SAVESTATE ICON"), _("DEFAULT VALUE") + " : " + defSS, showSaveStates);
@@ -3429,7 +3429,7 @@ void GuiMenu::openThemeConfiguration(Window *mWindow, GuiComponent *s, std::shar
 		auto defMM = Settings::getInstance()->getBool("ShowManualIcon") ? _("YES") : _("NO");
 		auto curMM = Settings::getInstance()->getString(system->getName() + ".ShowManualIcon");
 		auto showManual = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SHOW MANUAL ICON"), false);
-		showManual->add(_("DEFAULT"), "", curMM == "" || curMM == "auto");
+		showManual->add(_("DEFAULT"), "", curMM == "" || curMM == "default");
 		showManual->add(_("YES"), "1", curMM == "1");
 		showManual->add(_("NO"), "0", curMM == "0");
 		themeconfig->addWithDescription(_("SHOW MANUAL ICON"), _("DEFAULT VALUE") + " : " + defMM, showManual);
@@ -3847,7 +3847,7 @@ void GuiMenu::openUISettings()
 	// retroarch.menu_driver choose from 'auto' (default), 'xmb', 'rgui', 'ozone', 'glui'
 	auto retroarchRgui = std::make_shared<OptionListComponent<std::string>>(mWindow, _("RETROARCH MENU DRIVER"), false);
 	std::vector<std::string> driver;
-	driver.push_back("auto");
+	driver.push_back("default");
 	driver.push_back("xmb");
 	driver.push_back("rgui");
 	driver.push_back("ozone");
@@ -3855,7 +3855,7 @@ void GuiMenu::openUISettings()
 
 	auto currentDriver = SystemConf::getInstance()->get("global.retroarch.menu_driver");
 	if (currentDriver.empty())
-		currentDriver = "auto";
+		currentDriver = "default";
 
 	for (auto it = driver.cbegin(); it != driver.cend(); it++)
 		retroarchRgui->add(_(it->c_str()), *it, currentDriver == *it);
@@ -3911,14 +3911,14 @@ void GuiMenu::openUISettings()
 
 	// transition style
 	auto transition_style = std::make_shared<OptionListComponent<std::string>>(mWindow, _("LIST TRANSITION STYLE"), false);
-	transition_style->addRange({"auto", "fade", "slide", "fade & slide", "instant"}, Settings::TransitionStyle());
+	transition_style->addRange({"default", "fade", "slide", "fade & slide", "instant"}, Settings::TransitionStyle());
 	s->addWithLabel(_("LIST TRANSITION STYLE"), transition_style);
 	s->addSaveFunc([transition_style]
 				   { Settings::setTransitionStyle(transition_style->getSelected()); });
 
 	// game transition style
 	auto transitionOfGames_style = std::make_shared<OptionListComponent<std::string>>(mWindow, _("GAME LAUNCH TRANSITION"), false);
-	transitionOfGames_style->addRange({"auto", "fade", "slide", "instant"}, Settings::GameTransitionStyle());
+	transitionOfGames_style->addRange({"default", "fade", "slide", "instant"}, Settings::GameTransitionStyle());
 	s->addWithLabel(_("GAME LAUNCH TRANSITION"), transitionOfGames_style);
 	s->addSaveFunc([transitionOfGames_style]
 				   { Settings::setGameTransitionStyle(transitionOfGames_style->getSelected()); });
@@ -3994,7 +3994,7 @@ void GuiMenu::openUISettings()
 
 	// Show flags
 	auto showRegionFlags = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SHOW REGION FLAG"), false);
-	showRegionFlags->addRange({{_("NO"), "auto"}, {_("BEFORE NAME"), "1"}, {_("AFTER NAME"), "2"}}, Settings::getInstance()->getString("ShowFlags"));
+	showRegionFlags->addRange({{_("NO"), "default"}, {_("BEFORE NAME"), "1"}, {_("AFTER NAME"), "2"}}, Settings::getInstance()->getString("ShowFlags"));
 	s->addWithLabel(_("SHOW REGION FLAG"), showRegionFlags);
 	s->addSaveFunc([s, showRegionFlags]
 				   {
@@ -4825,7 +4825,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::smooth))
 	{
 		auto smoothing_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("BILINEAR FILTERING"));
-		smoothing_enabled->addRange({{_("DEFAULT"), "auto"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get(configName + ".smooth"));
+		smoothing_enabled->addRange({{_("DEFAULT"), "default"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get(configName + ".smooth"));
 		systemConfiguration->addWithLabel(_("BILINEAR FILTERING"), smoothing_enabled);
 		systemConfiguration->addSaveFunc([configName, smoothing_enabled]
 										 { SystemConf::getInstance()->set(configName + ".smooth", smoothing_enabled->getSelected()); });
@@ -4835,7 +4835,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::rewind))
 	{
 		auto rewind_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("REWIND"));
-		rewind_enabled->addRange({{_("DEFAULT"), "auto"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get(configName + ".rewind"));
+		rewind_enabled->addRange({{_("DEFAULT"), "default"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get(configName + ".rewind"));
 		systemConfiguration->addWithLabel(_("REWIND"), rewind_enabled);
 		systemConfiguration->addSaveFunc([configName, rewind_enabled]
 										 { SystemConf::getInstance()->set(configName + ".rewind", rewind_enabled->getSelected()); });
@@ -4845,7 +4845,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::autosave))
 	{
 		auto autosave_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("AUTO SAVE/LOAD ON GAME LAUNCH"));
-		autosave_enabled->addRange({{_("DEFAULT"), "auto"}, {_("ON"), "1"}, {_("OFF"), "0"}, {_("SHOW SAVE STATES"), "2"}, {_("SHOW SAVE STATES IF NOT EMPTY"), "3"}}, SystemConf::getInstance()->get(configName + ".autosave"));
+		autosave_enabled->addRange({{_("DEFAULT"), "default"}, {_("ON"), "1"}, {_("OFF"), "0"}, {_("SHOW SAVE STATES"), "2"}, {_("SHOW SAVE STATES IF NOT EMPTY"), "3"}}, SystemConf::getInstance()->get(configName + ".autosave"));
 		systemConfiguration->addWithLabel(_("AUTO SAVE/LOAD ON GAME LAUNCH"), autosave_enabled);
 		systemConfiguration->addSaveFunc([configName, autosave_enabled]
 										 { SystemConf::getInstance()->set(configName + ".autosave", autosave_enabled->getSelected()); });
@@ -4860,10 +4860,10 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 		std::string currentShader = SystemConf::getInstance()->get(configName + ".shaderset");
 		if (currentShader.empty())
 		{
-			currentShader = std::string("auto");
+			currentShader = std::string("default");
 		}
 
-		shaders_choices->add(_("DEFAULT"), "auto", currentShader == "auto");
+		shaders_choices->add(_("DEFAULT"), "default", currentShader == "default");
 		shaders_choices->add(_("NONE"), "none", currentShader == "none");
 		for (std::stringstream ss(getShOutput(R"(/usr/bin/getshaders)")); getline(ss, a, ',');)
 			shaders_choices->add(a, a, currentShader == a); // emuelec
@@ -4881,10 +4881,10 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 		std::string currentFilter = SystemConf::getInstance()->get(configName + ".filterset");
 		if (currentFilter.empty())
 		{
-			currentFilter = std::string("auto");
+			currentFilter = std::string("default");
 		}
 
-		filters_choices->add(_("DEFAULT"), "auto", currentFilter == "auto");
+		filters_choices->add(_("DEFAULT"), "default", currentFilter == "default");
 		filters_choices->add(_("NONE"), "none", currentFilter == "none");
 		for (std::stringstream ss(getShOutput(R"(/usr/bin/getfilters)")); getline(ss, a, ',');)
 			filters_choices->add(a, a, currentFilter == a); // emuelec
@@ -4897,7 +4897,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::vertical))
 	{
 		auto vertical_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("ENABLE VERTICAL"));
-		vertical_enabled->add(_("OFF"), "auto", SystemConf::getInstance()->get(configName + ".vertical") != "1");
+		vertical_enabled->add(_("OFF"), "default", SystemConf::getInstance()->get(configName + ".vertical") != "1");
 		vertical_enabled->add(_("ON"), "1", SystemConf::getInstance()->get(configName + ".vertical") == "1");
 		systemConfiguration->addWithLabel(_("ENABLE VERTICAL"), vertical_enabled);
 		systemConfiguration->addSaveFunc([configName, vertical_enabled]
@@ -4920,7 +4920,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 			std::string currentShader = SystemConf::getInstance()->get(configName + ".shaderset");
 
 			auto shaders_choices = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SHADER SET"), false);
-			shaders_choices->add(_("DEFAULT"), "auto", currentShader.empty() || currentShader == "auto");
+			shaders_choices->add(_("DEFAULT"), "default", currentShader.empty() || currentShader == "default");
 			shaders_choices->add(_("NONE"), "none", currentShader == "none");
 
 			for (auto shader : installedShaders)
@@ -4939,7 +4939,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::pixel_perfect))
 	{
 		auto integerscale_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("INTEGER SCALING (PIXEL PERFECT)"));
-		integerscale_enabled->addRange({{_("DEFAULT"), "auto"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get(configName + ".integerscale"));
+		integerscale_enabled->addRange({{_("DEFAULT"), "default"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get(configName + ".integerscale"));
 		systemConfiguration->addWithLabel(_("INTEGER SCALING (PIXEL PERFECT)"), integerscale_enabled);
 		systemConfiguration->addSaveFunc([integerscale_enabled, configName]
 										 { SystemConf::getInstance()->set(configName + ".integerscale", integerscale_enabled->getSelected()); });
@@ -5065,9 +5065,9 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 
 	std::string cpu_governor = SystemConf::getInstance()->get(configName + ".cpugovernor");
 	if (cpu_governor.empty())
-		cpu_governor = "auto";
+		cpu_governor = "default";
 
-	cpuGovUpdate->add(_("DEFAULT"), "auto", cpu_governor == "auto");
+	cpuGovUpdate->add(_("DEFAULT"), "default", cpu_governor == "default");
 	cpuGovUpdate->add(_("SCHEDUTIL"), "schedutil", cpu_governor == "schedutil");
 	cpuGovUpdate->add(_("ONDEMAND"), "ondemand", cpu_governor == "ondemand");
 	cpuGovUpdate->add(_("PERFORMANCE"), "performance", cpu_governor == "performance");
@@ -5138,9 +5138,9 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 		auto colorizations_choices = std::make_shared<OptionListComponent<std::string>>(mWindow, _("COLORIZATION"), false);
 		std::string currentColorization = SystemConf::getInstance()->get(configName + ".renderer.colorization");
 		if (currentColorization.empty())
-			currentColorization = std::string("auto");
+			currentColorization = std::string("default");
 
-		colorizations_choices->add(_("DEFAULT"), "auto", currentColorization == "auto");
+		colorizations_choices->add(_("DEFAULT"), "default", currentColorization == "default");
 		colorizations_choices->add(_("NONE"), "none", currentColorization == "none");
 #ifdef _ENABLEEMUELEC
 		colorizations_choices->add(_("GBC"), "GBC", currentColorization == "GBC");
@@ -5296,7 +5296,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 		if (SystemData::es_features_loaded || (!SystemData::es_features_loaded && systemData->getName() == "ps2")) // only for ps2
 		{
 			auto fullboot_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("FULL BOOT"));
-			fullboot_enabled->addRange({{_("DEFAULT"), "auto"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get(configName + ".fullboot"));
+			fullboot_enabled->addRange({{_("DEFAULT"), "default"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get(configName + ".fullboot"));
 			systemConfiguration->addWithLabel(_("FULL BOOT"), fullboot_enabled);
 			systemConfiguration->addSaveFunc([fullboot_enabled, configName]
 											 { SystemConf::getInstance()->set(configName + ".fullboot", fullboot_enabled->getSelected()); });
@@ -5309,7 +5309,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 		if (SystemData::es_features_loaded || (!SystemData::es_features_loaded && systemData->getName() == "wii")) // only for wii
 		{
 			auto emulatedwiimotes_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("EMULATED WIIMOTES"));
-			emulatedwiimotes_enabled->addRange({{_("DEFAULT"), "auto"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get(configName + ".emulatedwiimotes"));
+			emulatedwiimotes_enabled->addRange({{_("DEFAULT"), "default"}, {_("ON"), "1"}, {_("OFF"), "0"}}, SystemConf::getInstance()->get(configName + ".emulatedwiimotes"));
 			systemConfiguration->addWithLabel(_("EMULATED WIIMOTES"), emulatedwiimotes_enabled);
 			systemConfiguration->addSaveFunc([emulatedwiimotes_enabled, configName]
 											 { SystemConf::getInstance()->set(configName + ".emulatedwiimotes", emulatedwiimotes_enabled->getSelected()); });
@@ -5322,7 +5322,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 		if (SystemData::es_features_loaded || (!SystemData::es_features_loaded && systemData->getName() == "3ds")) // only for 3ds
 		{
 			auto changescreen_layout = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CHANGE SCREEN LAYOUT"));
-			changescreen_layout->addRange({{_("DEFAULT"), "auto"}, {_("LARGE SCREEN"), "2"}, {_("SIDE BY SIDE"), "3"}}, SystemConf::getInstance()->get(configName + ".layout_option"));
+			changescreen_layout->addRange({{_("DEFAULT"), "default"}, {_("LARGE SCREEN"), "2"}, {_("SIDE BY SIDE"), "3"}}, SystemConf::getInstance()->get(configName + ".layout_option"));
 			systemConfiguration->addWithLabel(_("CHANGE SCREEN LAYOUT"), changescreen_layout);
 			systemConfiguration->addSaveFunc([changescreen_layout, configName]
 											 { SystemConf::getInstance()->set(configName + ".layout_option", changescreen_layout->getSelected()); });
@@ -5335,7 +5335,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 		std::string curResol = SystemConf::getInstance()->get(configName + ".internalresolution");
 
 		auto internalresolution = std::make_shared<OptionListComponent<std::string>>(mWindow, _("INTERNAL RESOLUTION"));
-		internalresolution->add(_("DEFAULT"), "auto", curResol.empty() || curResol == "auto");
+		internalresolution->add(_("DEFAULT"), "default", curResol.empty() || curResol == "default");
 		internalresolution->add("1:1", "0", curResol == "0");
 		internalresolution->add("x1", "1", curResol == "1");
 		internalresolution->add("x2", "2", curResol == "2");
@@ -5375,7 +5375,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 					std::string storedValue = SystemConf::getInstance()->get(storageName);
 
 					auto cf = std::make_shared<OptionListComponent<std::string>>(mWindow, _(feat.name.c_str()));
-					cf->add(_("DEFAULT"), "", storedValue.empty() || storedValue == "auto");
+					cf->add(_("DEFAULT"), "", storedValue.empty() || storedValue == "default");
 
 					for (auto fval : feat.choices)
 						cf->add(_(fval.name.c_str()), fval.value, storedValue == fval.value);
@@ -5404,7 +5404,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 				std::string storedValue = SystemConf::getInstance()->get(storageName);
 
 				auto cf = std::make_shared<OptionListComponent<std::string>>(mWindow, _(feat.name.c_str()));
-				cf->add(_("DEFAULT"), "", storedValue.empty() || storedValue == "auto");
+				cf->add(_("DEFAULT"), "", storedValue.empty() || storedValue == "default");
 
 				for (auto fval : feat.choices)
 					cf->add(_(fval.name.c_str()), fval.value, storedValue == fval.value);
@@ -5471,7 +5471,7 @@ std::shared_ptr<OptionListComponent<std::string>> GuiMenu::createRatioOptionList
 	auto ratio_choice = std::make_shared<OptionListComponent<std::string>>(window, _("GAME ASPECT RATIO"), false);
 	std::string currentRatio = SystemConf::getInstance()->get(configname + ".ratio");
 	if (currentRatio.empty())
-		currentRatio = std::string("auto");
+		currentRatio = std::string("default");
 
 	std::map<std::string, std::string> *ratioMap = LibretroRatio::getInstance()->getRatio();
 	for (auto ratio = ratioMap->begin(); ratio != ratioMap->end(); ratio++)
@@ -5489,10 +5489,10 @@ std::shared_ptr<OptionListComponent<std::string>> GuiMenu::createVideoResolution
 
 	std::string currentVideoMode = SystemConf::getInstance()->get(configname + ".videomode");
 	if (currentVideoMode.empty())
-		currentVideoMode = std::string("auto");
+		currentVideoMode = std::string("default");
 
 	std::vector<std::string> videoResolutionModeMap = ApiSystem::getInstance()->getVideoModes();
-	videoResolutionMode_choice->add(_("DEFAULT"), "auto", currentVideoMode == "auto");
+	videoResolutionMode_choice->add(_("DEFAULT"), "default", currentVideoMode == "default");
 	for (auto videoMode = videoResolutionModeMap.begin(); videoMode != videoResolutionModeMap.end(); videoMode++)
 	{
 		std::vector<std::string> tokens = Utils::String::split(*videoMode, ':');
