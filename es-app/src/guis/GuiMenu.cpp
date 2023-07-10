@@ -1237,6 +1237,21 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 	}
 
+	bool deviceDisablePLed = getenv("DEVICE_PWR_LED_CONTROL");
+	if (deviceDisablePLed == true) {
+
+		s->addGroup(_("DEVICE LEDS"));
+		// Disable Power LED
+		auto pwr_led_disabled = std::make_shared<SwitchComponent>(mWindow);
+		bool pwrleddisabled = SystemConf::getInstance()->get("powerled.disabled") == "1";
+		pwr_led_disabled->setState(SystemConf::getInstance()->getBool("powerled.disabled"));
+		s->addWithLabel(_("DISABLE POWER LED"), pwr_led_disabled);
+		s->addSaveFunc([pwr_led_disabled] {
+        	bool pwrleddisabled = pwr_led_disabled->getState();
+			SystemConf::getInstance()->set("powerled.disabled", pwrleddisabled ? "1" : "0");
+			SystemConf::getInstance()->saveSystemConf(); });
+	}
+	
 #if defined(AMD64)
 
 	char *deviceLedControl = getenv("DEVICE_LED_CONTROL");
