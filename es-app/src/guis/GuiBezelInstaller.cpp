@@ -45,7 +45,7 @@ void GuiBezelInstaller::OnContentInstalled(int contentType, std::string contentN
 	}
 	else if (contentType == ContentInstaller::CONTENT_BEZEL_UNINSTALL && success)
 	{
-		// When uninstalled, set "auto" as default decorations for the system, if it was thebezelproject before
+		// When uninstalled, set "default" as default decorations for the system, if it was thebezelproject before
 		auto current = SystemConf::getInstance()->get(contentName + ".bezel");
 		if (current == "thebezelproject")
 			SystemConf::getInstance()->set(contentName + ".bezel", "");

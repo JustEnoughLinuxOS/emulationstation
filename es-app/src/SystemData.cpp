@@ -895,10 +895,10 @@ std::vector<CustomFeature> SystemData::getCustomFeatures(std::string emulatorNam
 {
 	std::vector<CustomFeature> ret;
 
-	if (emulatorName.empty() || emulatorName == "auto")
+	if (emulatorName.empty() || emulatorName == "default")
 		emulatorName = getEmulator();
 
-	if (coreName.empty() || coreName == "auto")
+	if (coreName.empty() || coreName == "default")
 		coreName = getCore();
 
 	for (auto emulator : mEmulators)
@@ -922,10 +922,10 @@ std::vector<CustomFeature> SystemData::getCustomFeatures(std::string emulatorNam
 
 bool SystemData::isFeatureSupported(std::string emulatorName, std::string coreName, EmulatorFeatures::Features feature)
 {
-	if (emulatorName.empty() || emulatorName == "auto")
+	if (emulatorName.empty() || emulatorName == "default")
 		emulatorName = getEmulator();
 
-	if (coreName.empty() || coreName == "auto")
+	if (coreName.empty() || coreName == "default")
 		coreName = getCore();
 
 	for (auto emulator : mEmulators)
@@ -1979,7 +1979,7 @@ std::string SystemData::getCore(bool resolveDefault)
 	std::string core = SystemConf::getInstance()->get(getName() + ".core");
 #endif
 
-	if (!core.empty() && core != "auto")
+	if (!core.empty() && core != "default")
 	{
 		auto emul = getEmulator(true);
 
@@ -2018,7 +2018,7 @@ std::string SystemData::getDefaultEmulator()
 std::string SystemData::getDefaultCore(const std::string emulatorName)
 {
 	std::string emul = emulatorName;
-	if (emul.empty() || emul == "auto")
+	if (emul.empty() || emul == "default")
 		emul = getDefaultEmulator();
 
 	if (emul.empty())
@@ -2218,10 +2218,10 @@ std::string SystemData::getFolderViewMode()
 	std::string showFoldersMode = Settings::getInstance()->getString("FolderViewMode");
 
 	auto fvm = Settings::getInstance()->getString(getName() + ".FolderViewMode");
-	if (!fvm.empty() && fvm != "auto") 
+	if (!fvm.empty() && fvm != "default") 
 		showFoldersMode = fvm;
 
-	if ((fvm.empty() || fvm == "auto") && this == CollectionSystemManager::get()->getCustomCollectionsBundle())
+	if ((fvm.empty() || fvm == "default") && this == CollectionSystemManager::get()->getCustomCollectionsBundle())
 		showFoldersMode = "always";
 	else if (getName() == "windows_installers")
 		showFoldersMode = "always";
@@ -2259,7 +2259,7 @@ int SystemData::getShowFlags()
 	int show = Utils::String::toInteger(Settings::getInstance()->getString("ShowFlags"));
 
 	auto spf = Settings::getInstance()->getString(getName() + ".ShowFlags");
-	if (spf == "" || spf == "auto")
+	if (spf == "" || spf == "default")
 		return show;
 	
 	return Utils::String::toInteger(spf);

@@ -1190,7 +1190,7 @@ const std::string FileData::getCore(bool resolveDefault)
 	std::string core = SystemConf::getInstance()->get(getConfigurationName() + ".core"); 
 #endif
 
-	if (core == "auto")
+	if (core == "default")
 		core = "";
 
 	if (!core.empty())
@@ -1240,7 +1240,7 @@ const std::string FileData::getEmulator(bool resolveDefault)
 	std::string emulator = SystemConf::getInstance()->get(getConfigurationName() + ".emulator");
 #endif
 
-	if (emulator == "auto")
+	if (emulator == "default")
 		emulator = "";
 
 	if (!emulator.empty())
@@ -1264,7 +1264,7 @@ const std::string FileData::getEmulator(bool resolveDefault)
 void FileData::setCore(const std::string value)
 {
 #if WIN32 && !_DEBUG
-	setMetadata(MetaDataId::Core, value == "auto" ? "" : value);
+	setMetadata(MetaDataId::Core, value == "default" ? "" : value);
 #else
 	SystemConf::getInstance()->set(getConfigurationName() + ".core", value);
 #endif
@@ -1273,7 +1273,7 @@ void FileData::setCore(const std::string value)
 void FileData::setEmulator(const std::string value)
 {
 #if WIN32 && !_DEBUG
-	setMetadata(MetaDataId::Emulator, value == "auto" ? "" : value);
+	setMetadata(MetaDataId::Emulator, value == "default" ? "" : value);
 #else
 	SystemConf::getInstance()->set(getConfigurationName() + ".emulator", value);
 #endif
@@ -1580,11 +1580,11 @@ std::string FileData::getCurrentGameSetting(const std::string& settingName)
 	FileData* src = getSourceFileData();
 
 	std::string value = SystemConf::getInstance()->get(getConfigurationName() + "." + settingName);
-	if (!value.empty() && value != "auto")
+	if (!value.empty() && value != "default")
 		return value;
 
 	value = SystemConf::getInstance()->get(src->getSystem()->getName() + "." + settingName);
-	if (!value.empty() && value != "auto")
+	if (!value.empty() && value != "default")
 		return value;
 
 	return SystemConf::getInstance()->get("global." + settingName);

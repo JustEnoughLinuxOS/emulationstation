@@ -26,10 +26,10 @@ GuiDecorationOptions::GuiDecorationOptions(Window *window,
 	auto selectedDecoration = SystemConf::getInstance()->get(mConfigName + ".bezel");
 
 	//Check for both <system>.bezel and then global.bezel if <system>.bezel is set to auto
-	if (Utils::String::toLower(selectedDecoration) == "auto" || selectedDecoration == "")
+	if (Utils::String::toLower(selectedDecoration) == "default" || selectedDecoration == "")
 	{
 		selectedDecoration = SystemConf::getInstance()->get("global.bezel");
-		if (Utils::String::toLower(selectedDecoration) == "auto" || selectedDecoration == "")
+		if (Utils::String::toLower(selectedDecoration) == "default" || selectedDecoration == "")
 		{
 			selectedDecoration = "default";
 		}
@@ -69,7 +69,7 @@ GuiDecorationOptions::GuiDecorationOptions(Window *window,
 	addWithDescription(_("SYSTEM"), _("Forces specific system bezel"), systemsList);
 	systemsList->setSelectedChangedCallback([this](std::string system)
 	{
-		if(Utils::String::toLower(system) == "auto") {
+		if(Utils::String::toLower(system) == "default") {
 			system = "";
 		}
 		if (SystemConf::getInstance()->set(mConfigName + ".bezel.system.override", Utils::String::toLower(system)))
@@ -102,7 +102,7 @@ GuiDecorationOptions::GuiDecorationOptions(Window *window,
     auto systemName =  Utils::String::split(mConfigName, '[', true).front();
 	LOG(LogDebug) << "System Override: " << systemOverride << " Current System: " << systemName;
 
-	if (systemOverride != "" && Utils::String::toLower(systemOverride) != "auto")
+	if (systemOverride != "" && Utils::String::toLower(systemOverride) != "default")
 	{
 		systemName = systemOverride;
 	}
@@ -122,7 +122,7 @@ GuiDecorationOptions::GuiDecorationOptions(Window *window,
 	addWithDescription(_("GAME"), _("Forces specific game bezel"), gamesList);
 	gamesList->setSelectedChangedCallback([this](std::string game)
 	{
-		if(Utils::String::toLower(game) == "auto") {
+		if(Utils::String::toLower(game) == "default") {
 			game = "";
 		}
 		LOG(LogDebug) << "Saving game override: " << game << "for system: "+mConfigName;

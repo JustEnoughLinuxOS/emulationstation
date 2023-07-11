@@ -183,7 +183,7 @@ void CarouselComponent::onCursorChanged(const CursorState& state)
 	cancelAnimation(2);
 
 	std::string transition_style = Settings::TransitionStyle();
-	if (transition_style == "auto")
+	if (transition_style == "default")
 	{
 		if (mDefaultTransition == "instant" || mDefaultTransition == "fade" || mDefaultTransition == "slide" || mDefaultTransition == "fade & slide")
 			transition_style = mDefaultTransition;
