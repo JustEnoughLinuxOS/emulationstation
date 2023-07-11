@@ -38,9 +38,9 @@ void GuiBezelInstaller::OnContentInstalled(int contentType, std::string contentN
 	{
 		auto global = SystemConf::getInstance()->get("global.bezel");
 
-		// When installed, set thebezelproject as default decorations for the system, if the global setting is not set to "AUTO"
+		// When installed, set thebezelproject as default decorations for the system, if the global setting is not set to "DEFAULT"
 		auto current = SystemConf::getInstance()->get(contentName + ".bezel");
-		if ((current == "" || current == "AUTO") && global != "" && global != "AUTO")
+		if ((current == "" || current == "DEFAULT") && global != "" && global != "DEFAULT")
 			SystemConf::getInstance()->set(contentName + ".bezel", "thebezelproject");
 	}
 	else if (contentType == ContentInstaller::CONTENT_BEZEL_UNINSTALL && success)

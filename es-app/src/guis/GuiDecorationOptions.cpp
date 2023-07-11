@@ -149,7 +149,7 @@ GuiDecorationOptions::GuiDecorationOptions(Window *window,
 
 			auto optionComponent = std::make_shared<OptionListComponent<std::string>>(mWindow, _(fileConfigNameUpper.c_str()));
 
-			optionComponent->add(_("AUTO"), "auto", SystemConf::getInstance()->get(configName + optionConfigName) != "0" && SystemConf::getInstance()->get(configName + optionConfigName) != "1");
+			optionComponent->add(_("DEFAULT"), "default", SystemConf::getInstance()->get(configName + optionConfigName) != "0" && SystemConf::getInstance()->get(configName + optionConfigName) != "1");
 			optionComponent->add(_("YES"), "1", SystemConf::getInstance()->get(configName + optionConfigName) == "1");
 			optionComponent->add(_("NO"), "0", SystemConf::getInstance()->get(configName + optionConfigName) == "0");
 
@@ -163,7 +163,7 @@ GuiDecorationOptions::GuiDecorationOptions(Window *window,
 std::vector<std::string> GuiDecorationOptions::getAvailableSystems(std::string path)
 {
 	std::vector<std::string> systems;
-	systems.push_back("AUTO");
+	systems.push_back("DEFAULT");
 	systems.push_back("NONE");
 
 	std::string systemsDir = path + "/systems/";
@@ -187,7 +187,7 @@ std::vector<std::string> GuiDecorationOptions::getAvailableSystems(std::string p
 std::vector<std::string> GuiDecorationOptions::getAvailableGames(std::string path, std::string systemName)
 {
 	std::vector<std::string> availableGames;
-	availableGames.push_back("AUTO");
+	availableGames.push_back("DEFAULT");
 	availableGames.push_back("NONE");
 	if (Utils::String::toUpper(systemName) == "NONE")
 	{
