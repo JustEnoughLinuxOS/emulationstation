@@ -1484,25 +1484,28 @@ void GuiMenu::openSystemSettings_batocera()
 
 	// Default MangoHud Mode
 
-	auto mangoUpdate = std::make_shared<OptionListComponent<std::string>>(mWindow, _("DEFAULT MANGOHUD MODE"), false);
+	bool deviceHasMango = getenv("MANGOHUD_SUPPORT");
+	if (deviceHasMango == true) {
+		auto mangoUpdate = std::make_shared<OptionListComponent<std::string>>(mWindow, _("DEFAULT MANGOHUD MODE"), false);
 
-	std::string mangohud = SystemConf::getInstance()->get("system.mangohud");
-	if (mangohud.empty())
-		mangohud = "off";
+		std::string mangohud = SystemConf::getInstance()->get("system.mangohud");
+		if (mangohud.empty())
+			mangohud = "off";
 
-	mangoUpdate->add(_("BASIC"), "basic", mangohud == "basic");
-	mangoUpdate->add(_("DEV"), "dev", mangohud == "dev");
-	mangoUpdate->add(_("OFF"), "off", mangohud == "off");
+		mangoUpdate->add(_("BASIC"), "basic", mangohud == "basic");
+		mangoUpdate->add(_("DEV"), "dev", mangohud == "dev");
+		mangoUpdate->add(_("OFF"), "off", mangohud == "off");
 
-	s->addWithLabel(_("DEFAULT MANGOHUD MODE"), mangoUpdate);
+		s->addWithLabel(_("DEFAULT MANGOHUD MODE"), mangoUpdate);
 
-	s->addSaveFunc([this, mangoUpdate, mangohud]
+		s->addSaveFunc([this, mangoUpdate, mangohud]
 				   {
-          if (mangoUpdate->changed()) {
-            SystemConf::getInstance()->set("system.mangohud", mangoUpdate->getSelected());
-            SystemConf::getInstance()->saveSystemConf();
-          }
-	  runSystemCommand("/usr/bin/bash -lc \". /etc/profile; "+ mangoUpdate->getSelected() + "\"", "", nullptr); });
+		if (mangoUpdate->changed()) {
+			SystemConf::getInstance()->set("system.mangohud", mangoUpdate->getSelected());
+			SystemConf::getInstance()->saveSystemConf();
+		}
+		runSystemCommand("/usr/bin/bash -lc \". /etc/profile; "+ mangoUpdate->getSelected() + "\"", "", nullptr); });
+	}
 
 	s->addGroup(_("HARDWARE / GPU"));
         // Automatically enable or disable enhanced power saving mode
@@ -5098,25 +5101,27 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
           } });
 
 	// Per game/core/emu MangoHud mode
+	bool deviceHasMango = getenv("MANGOHUD_SUPPORT");
+	if (deviceHasMango == true) {
+		auto mangoUpdate = std::make_shared<OptionListComponent<std::string>>(mWindow, _("MANGOHUD MODE"), false);
 
-	auto mangoUpdate = std::make_shared<OptionListComponent<std::string>>(mWindow, _("MANGOHUD MODE"), false);
+		std::string mangohud = SystemConf::getInstance()->get(configName + ".mangohud");
+		if (mangohud.empty())
+			mangohud = "off";
 
-	std::string mangohud = SystemConf::getInstance()->get(configName + ".mangohud");
-	if (mangohud.empty())
-		mangohud = "off";
+		mangoUpdate->add(_("BASIC"), "basic", mangohud == "basic");
+		mangoUpdate->add(_("DEV"), "dev", mangohud == "dev");
+		mangoUpdate->add(_("OFF"), "off", mangohud == "off");
 
-	mangoUpdate->add(_("BASIC"), "basic", mangohud == "basic");
-	mangoUpdate->add(_("DEV"), "dev", mangohud == "dev");
-	mangoUpdate->add(_("OFF"), "off", mangohud == "off");
+		systemConfiguration->addWithLabel(_("DEFAULT MANGOHUD MODE"), mangoUpdate);
 
-	systemConfiguration->addWithLabel(_("DEFAULT MANGOHUD MODE"), mangoUpdate);
-
-	systemConfiguration->addSaveFunc([configName, mangoUpdate, mangoUpdate]
+		systemConfiguration->addSaveFunc([configName, mangoUpdate, mangoUpdate]
 									 {
-          if (mangoUpdate->changed()) {
-            SystemConf::getInstance()->set(configName + ".mangohud", mangoUpdate->getSelected());
-            SystemConf::getInstance()->saveSystemConf();
-          } });
+		if (mangoUpdate->changed()) {
+			SystemConf::getInstance()->set(configName + ".mangohud", mangoUpdate->getSelected());
+			SystemConf::getInstance()->saveSystemConf();
+		} });
+	}
 
 	if (SystemConf::getInstance()->getBool("system.powersave", true))
 	{
