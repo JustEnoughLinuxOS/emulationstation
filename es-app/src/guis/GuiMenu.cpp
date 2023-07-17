@@ -1375,7 +1375,7 @@ void GuiMenu::openSystemSettings_batocera()
 	std::vector<std::string> availableThreads = ApiSystem::getInstance()->getAvailableThreads();
 	std::string selectedThreads = SystemConf::getInstance()->get("system.threads");
 	if (selectedThreads.empty())
-		selectedThreads = "all";
+		selectedThreads = "default";
 
 	bool wfound = false;
 	for (auto it = availableThreads.begin(); it != availableThreads.end(); it++)
@@ -4992,7 +4992,7 @@ void GuiMenu::popSpecificConfigurationGui(Window *mWindow, std::string title, st
 	std::vector<std::string> availableThreads = ApiSystem::getInstance()->getAvailableThreads();
 	std::string selectedThreads = SystemConf::getInstance()->get(configName + ".threads");
 	if (selectedThreads.empty())
-		selectedThreads = "all";
+		selectedThreads = "default";
 
 	bool wfound = false;
 	for (auto it = availableThreads.begin(); it != availableThreads.end(); it++)
