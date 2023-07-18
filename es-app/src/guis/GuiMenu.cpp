@@ -5048,7 +5048,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
         std::string cpu_governor = SystemConf::getInstance()->get(configName + ".cpugovernor");
         if (cpu_governor.empty())
-                cpu_governor = "auto";
+                cpu_governor = "default";
 
         cpuGovUpdate->add(_("DEFAULT"), "default", cpu_governor == "default");
         cpuGovUpdate->add(_("SCHEDUTIL"), "schedutil", cpu_governor == "schedutil");
