@@ -100,9 +100,9 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 			std::string currentEmul = file->getEmulator(false);
 
 			if (defaultEmul.length() == 0)
-				emul_choice->add(_("AUTO"), "", true);
+				emul_choice->add(_("DEFAULT"), "", true);
 			else
-				emul_choice->add(_("AUTO") + " (" + defaultEmul + ")", "", currentEmul.length() == 0);
+				emul_choice->add(_("DEFAULT") + " (" + defaultEmul + ")", "", currentEmul.length() == 0);
 
 			for (auto core : file->getSystem()->getEmulators())
 				emul_choice->add(core.name, core.name, core.name == currentEmul);
@@ -124,9 +124,9 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 
 				core_choice->clear();
 				if (defaultCore.length() == 0)
-					core_choice->add(_("AUTO"), "", false);
+					core_choice->add(_("DEFAULT"), "", false);
 				else
-					core_choice->add(_("AUTO") + " (" + defaultCore + ")", "", false);
+					core_choice->add(_("DEFAULT") + " (" + defaultCore + ")", "", false);
 
 				std::vector<std::string> cores = system->getCoreNames(emulatorName);
 

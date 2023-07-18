@@ -619,7 +619,7 @@ std::vector<std::string> ApiSystem::getAvailableAudioOutputDevices()
 {
 #if WIN32
 	std::vector<std::string> res;
-	res.push_back("auto");
+	res.push_back("default");
 	return res;
 #endif
 
@@ -634,7 +634,7 @@ std::vector<std::string> ApiSystem::getAvailableThreads()
 std::string ApiSystem::getCurrentAudioOutputDevice() 
 {
 #if WIN32
-	return "auto";
+	return "default";
 #endif
 
 	LOG(LogDebug) << "ApiSystem::getCurrentAudioOutputDevice";
@@ -675,7 +675,7 @@ std::vector<std::string> ApiSystem::getAvailableAudioOutputPaths()
 {
 #if WIN32
         std::vector<std::string> res;
-        res.push_back("auto");
+        res.push_back("default");
         return res;
 #endif
 
@@ -685,7 +685,7 @@ std::vector<std::string> ApiSystem::getAvailableAudioOutputPaths()
 std::string ApiSystem::getCurrentAudioOutputPath()
 {
 #if WIN32
-        return "auto";
+        return "default";
 #endif
 
         LOG(LogDebug) << "ApiSystem::getCurrentAudioOutputPath";
@@ -726,7 +726,7 @@ std::vector<std::string> ApiSystem::getAvailableAudioOutputProfiles()
 {
 #if WIN32
 	std::vector<std::string> res;
-	res.push_back("auto");
+	res.push_back("default");
 	return res;
 #endif
 
@@ -736,7 +736,7 @@ std::vector<std::string> ApiSystem::getAvailableAudioOutputProfiles()
 std::string ApiSystem::getCurrentAudioOutputProfile() 
 {
 #if WIN32
-	return "auto";
+	return "default";
 #endif
 
 	LOG(LogDebug) << "ApiSystem::getCurrentAudioOutputProfile";

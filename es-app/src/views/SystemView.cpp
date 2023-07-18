@@ -759,7 +759,7 @@ void SystemView::onCursorChanged(const CursorState& state)
 	cancelAnimation(2);
 
 	std::string transition_style = Settings::TransitionStyle();
-	if (transition_style == "auto")
+	if (transition_style == "default")
 	{
 		if (mCarousel.defaultTransition == "instant" || mCarousel.defaultTransition == "fade" || mCarousel.defaultTransition == "slide" || mCarousel.defaultTransition == "fade & slide")
 			transition_style = mCarousel.defaultTransition;

@@ -158,8 +158,8 @@ void Settings::setDefaults()
 	mIntMap["MaxVRAM"] = 100;
 #endif
 
-	mStringMap["TransitionStyle"] = "auto";
-	mStringMap["GameTransitionStyle"] = "auto";
+	mStringMap["TransitionStyle"] = "default";
+	mStringMap["GameTransitionStyle"] = "default";
 
 	mStringMap["ThemeSet"] = "";
 	mStringMap["ScreenSaverBehavior"] = "black";

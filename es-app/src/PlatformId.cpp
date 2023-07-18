@@ -166,6 +166,7 @@ namespace PlatformIds
 		{ "cdi",				PHILIPS_CDI },			
 
 		{ "snes-msu1",			SUPER_NINTENDO_MSU1 },
+		{ "z-machine",			Z_MACHINE },
 
 		{ "ignore",				PLATFORM_IGNORE },
 		{ "invalid",			PLATFORM_COUNT }

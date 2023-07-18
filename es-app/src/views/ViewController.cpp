@@ -357,10 +357,10 @@ void ViewController::playViewTransition(bool forceImmediate)
 	std::string transition_style = Settings::TransitionStyle();
 
 	// check <theme defaultTransition> value
-	if ((transition_style.empty() || transition_style == "auto") && getState().system != nullptr && getState().system->getTheme() != nullptr)
+	if ((transition_style.empty() || transition_style == "default") && getState().system != nullptr && getState().system->getTheme() != nullptr)
 	{
 		auto defaultTransition = getState().system->getTheme()->getDefaultTransition();
-		if (!defaultTransition.empty() && defaultTransition != "auto")
+		if (!defaultTransition.empty() && defaultTransition != "default")
 			transition_style = defaultTransition;
 	}
 
@@ -399,7 +399,7 @@ void ViewController::playViewTransition(bool forceImmediate)
 		else
 			advanceAnimation(0, (int)(mFadeOpacity * FADE_DURATION));		
 	} 
-	else if (transition_style == "slide" || transition_style == "auto")
+	else if (transition_style == "slide" || transition_style == "default")
 	{
 		// slide or simple slide
 		setAnimation(new MoveCameraAnimation(mCamera, target));
@@ -547,13 +547,13 @@ void ViewController::launch(FileData* game, LaunchGameOptions options, Vector3f 
 		mWindow->setCustomSplashScreen(game->getImagePath(), game->getName());
 
 	std::string transition_style = Settings::GameTransitionStyle();
-	if (transition_style.empty() || transition_style == "auto")
+	if (transition_style.empty() || transition_style == "default")
 		transition_style = Settings::TransitionStyle();
 	
 	if (Settings::PowerSaverMode() == "instant")
 		transition_style = "instant";
 
-	if(transition_style == "auto")
+	if(transition_style == "default")
 		transition_style = "slide";
 
 	if (Settings::PowerSaverMode() == "instant")
