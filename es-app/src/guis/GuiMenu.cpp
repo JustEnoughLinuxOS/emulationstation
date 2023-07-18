@@ -4079,23 +4079,24 @@ void GuiMenu::openSoundSettings()
 
 	bool deviceSWHP = getenv("DEVICE_SW_HP_SWITCH");
 	if (deviceSWHP == true) {
-	s->addGroup(_("OUTPUT"));
+		s->addGroup(_("OUTPUT"));
 
-	// sw headphone enable
-	auto sw_hp_enabled = std::make_shared<SwitchComponent>(mWindow);
-	bool hpbaseEnabled = SystemConf::getInstance()->get("headphone.enabled") == "1";
-	sw_hp_enabled->setState(hpbaseEnabled);
-	s->addWithLabel(_("ENABLE HEADPHONE JACK"), sw_hp_enabled);
-	s->addSaveFunc([sw_hp_enabled]
-		if (sw_hp_enabled->getState() == false) {
-			runSystemCommand("amixer -c0 sset \"Playback Mux\" \"SPK\"", "", nullptr);
-		} else {
-			runSystemCommand("amixer -c0 sset \"Playback Mux\" \"HP\"", "", nullptr);
-		}
-	bool swhpenabled = sw_hp_enabled->getState();
-	SystemConf::getInstance()->set("headphone.enabled", swhpenabled ? "1" : "0");
-		SystemConf::getInstance()->saveSystemConf();
-	});
+		// sw headphone enable
+		auto sw_hp_enabled = std::make_shared<SwitchComponent>(mWindow);
+		bool hpbaseEnabled = SystemConf::getInstance()->get("headphone.enabled") == "1";
+		sw_hp_enabled->setState(hpbaseEnabled);
+		s->addWithLabel(_("ENABLE HEADPHONE JACK"), sw_hp_enabled);
+		s->addSaveFunc([sw_hp_enabled]
+			if (sw_hp_enabled->getState() == false) {
+				runSystemCommand("amixer -c0 sset \"Playback Mux\" \"SPK\"", "", nullptr);
+			} else {
+				runSystemCommand("amixer -c0 sset \"Playback Mux\" \"HP\"", "", nullptr);
+			}
+		bool swhpenabled = sw_hp_enabled->getState();
+		SystemConf::getInstance()->set("headphone.enabled", swhpenabled ? "1" : "0");
+			SystemConf::getInstance()->saveSystemConf();
+		});
+	}
 
 	if (VolumeControl::getInstance()->isAvailable())
 	{
