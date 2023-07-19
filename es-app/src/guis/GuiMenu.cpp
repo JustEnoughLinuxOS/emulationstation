@@ -2352,7 +2352,7 @@ void GuiMenu::openGamesSettings_batocera()
 
 	// autosave/load
 	auto autosave_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("AUTO SAVE/LOAD ON GAME LAUNCH"));
-	autosave_enabled->addRange({ { _("OFF"), "auto" },{ _("ON") , "1" },{ _("SHOW SAVE STATES") , "2" },{ _("SHOW SAVE STATES IF NOT EMPTY") , "3" } }, SystemConf::getInstance()->get("global.autosave"));
+	autosave_enabled->addRange({ { _("OFF"), "default" },{ _("ON") , "1" },{ _("SHOW SAVE STATES") , "2" },{ _("SHOW SAVE STATES IF NOT EMPTY") , "3" } }, SystemConf::getInstance()->get("global.autosave"));
 	s->addWithLabel(_("AUTO SAVE/LOAD ON GAME LAUNCH"), autosave_enabled);
 	s->addSaveFunc([autosave_enabled] { SystemConf::getInstance()->set("global.autosave", autosave_enabled->getSelected()); });
 
@@ -2379,7 +2379,7 @@ void GuiMenu::openGamesSettings_batocera()
 			std::string currentShader = SystemConf::getInstance()->get("global.shaderset");
 
 			auto shaders_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("SHADER SET"), false);
-			shaders_choices->add(_("DEFAULT"), "default", currentShader.empty() || currentShader == "auto");
+			shaders_choices->add(_("DEFAULT"), "default", currentShader.empty() || currentShader == "default");
 			shaders_choices->add(_("NONE"), "none", currentShader == "none");
 
 #ifdef _ENABLEEMUELEC
@@ -2404,7 +2404,7 @@ void GuiMenu::openGamesSettings_batocera()
 	// Filters preset
 	std::string currentFilter = SystemConf::getInstance()->get("global.filterset");
 	auto filters_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("FILTER SET"), false);
-	filters_choices->add(_("DEFAULT"), "default", currentFilter.empty() || currentFilter == "auto");
+	filters_choices->add(_("DEFAULT"), "default", currentFilter.empty() || currentFilter == "default");
 	filters_choices->add(_("NONE"), "none", currentFilter == "none");
 	std::string filterList;
 	for(std::stringstream ss(getShOutput(R"(/usr/bin/getfilters)")); getline(ss, filterList, ','); )
@@ -2440,7 +2440,7 @@ void GuiMenu::openGamesSettings_batocera()
 
 			decorations->setSelectedChangedCallback([decorations](std::string value)
 			{
-				if (Utils::String::toLower(value) == "auto") {
+				if (Utils::String::toLower(value) == "default") {
 					value = "";
 				}
 				LOG(LogDebug) << "Setting bezel on change to: " << value;
@@ -3997,7 +3997,7 @@ void GuiMenu::openUISettings()
 
 	// Show flags
 	auto showRegionFlags = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SHOW REGION FLAG"), false);
-	showRegionFlags->addRange({ { _("NO"), "auto" },{ _("BEFORE NAME") , "1" },{ _("AFTER NAME"), "2" } }, Settings::getInstance()->getString("ShowFlags"));
+	showRegionFlags->addRange({ { _("NO"), "default" },{ _("BEFORE NAME") , "1" },{ _("AFTER NAME"), "2" } }, Settings::getInstance()->getString("ShowFlags"));
 	s->addWithLabel(_("SHOW REGION FLAG"), showRegionFlags);
 	s->addSaveFunc([s, showRegionFlags]
 	{
@@ -4848,10 +4848,10 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		auto shaders_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("SHADER SET"),false);
 		std::string currentShader = SystemConf::getInstance()->get(configName + ".shaderset");
 		if (currentShader.empty()) {
-			currentShader = std::string("auto");
+			currentShader = std::string("default");
 		}
 
-		shaders_choices->add(_("DEFAULT"), "default", currentShader == "auto");
+		shaders_choices->add(_("DEFAULT"), "default", currentShader == "default");
 		shaders_choices->add(_("NONE"), "none", currentShader == "none");
 		for(std::stringstream ss(getShOutput(R"(/usr/bin/getshaders)")); getline(ss, a, ','); )
 		shaders_choices->add(a, a, currentShader == a); // emuelec
@@ -4867,10 +4867,10 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		auto filters_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("FILTER SET"),false);
 		std::string currentFilter = SystemConf::getInstance()->get(configName + ".filterset");
 		if (currentFilter.empty()) {
-			currentFilter = std::string("auto");
+			currentFilter = std::string("default");
 		}
 
-		filters_choices->add(_("DEFAULT"), "default", currentFilter == "auto");
+		filters_choices->add(_("DEFAULT"), "default", currentFilter == "default");
 		filters_choices->add(_("NONE"), "none", currentFilter == "none");
 		for(std::stringstream ss(getShOutput(R"(/usr/bin/getfilters)")); getline(ss, a, ','); )
 		filters_choices->add(a, a, currentFilter == a); // emuelec
@@ -4903,7 +4903,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 			std::string currentShader = SystemConf::getInstance()->get(configName + ".shaderset");
 
 			auto shaders_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("SHADER SET"), false);
-			shaders_choices->add(_("DEFAULT"), "default", currentShader.empty() || currentShader == "auto");
+			shaders_choices->add(_("DEFAULT"), "default", currentShader.empty() || currentShader == "default");
 			shaders_choices->add(_("NONE"), "none", currentShader == "none");
 
 			for (auto shader : installedShaders)
