@@ -3873,7 +3873,12 @@ void GuiMenu::openUISettings()
         {
                 if (Settings::getInstance()->setBool("InvertButtons", invertJoy->getState()))
                 {
-			Settings::getInstance()->setBool("subset.switch-a-b", invertJoy->getState());
+			std::string trueFalse = "false";
+			if ( invertJoy->getState() == true ) {
+				trueFalse = "true";
+			}
+			Settings::getInstance()->setString("subset.swap-a-b", trueFalse);
+			SystemConf::getInstance()->saveSystemConf();
                         InputConfig::AssignActionButtons();
                         s->setVariable("reloadAll", true);
                 }
