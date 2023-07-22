@@ -125,18 +125,22 @@ void TextComponent::setUppercase(bool uppercase)
 	onTextChanged();
 }
 
-void TextComponent::renderSingleGlow(const Transform4x4f& parentTrans, float yOff, float x, float y, bool verticesChanged)
+void TextComponent::renderSingleGlow(const Transform4x4f& parentTrans, float yOff, float x, float y)
 {
-	Transform4x4f trans = parentTrans;
-	trans.translate(x, y);
+	Vector3f off = Vector3f(mPadding.x() + x + mGlowOffset.x(), mPadding.y() + yOff + y + mGlowOffset.y(), 0);
+
+	Transform4x4f trans = parentTrans * getTransform();
+	trans.translate(off);
+
 	Renderer::setMatrix(trans);
-	mFont->renderTextCache(mTextCache.get(), verticesChanged);
+	mFont->renderTextCache(mTextCache.get());	
 }
 
 void TextComponent::renderGlow(const Transform4x4f& parentTrans, float yOff, float xOff)
 {
-	Transform4x4f glowTrans = parentTrans * getTransform();
-	glowTrans.translate(mPadding.x() + mGlowOffset.x() + xOff, mPadding.y() + mGlowOffset.y() + yOff);
+	Transform4x4f glowTrans = parentTrans;
+	if (xOff != 0.0)
+		glowTrans.translate(Vector3f(xOff, 0, 0));
 
 	mTextCache->setRenderingGlow(true);
 	
@@ -146,9 +150,9 @@ void TextComponent::renderGlow(const Transform4x4f& parentTrans, float yOff, flo
 		mTextCache->setColor((mGlowColor & 0xFFFFFF00) | (unsigned char)(a * (mOpacity / 255.0)));
 
 		renderSingleGlow(glowTrans, yOff, 1, 0);
-		renderSingleGlow(glowTrans, yOff, 0, 1, false);
-		renderSingleGlow(glowTrans, yOff, -1, 0, false);
-		renderSingleGlow(glowTrans, yOff, 0, -1, false);
+		renderSingleGlow(glowTrans, yOff, 0, 1);
+		renderSingleGlow(glowTrans, yOff, -1, 0);
+		renderSingleGlow(glowTrans, yOff, 0, -1);
 	}
 	else
 	{
@@ -160,16 +164,16 @@ void TextComponent::renderGlow(const Transform4x4f& parentTrans, float yOff, flo
 		renderSingleGlow(glowTrans, yOff, x, y);
 
 		for (int i = 0; i < 2 * mGlowSize; i++)
-			renderSingleGlow(glowTrans, yOff, ++x, y, false);
+			renderSingleGlow(glowTrans, yOff, ++x, y);
 
 		for (int i = 0; i < 2 * mGlowSize; i++)
-			renderSingleGlow(glowTrans, yOff, x, ++y, false);
+			renderSingleGlow(glowTrans, yOff, x, ++y);
 
 		for (int i = 0; i < 2 * mGlowSize; i++)
-			renderSingleGlow(glowTrans, yOff, --x, y, false);
+			renderSingleGlow(glowTrans, yOff, --x, y);
 
 		for (int i = 0; i < 2 * mGlowSize; i++)
-			renderSingleGlow(glowTrans, yOff, x, --y, false);
+			renderSingleGlow(glowTrans, yOff, x, --y);
 	}
 
 	mTextCache->setRenderingGlow(false);
@@ -272,6 +276,7 @@ void TextComponent::render(const Transform4x4f& parentTrans)
 		}
 	}
 		
+
 	mFont->renderTextCache(mTextCache.get());
 
 	// render currently selected item text again if
