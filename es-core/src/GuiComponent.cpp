@@ -224,7 +224,6 @@ void GuiComponent::addChild(GuiComponent* cmp)
 		cmp->getParent()->removeChild(cmp);
 
 	cmp->setParent(this);
-	cmp->mShowing = mShowing;
 }
 
 void GuiComponent::removeChild(GuiComponent* cmp)
@@ -274,7 +273,6 @@ GuiComponent* GuiComponent::getChild(unsigned int i) const
 void GuiComponent::setParent(GuiComponent* parent)
 {
 	mParent = parent;
-
 }
 
 GuiComponent* GuiComponent::getParent() const
