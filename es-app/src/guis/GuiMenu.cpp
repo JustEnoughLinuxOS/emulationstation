@@ -1462,9 +1462,9 @@ void GuiMenu::openSystemSettings_batocera()
 	});
 #endif
 
-        // Default CPU governor
+        // Default Scaling governor
 
-        auto cpuGovUpdate = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEFAULT CPU GOVERNOR"), false);
+        auto cpuGovUpdate = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEFAULT SCALING GOVERNOR"), false);
 
         std::string cpu_governor = SystemConf::getInstance()->get("system.cpugovernor");
         if (cpu_governor.empty())
@@ -1475,7 +1475,7 @@ void GuiMenu::openSystemSettings_batocera()
         cpuGovUpdate->add(_("PERFORMANCE"), "performance", cpu_governor == "performance");
         cpuGovUpdate->add(_("POWERSAVE"), "powersave", cpu_governor == "powersave");
 
-        s->addWithLabel(_("DEFAULT CPU GOVERNOR"), cpuGovUpdate);
+        s->addWithLabel(_("DEFAULT SCALING GOVERNOR"), cpuGovUpdate);
 
         s->addSaveFunc([this, cpuGovUpdate, cpu_governor]
         {
@@ -5062,7 +5062,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         cpuGovUpdate->add(_("PERFORMANCE"), "performance", cpu_governor == "performance");
         cpuGovUpdate->add(_("powersave"), "powersave", cpu_governor == "powersave");
 
-        systemConfiguration->addWithLabel(_("DEFAULT CPU GOVERNOR"), cpuGovUpdate);
+        systemConfiguration->addWithLabel(_("DEFAULT SCALING GOVERNOR"), cpuGovUpdate);
 
         systemConfiguration->addSaveFunc([configName, cpuGovUpdate, cpu_governor]
         {
