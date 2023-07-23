@@ -5072,6 +5072,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
           }
         });
 
+#if defined(AMD64)
         if (SystemConf::getInstance()->getBool("system.powersave", true)) {
           // GPU performance mode with enhanced power savings
           auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE (AMD ONLY)"), false);
@@ -5095,6 +5096,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
             }
           });
         }
+#endif
 
 #endif
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::latency_reduction))
