@@ -545,6 +545,8 @@ int main(int argc, char* argv[])
 			progressText = _("Loading system config...");
 
 		window.renderSplashScreen(progressText);
+	} else {
+		runSystemCommand("/usr/bin/bash -c \"clear >/dev/console\"", "", nullptr);
 	}
 
 	MameNames::init();
@@ -725,8 +727,8 @@ int main(int argc, char* argv[])
 	while(window.peekGui() != ViewController::get())
 		delete window.peekGui();
 
-	if (SystemData::hasDirtySystems())
-		window.renderSplashScreen(_("SAVING METADATAS. PLEASE WAIT..."));
+	//if (SystemData::hasDirtySystems())
+	//	window.renderSplashScreen(_("SAVING METADATAS. PLEASE WAIT..."));
 
 	ImageIO::saveImageCache();
 	MameNames::deinit();
