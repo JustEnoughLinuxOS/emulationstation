@@ -127,6 +127,13 @@ bool BrightnessControl::isAvailable()
 #if WIN32
     return false;
 #else
-    return true;
+    int fd;
+    fd = open(BACKLIGHT_BRIGHTNESS_MAX_NAME.c_str(), O_RDONLY);
+    if (fd < 0) {
+        return false;
+    } else {
+        close(fd);
+        return true;
+    }
 #endif
 }

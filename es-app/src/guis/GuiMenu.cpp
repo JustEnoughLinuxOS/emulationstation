@@ -1377,7 +1377,7 @@ void GuiMenu::openSystemSettings_batocera()
 
 
 	s->addGroup(_("HARDWARE / CPU"));
-	
+
 #if defined(AMD64)
         // Allow offlining all but n threads
 	auto optionsThreads = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AVAILABLE THREADS"), false);
@@ -1439,43 +1439,47 @@ void GuiMenu::openSystemSettings_batocera()
 
 // Prep for additional device support.
 #if defined(AMD64)
-	// Provides overclock profile switching
-	auto deviceTDP = getenv("DEVICE_BASE_TDP");
-	auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU TDP Max (AMD Only)"), false);
-	std::string selectedOCProfile = SystemConf::getInstance()->get("system.overclock");
-	if (selectedOCProfile.empty() || selectedOCProfile == deviceTDP)
-		selectedOCProfile = "default";
+        std::vector<std::string> cpuVendor = ApiSystem::getInstance()->getCPUVendor();
+        const std::string requiredCPU = "AuthenticAMD";
+	auto it = cpuVendor.begin();
+        if (*it == requiredCPU) {
+		// Provides overclock profile switching
+		auto deviceTDP = getenv("DEVICE_BASE_TDP");
+		auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU TDP Max"), false);
+		std::string selectedOCProfile = SystemConf::getInstance()->get("system.overclock");
+		if (selectedOCProfile.empty() || selectedOCProfile == deviceTDP)
+			selectedOCProfile = "default";
 
-	if (deviceTDP) {
-		optionsOCProfile->add(_("DEVICE DEFAULT (") + deviceTDP + ")", "default", selectedOCProfile == "default");
-	} else {
-		optionsOCProfile->add(_("DEFAULT"), "default", selectedOCProfile == "default");
-	}
-
-        optionsOCProfile->add(_("2.5W"),"2.5w", selectedOCProfile == "2.5w");
-        optionsOCProfile->add(_("4.5W"),"4.5w", selectedOCProfile == "4.5w");
-        optionsOCProfile->add(_("9W"),"9w", selectedOCProfile == "9w");
-        optionsOCProfile->add(_("12W"),"12w", selectedOCProfile == "12w");
-        optionsOCProfile->add(_("15W"),"15w", selectedOCProfile == "15w");
-        optionsOCProfile->add(_("18W"),"18w", selectedOCProfile == "18w");
-        optionsOCProfile->add(_("22W"),"22w", selectedOCProfile == "22w");
-        optionsOCProfile->add(_("24W"),"24w", selectedOCProfile == "24w");
-        optionsOCProfile->add(_("28W"),"28w", selectedOCProfile == "28w");
- 	s->addWithLabel(_("CPU TDP Max (AMD Only)"), optionsOCProfile);
-
-	s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
-	{
-		if (optionsOCProfile->changed()) {
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE!\n\nUSING THE QUIET COOLING PROFILE WHILE USING CERTAIN OVERCLOCKS MAY CAUSE PANIC REBOOTS!\n\nJELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!\n\nCLICK YES THAT YOU AGREE, OR NO TO CANCEL."), _("YES"),
-                                [this,optionsOCProfile] {
-					SystemConf::getInstance()->set("system.overclock", optionsOCProfile->getSelected());
-					SystemConf::getInstance()->saveSystemConf();
-					runSystemCommand("/usr/bin/overclock", "", nullptr);
-                                }, _("NO"), nullptr));
+		if (deviceTDP) {
+			optionsOCProfile->add(_("DEVICE DEFAULT (") + deviceTDP + ")", "default", selectedOCProfile == "default");
+		} else {
+			optionsOCProfile->add(_("DEFAULT"), "default", selectedOCProfile == "default");
 		}
-	});
-#endif
 
+	        optionsOCProfile->add(_("2.5W"),"2.5w", selectedOCProfile == "2.5w");
+	        optionsOCProfile->add(_("4.5W"),"4.5w", selectedOCProfile == "4.5w");
+	        optionsOCProfile->add(_("9W"),"9w", selectedOCProfile == "9w");
+	        optionsOCProfile->add(_("12W"),"12w", selectedOCProfile == "12w");
+	        optionsOCProfile->add(_("15W"),"15w", selectedOCProfile == "15w");
+	        optionsOCProfile->add(_("18W"),"18w", selectedOCProfile == "18w");
+	        optionsOCProfile->add(_("22W"),"22w", selectedOCProfile == "22w");
+	        optionsOCProfile->add(_("24W"),"24w", selectedOCProfile == "24w");
+	        optionsOCProfile->add(_("28W"),"28w", selectedOCProfile == "28w");
+	 	s->addWithLabel(_("CPU TDP Max"), optionsOCProfile);
+
+		s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
+		{
+			if (optionsOCProfile->changed()) {
+				mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE!\n\nUSING THE QUIET COOLING PROFILE WHILE USING CERTAIN OVERCLOCKS MAY CAUSE PANIC REBOOTS!\n\nJELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!\n\nCLICK YES THAT YOU AGREE, OR NO TO CANCEL."), _("YES"),
+	                                [this,optionsOCProfile] {
+						SystemConf::getInstance()->set("system.overclock", optionsOCProfile->getSelected());
+						SystemConf::getInstance()->saveSystemConf();
+						runSystemCommand("/usr/bin/overclock", "", nullptr);
+	                                }, _("NO"), nullptr));
+			}
+		});
+	}
+#endif
         // Default Scaling governor
 
         auto cpuGovUpdate = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEFAULT SCALING GOVERNOR"), false);
@@ -5030,35 +5034,40 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
 // Prep for additional device support.
 #if defined(AMD64)
-        // Provides overclock profile switching
-        auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU TDP Max (AMD Only)"), false);
-        std::string selectedOCProfile = SystemConf::getInstance()->get(configName + ".overclock");
-        if (selectedOCProfile.empty())
-                selectedOCProfile = "default";
+        std::vector<std::string> cpuVendor = ApiSystem::getInstance()->getCPUVendor();
+        const std::string requiredCPU = "AuthenticAMD";
+        auto it = cpuVendor.begin();
+        if (*it == requiredCPU) {
+	        // Provides overclock profile switching
+	        auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU TDP Max"), false);
+	        std::string selectedOCProfile = SystemConf::getInstance()->get(configName + ".overclock");
+	        if (selectedOCProfile.empty())
+	                selectedOCProfile = "default";
 
-	optionsOCProfile->add(_("DEFAULT"), "default", selectedOCProfile == "default");
-        optionsOCProfile->add(_("2.5W"),"2.5w", selectedOCProfile == "2.5w");
-        optionsOCProfile->add(_("4.5W"),"4.5w", selectedOCProfile == "4.5w");
-        optionsOCProfile->add(_("9W"),"9w", selectedOCProfile == "9w");
-        optionsOCProfile->add(_("12W"),"12w", selectedOCProfile == "12w");
-        optionsOCProfile->add(_("15W"),"15w", selectedOCProfile == "15w");
-        optionsOCProfile->add(_("18W"),"18w", selectedOCProfile == "18w");
-        optionsOCProfile->add(_("22W"),"22w", selectedOCProfile == "22w");
-        optionsOCProfile->add(_("24W"),"24w", selectedOCProfile == "24w");
-        optionsOCProfile->add(_("28W"),"28w", selectedOCProfile == "28w");
+		optionsOCProfile->add(_("DEFAULT"), "default", selectedOCProfile == "default");
+	        optionsOCProfile->add(_("2.5W"),"2.5w", selectedOCProfile == "2.5w");
+	        optionsOCProfile->add(_("4.5W"),"4.5w", selectedOCProfile == "4.5w");
+	        optionsOCProfile->add(_("9W"),"9w", selectedOCProfile == "9w");
+	        optionsOCProfile->add(_("12W"),"12w", selectedOCProfile == "12w");
+	        optionsOCProfile->add(_("15W"),"15w", selectedOCProfile == "15w");
+	        optionsOCProfile->add(_("18W"),"18w", selectedOCProfile == "18w");
+	        optionsOCProfile->add(_("22W"),"22w", selectedOCProfile == "22w");
+	        optionsOCProfile->add(_("24W"),"24w", selectedOCProfile == "24w");
+	        optionsOCProfile->add(_("28W"),"28w", selectedOCProfile == "28w");
 
-        systemConfiguration->addWithLabel(_("CPU TDP Max (AMD Only)"), optionsOCProfile);
+	        systemConfiguration->addWithLabel(_("CPU TDP Max"), optionsOCProfile);
 
-        systemConfiguration->addSaveFunc([optionsOCProfile, selectedOCProfile, configName, mWindow]
-        {
-                if (optionsOCProfile->changed()) {
-                        mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE!\n\nUSING THE QUIET COOLING PROFILE WHILE USING CERTAIN OVERCLOCKS MAY CAUSE PANIC REBOOTS!\n\nJELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!\n\nCLICK YES THAT YOU AGREE, OR NO TO CANCEL."), _("YES"),
-			[optionsOCProfile,configName] {
-                                SystemConf::getInstance()->set(configName + ".overclock", optionsOCProfile->getSelected());
-                                SystemConf::getInstance()->saveSystemConf();
-                        }, _("NO"), nullptr));
-                }
-        });
+	        systemConfiguration->addSaveFunc([optionsOCProfile, selectedOCProfile, configName, mWindow]
+	        {
+	                if (optionsOCProfile->changed()) {
+	                        mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: OVERCLOCKING YOUR DEVICE MAY RESULT IN STABILITY PROBLEMS OR CAUSE HARDWARE DAMAGE!\n\nUSING THE QUIET COOLING PROFILE WHILE USING CERTAIN OVERCLOCKS MAY CAUSE PANIC REBOOTS!\n\nJELOS IS NOT RESPONSIBLE FOR ANY DAMAGE THAT MAY OCCUR USING THESE SETTINGS!\n\nCLICK YES THAT YOU AGREE, OR NO TO CANCEL."), _("YES"),
+				[optionsOCProfile,configName] {
+	                                SystemConf::getInstance()->set(configName + ".overclock", optionsOCProfile->getSelected());
+	                                SystemConf::getInstance()->saveSystemConf();
+	                        }, _("NO"), nullptr));
+	                }
+	        });
+	}
 #endif
 
         // Per game/core/emu CPU governor

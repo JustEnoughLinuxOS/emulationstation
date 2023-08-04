@@ -631,6 +631,11 @@ std::vector<std::string> ApiSystem::getAvailableThreads()
         return executeEnumerationScript("/usr/bin/bash -lc \". /etc/profile; get_threads\"");
 }
 
+std::vector<std::string> ApiSystem::getCPUVendor()
+{
+	return executeEnumerationScript("awk \'/vendor_id/ {print $3;exit}\' /proc/cpuinfo");
+}
+
 std::string ApiSystem::getCurrentAudioOutputDevice() 
 {
 #if WIN32
