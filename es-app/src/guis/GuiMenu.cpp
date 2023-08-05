@@ -1440,9 +1440,9 @@ void GuiMenu::openSystemSettings_batocera()
 // Prep for additional device support.
 #if defined(AMD64)
         std::vector<std::string> cpuVendor = ApiSystem::getInstance()->getCPUVendor();
-        const std::string requiredCPU = "AuthenticAMD";
 	auto it = cpuVendor.begin();
-        if (*it == requiredCPU) {
+
+        if (*it == "AuthenticAMD") {
 		// Provides overclock profile switching
 		auto deviceTDP = getenv("DEVICE_BASE_TDP");
 		auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU TDP Max"), false);
@@ -1479,6 +1479,32 @@ void GuiMenu::openSystemSettings_batocera()
 			}
 		});
 	}
+
+        if (*it == "GenuineIntel") {
+                // Provides EPP Profile switching
+                auto optionsEPP = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU Energy Performance Preference"), false);
+                std::string selectedEPP = SystemConf::getInstance()->get("system.power.epp");
+                if (selectedEPP.empty())
+                        selectedEPP = "default";
+
+                optionsEPP->add(_("DEFAULT"), "default", selectedEPP == "default");
+
+                optionsEPP->add(_("Performance"),"performance", selectedEPP == "performance");
+                optionsEPP->add(_("Balance Performance"),"balance_performance", selectedEPP == "balance_performance");
+                optionsEPP->add(_("Balance Power Saving"),"balance_power", selectedEPP == "balance_power");
+                optionsEPP->add(_("Power Saving"),"power", selectedEPP == "power");
+
+                s->addWithLabel(_("CPU Energy Performance Preference"), optionsEPP);
+
+                s->addSaveFunc([this, optionsEPP, selectedEPP]
+                {
+                        if (optionsEPP->changed()) {
+                                SystemConf::getInstance()->set("system.power.epp", optionsEPP->getSelected());
+                                SystemConf::getInstance()->saveSystemConf();
+                                runSystemCommand("/usr/bin/set_epp " + optionsEPP->getSelected(), "", nullptr);
+                        }
+                });
+        }
 #endif
         // Default Scaling governor
 
@@ -5035,9 +5061,9 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 // Prep for additional device support.
 #if defined(AMD64)
         std::vector<std::string> cpuVendor = ApiSystem::getInstance()->getCPUVendor();
-        const std::string requiredCPU = "AuthenticAMD";
         auto it = cpuVendor.begin();
-        if (*it == requiredCPU) {
+
+        if (*it == "AuthenticAMD") {
 	        // Provides overclock profile switching
 	        auto optionsOCProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU TDP Max"), false);
 	        std::string selectedOCProfile = SystemConf::getInstance()->get(configName + ".overclock");
@@ -5068,6 +5094,32 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	                }
 	        });
 	}
+
+        if (*it == "GenuineIntel") {
+                // Provides EPP Profile switching
+                auto optionsEPP = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU Energy Performance Preference"), false);
+                std::string selectedEPP = SystemConf::getInstance()->get(configName + ".power.epp");
+                if (selectedEPP.empty())
+                        selectedEPP = "default";
+
+                optionsEPP->add(_("DEFAULT"), "default", selectedEPP == "default");
+
+                optionsEPP->add(_("Performance"),"performance", selectedEPP == "performance");
+                optionsEPP->add(_("Balance Performance"),"balance_performance", selectedEPP == "balance_performance");
+                optionsEPP->add(_("Balance Power Saving"),"balance_power", selectedEPP == "balance_power");
+                optionsEPP->add(_("Power Saving"),"power", selectedEPP == "power");
+
+                systemConfiguration->addWithLabel(_("CPU Energy Performance Preference"), optionsEPP);
+
+                systemConfiguration->addSaveFunc([optionsEPP, selectedEPP, configName]
+                {
+                        if (optionsEPP->changed()) {
+                                SystemConf::getInstance()->set(configName + ".power.epp", optionsEPP->getSelected());
+                                SystemConf::getInstance()->saveSystemConf();
+                        }
+                });
+        }
+
 #endif
 
         // Per game/core/emu CPU governor
