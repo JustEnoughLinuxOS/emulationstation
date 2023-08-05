@@ -1170,7 +1170,7 @@ void GuiMenu::openSystemSettings_batocera()
 	{
 		// brightness
 		int brightness = BrightnessControl::getInstance()->getBrightness();
-		auto brightnessComponent = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
+		auto brightnessComponent = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 10.f, "%");
 		brightnessComponent->setValue(brightness);
 		brightnessComponent->setOnValueChanged([](const float &newVal) { BrightnessControl::getInstance()->setBrightness((int)Math::round(newVal)); });
 
@@ -1182,8 +1182,11 @@ void GuiMenu::openSystemSettings_batocera()
 		s->addSaveFunc([brightnessPopup]
 			{
 				bool old_value = Settings::getInstance()->getBool("BrightnessPopup");
+				int newBrightness = BrightnessControl::getInstance()->getBrightness();
 				if (old_value != brightnessPopup->getState())
 					Settings::getInstance()->setBool("BrightnessPopup", brightnessPopup->getState());
+					SystemConf::getInstance()->set("system.brightness", std::to_string(newBrightness / 10));
+					SystemConf::getInstance()->saveSystemConf();
 			}
 		);
 
@@ -4158,7 +4161,7 @@ void GuiMenu::openSoundSettings()
 		s->addGroup(_("VOLUME"));
 
 		// volume
-		auto volume = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");
+		auto volume = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 10.f, "%");
 		volume->setValue((float)VolumeControl::getInstance()->getVolume());
 		volume->setOnValueChanged([](const float &newVal) { VolumeControl::getInstance()->setVolume((int)Math::round(newVal)); });
 		s->addWithLabel(_("SYSTEM VOLUME"), volume);
@@ -4171,7 +4174,7 @@ void GuiMenu::openSoundSettings()
 		});
 
 		// preamp
-		auto preamp = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");
+		auto preamp = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
 		preamp->setValue(std::stof(SystemConf::getInstance()->get("audio.preamp")));
 		preamp->setOnValueChanged([](const float &newVal) { SystemConf::getInstance()->set("audio.preamp", std::to_string((int)round(newVal))); });
 		s->addWithLabel(_("VOLUME PREAMP"), preamp);
