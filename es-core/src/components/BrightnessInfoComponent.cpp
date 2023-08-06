@@ -9,7 +9,7 @@
 #include "BrightnessControl.h"
 
 #define PADDING_PX (Renderer::getScreenWidth() * 0.006)
-#define PADDING_BAR (Renderer::isSmallScreen() ? Renderer::getScreenWidth() * 0.02 : Renderer::getScreenWidth() * 0.006)
+#define PADDING_BAR (Renderer::isSmallScreen() ? Renderer::getScreenWidth() * 0.02 : Renderer::getScreenWidth() * 0.008)
 
 #define VISIBLE_TIME 2650
 #define FADE_TIME 350
@@ -25,12 +25,8 @@ BrightnessInfoComponent::BrightnessInfoComponent(Window *window, bool actionLine
 
 	auto theme = ThemeData::getMenuTheme();
 
-	auto font = theme->TextSmall.font;
-	if (Renderer::isSmallScreen())
-		font = theme->Text.font;
-
 	Vector2f fullSize(
-		2 * PADDING_PX + font->sizeText("100%").x(),
+		2 * PADDING_PX + Renderer::getScreenWidth() * 0.02f,
 		2 * PADDING_PX + Renderer::getScreenHeight() * 0.20f);
 
 	fullSize.y() = fullSize.x() * 2.5f;
@@ -45,13 +41,6 @@ BrightnessInfoComponent::BrightnessInfoComponent(Window *window, bool actionLine
 	mFrame->fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
 	addChild(mFrame);
 
-	mLabel = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_CENTER);
-
-	int h = font->sizeText("100%").y() + PADDING_PX;
-	mLabel->setPosition(0, fullSize.y() - h);
-	mLabel->setSize(fullSize.x(), h);
-	addChild(mLabel);
-
 	// FCA TopRight
 	float posX = Renderer::getScreenWidth() - (Renderer::getScreenWidth() * 0.02f) - fullSize.x();
 	float posY = Renderer::getScreenHeight() * 0.13f; // 351ELEC
@@ -62,7 +51,6 @@ BrightnessInfoComponent::BrightnessInfoComponent(Window *window, bool actionLine
 
 BrightnessInfoComponent::~BrightnessInfoComponent()
 {
-	delete mLabel;
 	delete mFrame;
 }
 
@@ -98,11 +86,6 @@ void BrightnessInfoComponent::update(int deltaTime)
 
 		mBrightness = brightness;
 
-		if (mBrightness == 0)
-			mLabel->setText("X");
-		else
-			mLabel->setText(std::to_string(mBrightness) + "%");
-
 		if (!firstTime)
 		{
 			mDisplayTime = 0;
@@ -129,10 +112,10 @@ void BrightnessInfoComponent::render(const Transform4x4f &parentTrans)
 	Transform4x4f trans = parentTrans * getTransform();
 	Renderer::setMatrix(trans);
 
-	float x = PADDING_PX + PADDING_BAR;
-	float y = PADDING_PX * 2;
-	float w = getSize().x() - 2 * PADDING_PX - 2 * PADDING_BAR;
-	float h = getSize().y() - mLabel->getSize().y() - PADDING_PX - PADDING_PX;
+        float x = PADDING_PX + PADDING_BAR;
+        float y = PADDING_PX;
+        float w = getSize().x() - 2 * PADDING_PX - 2 * PADDING_BAR;
+        float h = getSize().y() - PADDING_PX - PADDING_PX;
 
 	auto theme = ThemeData::getMenuTheme();
 
