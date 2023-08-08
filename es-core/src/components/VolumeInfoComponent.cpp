@@ -27,7 +27,7 @@ VolumeInfoComponent::VolumeInfoComponent(Window* window, bool actionLine)
 
 	Vector2f fullSize(
 		2 * PADDING_PX + Renderer::getScreenWidth() * 0.02f,
-		2 * PADDING_PX + Renderer::getScreenHeight() * 0.20f);
+		4 * PADDING_PX + Renderer::getScreenHeight() * 0.20f);
 	
 	fullSize.y() = fullSize.x() * 2.5f;
 

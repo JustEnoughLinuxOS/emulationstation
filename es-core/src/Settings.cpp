@@ -74,8 +74,8 @@ void Settings::setDefaults()
 	mBoolMap["ShowExit"] = true;
 	mBoolMap["ExitOnRebootRequired"] = false;
 	mBoolMap["Windowed"] = false;
-	mBoolMap["SplashScreen"] = true;
-	mBoolMap["SplashScreenProgress"] = true;
+	mBoolMap["SplashScreen"] = false;
+	mBoolMap["SplashScreenProgress"] = false;
 	mBoolMap["StartupOnGameList"] = false;
 	mBoolMap["BrightnessPopup"] = true;
 

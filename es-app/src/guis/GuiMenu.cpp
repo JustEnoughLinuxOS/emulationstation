@@ -1314,71 +1314,6 @@ void GuiMenu::openSystemSettings_batocera()
 
 #endif
 
-	s->addGroup(_("HARDWARE / AUDIO"));
-
-	// audio device
-	auto optionsAudio = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AUDIO DEVICE"), false);
-
-	std::vector<std::string> availableAudio = ApiSystem::getInstance()->getAvailableAudioOutputDevices();
-	std::string selectedAudio = ApiSystem::getInstance()->getCurrentAudioOutputDevice();
-
-	bool vfound = false;
-	for (auto it = availableAudio.begin(); it != availableAudio.end(); it++)
-	{
-		optionsAudio->add((*it), (*it), selectedAudio == (*it));
-		if (selectedAudio == (*it))
-			vfound = true;
-	}
-	if (!vfound)
-		optionsAudio->add(selectedAudio, selectedAudio, true);
-
-	s->addWithLabel(_("AUDIO DEVICE"), optionsAudio);
-
-	s->addSaveFunc([this, optionsAudio, selectedAudio]
-	{
-		if (optionsAudio->changed()) {
-			std::string msg = _("Emulationstation will restart")+"\n";
-			msg += _("Do you want to proceed ?");
-			mWindow->pushGui(new GuiMsgBox(mWindow, msg, _("YES"), [optionsAudio] {
-				ApiSystem::getInstance()->setAudioOutputDevice(optionsAudio->getSelected());
-				quitES(QuitMode::QUIT);
-			}, "NO",nullptr));
-		}
-		SystemConf::getInstance()->saveSystemConf();
-	});
-
-        // audio path
-        auto AudioPath = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AUDIO PATH"), false);
-
-        std::vector<std::string> availablePaths = ApiSystem::getInstance()->getAvailableAudioOutputPaths();
-        std::string selectedPath = ApiSystem::getInstance()->getCurrentAudioOutputPath();
-
-        bool afound = false;
-        for (auto it = availablePaths.begin(); it != availablePaths.end(); it++)
-        {
-                AudioPath->add((*it), (*it), selectedPath == (*it));
-                if (selectedPath == (*it))
-                        afound = true;
-        }
-        if (!afound)
-                AudioPath->add(selectedPath, selectedPath, true);
-
-        s->addWithLabel(_("AUDIO PATH"), AudioPath);
-
-        s->addSaveFunc([this, AudioPath, selectedPath]
-        {
-                if (AudioPath->changed()) {
-                        std::string msg = _("Emulationstation will restart")+"\n";
-                        msg += _("Do you want to proceed ?");
-                        mWindow->pushGui(new GuiMsgBox(mWindow, msg, _("YES"), [AudioPath] {
-                                ApiSystem::getInstance()->setAudioOutputPath(AudioPath->getSelected());
-                                quitES(QuitMode::QUIT);
-                        }, "NO",nullptr));
-                }
-                SystemConf::getInstance()->saveSystemConf();
-        });
-
-
 	s->addGroup(_("HARDWARE / CPU"));
 
 #if defined(AMD64)
@@ -4171,16 +4106,6 @@ void GuiMenu::openSoundSettings()
 #if !WIN32
 			SystemConf::getInstance()->set("audio.volume", std::to_string((int)round(volume->getValue())));
 #endif
-		});
-
-		// preamp
-		auto preamp = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%");
-		preamp->setValue(std::stof(SystemConf::getInstance()->get("audio.preamp")));
-		preamp->setOnValueChanged([](const float &newVal) { SystemConf::getInstance()->set("audio.preamp", std::to_string((int)round(newVal))); });
-		s->addWithLabel(_("VOLUME PREAMP"), preamp);
-		s->addSaveFunc([this, preamp]
-		{
-			runSystemCommand("amixer -M set Pre-Amp -- " + std::to_string((int)round(preamp->getValue())) + "%","", nullptr);
 		});
 
 		// Music Volume
