@@ -434,13 +434,6 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 				}, _("NO"), nullptr));
      });
 
-    dangerZone->addEntry(_("RESET AUDIO CONFIGURATION"), true, [mWindow] {
-    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL RESTART EMULATIONSTATION AND REBOOT!"), _("YES"),
-                                [] {
-                                runSystemCommand("/usr/bin/run \"rm -f /storage/.config/asound*;reboot\"", "", nullptr);
-                                }, _("NO"), nullptr));
-     });
-
 mWindow->pushGui(dangerZone);
 }
 
