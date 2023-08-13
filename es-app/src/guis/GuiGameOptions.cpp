@@ -208,9 +208,13 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 				public_announce->setState(SystemConf::getInstance()->getBool("global.netplay_public_announce"));
 				msgBox->addWithLabel(_("PUBLICLY ANNOUNCE GAME"), public_announce);
 				msgBox->addSaveFunc([public_announce] { SystemConf::getInstance()->setBool("global.netplay_public_announce", public_announce->getState()); });
-						
+
+				msgBox->addInputTextRow(_("NETPLAY NICKNAME"), "global.netplay.nickname", false);
+				msgBox->addInputTextRow(_("NETPLAY HOST"), "global.netplay.host", false);
+				msgBox->addInputTextRow(_("NETPLAY PORT"), "global.netplay.port", false);
+
 				// passwords
-				msgBox->addInputTextRow(_("SET NETPLAY PASSWORD"), "global.netplay.password", false);
+				msgBox->addInputTextRow(_("SET NETPLAY HOST PASSWORD"), "global.netplay.password", false);
 
 				mWindow->pushGui(msgBox);
 				close();
