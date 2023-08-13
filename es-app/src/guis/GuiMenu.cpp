@@ -2169,6 +2169,7 @@ void GuiMenu::openNetplaySettings()
 		SystemConf::getInstance()->set("global.netplay.port", "55435");
 
 	settings->addInputTextRow(_("NICKNAME"), "global.netplay.nickname", false);
+        settings->addInputTextRow(_("HOST"), "global.netplay.host", false);
 	settings->addInputTextRow(_("PORT"), "global.netplay.port", false);
 
 	// RELAY SERVER

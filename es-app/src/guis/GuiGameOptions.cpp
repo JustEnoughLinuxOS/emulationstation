@@ -167,13 +167,13 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 
 		if (game->isNetplaySupported())
 		{
-			mMenu.addEntry(_("NETPLAY HOSTING/OPTIONS"), false, [window, game, this]
+			mMenu.addEntry(_("NETPLAY OPTIONS"), false, [window, game, this]
 			{
 				GuiSettings* msgBox = new GuiSettings(mWindow, _("NETPLAY"));
 				msgBox->setSubTitle(game->getName());
 				msgBox->addGroup(_("START GAME"));
 
-				msgBox->addEntry(_U("\uF144 ") + _("BEGIN HOSTING A NETPLAY SESSION"), false, [window, msgBox, game]
+				msgBox->addEntry(_U("\uF144 ") + _("HOST A NETPLAY SESSION"), false, [window, msgBox, game]
 				{
 					if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
 					{
@@ -187,6 +187,20 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 					msgBox->close();
 				});
 
+                                msgBox->addEntry(_U("\uF144 ") + _("CONNECT TO A NETPLAY SESSION"), false, [window, msgBox, game]
+                                {
+                                        if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
+                                        {
+                                                window->pushGui(new GuiMsgBox(window, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
+                                                return;
+                                        }
+
+                                        LaunchGameOptions options;
+                                        options.netPlayMode = CLIENT;
+                                        ViewController::get()->launch(game, options);
+                                        msgBox->close();
+                                });
+
 				msgBox->addGroup(_("OPTIONS"));
 
 				// pubic announce
@@ -196,8 +210,7 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 				msgBox->addSaveFunc([public_announce] { SystemConf::getInstance()->setBool("global.netplay_public_announce", public_announce->getState()); });
 						
 				// passwords
-				msgBox->addInputTextRow(_("SET PLAYER PASSWORD"), "global.netplay.password", false);
-				msgBox->addInputTextRow(_("SET VIEWER PASSWORD"), "global.netplay.spectatepassword", false);
+				msgBox->addInputTextRow(_("SET NETPLAY PASSWORD"), "global.netplay.password", false);
 
 				mWindow->pushGui(msgBox);
 				close();
