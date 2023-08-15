@@ -626,6 +626,11 @@ std::vector<std::string> ApiSystem::getAvailableAudioOutputDevices()
 	return executeEnumerationScript("set-audio list");
 }
 
+std::vector<std::string> ApiSystem::getAvailableChannels()
+{
+        return executeEnumerationScript("/usr/bin/bash -lc \"/usr/bin/wifictl channels\"");
+}
+
 std::vector<std::string> ApiSystem::getAvailableThreads()
 {
         return executeEnumerationScript("/usr/bin/bash -lc \". /etc/profile; get_threads\"");

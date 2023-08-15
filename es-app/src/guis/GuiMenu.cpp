@@ -2169,24 +2169,29 @@ void GuiMenu::openNetplaySettings()
 		SystemConf::getInstance()->set("global.netplay.port", "55435");
 
 	settings->addInputTextRow(_("NICKNAME"), "global.netplay.nickname", false);
-        settings->addInputTextRow(_("HOST"), "global.netplay.host", false);
-	settings->addInputTextRow(_("PORT"), "global.netplay.port", false);
 
-	// RELAY SERVER
+	bool adhocEnabled = SystemConf::getInstance()->getBool("network.adhoc.enabled");
 	std::string mitm = SystemConf::getInstance()->get("global.netplay.relay");
-
 	auto mitms = std::make_shared<OptionListComponent<std::string> >(mWindow, _("USE RELAY SERVER"), false);
-	mitms->add(_("NONE"), "", mitm.empty() || mitm == "none");
-	mitms->add("NEW YORK", "nyc", mitm == "nyc");
-	mitms->add("MADRID", "madrid", mitm == "madrid");
-	mitms->add("MONTREAL", "montreal", mitm == "montreal");
-	mitms->add("SAO PAULO", "saopaulo", mitm == "saopaulo");
 
-	if (!mitms->hasSelection())
-		mitms->selectFirstItem();
+        if (!adhocEnabled)
+	{
+		settings->addInputTextRow(_("HOST"), "global.netplay.host", false);
+		settings->addInputTextRow(_("PORT"), "global.netplay.port", false);
 
-	settings->addWithLabel(_("USE RELAY SERVER"), mitms);
+		// RELAY SERVER
+		mitms->add(_("NONE"), "", mitm.empty() || mitm == "none");
+		mitms->add("NEW YORK", "nyc", mitm == "nyc");
+		mitms->add("MADRID", "madrid", mitm == "madrid");
+		mitms->add("MONTREAL", "montreal", mitm == "montreal");
+		mitms->add("SAO PAULO", "saopaulo", mitm == "saopaulo");
 
+		if (!mitms->hasSelection())
+			mitms->selectFirstItem();
+
+		settings->addWithLabel(_("USE RELAY SERVER"), mitms);
+
+	}
 	settings->addGroup(_("GAME INDEXES"));
 
 	// CheckOnStart
@@ -4212,9 +4217,10 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 	win->pushGui(new GuiWifi(win, title, data, onsave));
 }
 
-void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
+void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdhocEnable)
 {
 	bool baseNetworkEnabled = SystemConf::getInstance()->getBool("network.enabled");
+	bool adhocEnabled = SystemConf::getInstance()->getBool("network.adhoc.enabled");
 
 	auto theme = ThemeData::getMenuTheme();
 	std::shared_ptr<Font> font = theme->Text.font;
@@ -4237,75 +4243,147 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 	s->addWithLabel(_("SHOW NETWORK INDICATOR"), networkIndicator);
 	s->addSaveFunc([networkIndicator] { Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState()); });
 
-	s->addGroup(_("NETWORK SETTINGS"));
+	s->addGroup(_("NETWORK CONFIGURATION"));
 
 #if !WIN32
 	// Hostname
 	s->addInputTextRow(_("HOSTNAME"), "system.hostname", false);
 #endif
 
-//        std::string a;
-//        auto bluetoothd_enabled = std::make_shared<SwitchComponent>(mWindow);
-//                bool btbaseEnabled = SystemConf::getInstance()->get("bluetooth.enabled") == "1";
-//                bluetoothd_enabled->setState(btbaseEnabled);
-//                s->addWithLabel(_("ENABLE BLUETOOTH"), bluetoothd_enabled);
-//                s->addSaveFunc([bluetoothd_enabled] {
-//                        if (bluetoothd_enabled->changed()) {
-//                        if (bluetoothd_enabled->getState() == false) {
-//                                runSystemCommand("systemctl stop bluetooth", "", nullptr);
-//                                runSystemCommand("rm /storage/.cache/services/bluez.conf", "", nullptr);
-//                        } else {
-//                                runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
-//                                runSystemCommand("touch /storage/.cache/services/bluez.conf", "", nullptr);
-//                                runSystemCommand("systemctl start bluetooth", "", nullptr);
-//                        }
-//                bool bluetoothenabled = bluetoothd_enabled->getState();
-//                SystemConf::getInstance()->set("bluetooth.enabled", bluetoothenabled ? "1" : "0");
-//                                SystemConf::getInstance()->saveSystemConf();
-//                        }
-//                });
-
         // Wifi enable
         auto enable_net = std::make_shared<SwitchComponent>(mWindow);
+        auto enable_adhoc = std::make_shared<SwitchComponent>(mWindow);
+
         enable_net->setState(baseNetworkEnabled);
+	enable_adhoc->setState(adhocEnabled);
+
         s->addWithLabel(_("ENABLE NETWORK"), enable_net, selectWifiEnable);
 
 	// window, title, settingstring,
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
 	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
 
-	if (baseNetworkEnabled)
-	{
-		s->addInputTextRow(_("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
-		s->addInputTextRow(_("WIFI KEY"), "wifi.key", true);
-	}
+        s->addInputTextRow(_("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
+        s->addInputTextRow(_("WIFI KEY"), "wifi.key", true);
 
-	s->addSaveFunc([baseNetworkEnabled, baseSSID, baseKEY, enable_net, window]
+	auto optionsAdhocID = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LOCAL PLAY ID"), false);
+	std::string selectedAdhocID = SystemConf::getInstance()->get("wifi.adhoc.id");
+
+        auto optionsChannels = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LOCAL NETWORK CHANNEL"), false);
+
+        std::vector<std::string> availableChannels = ApiSystem::getInstance()->getAvailableChannels();
+        std::string selectedChannel = SystemConf::getInstance()->get("wifi.adhoc.channel");
+
+        // Enable or disable ipv6
+        auto ipv6_enable = std::make_shared<SwitchComponent>(mWindow);
+        bool ipv6Enabled = SystemConf::getInstance()->get("ipv6.enabled") == "1";
+        ipv6_enable->setState(ipv6Enabled);
+        s->addWithLabel(_("ENABLE IPV6"), ipv6_enable);
+        s->addSaveFunc([ipv6_enable] {
+                bool ipv6Enabled = ipv6_enable->getState();
+                SystemConf::getInstance()->set("ipv6.enabled", ipv6Enabled ? "1" : "0");
+                SystemConf::getInstance()->saveSystemConf();
+                runSystemCommand("/usr/bin/toggle-ipv6", "", nullptr);
+        });
+
+	s->addGroup(_("LOCAL NETPLAY SETTINGS"));
+	// Adhoc mode options
+       enable_adhoc->setState(adhocEnabled);
+       s->addWithLabel(_("LOCAL PLAY MODE"), enable_adhoc, selectAdhocEnable);
+
+	if (selectedAdhocID.empty())
+	{
+		selectedAdhocID = "1";
+	}
+	optionsAdhocID->add(_("1 (HOST)"),"1", selectedAdhocID == "1");
+	optionsAdhocID->add(_("2 (CLIENT 1)"),"2", selectedAdhocID == "2");
+	optionsAdhocID->add(_("3 (CLIENT 2)"),"3", selectedAdhocID == "3");
+	optionsAdhocID->add(_("4 (CLIENT 3)"),"4", selectedAdhocID == "4");
+	s->addWithLabel(_("LOCAL PLAY ID"), optionsAdhocID);
+
+       if (selectedChannel.empty())
+                selectedChannel = "6";
+
+        bool wfound = false;
+        for (auto it = availableChannels.begin(); it != availableChannels.end(); it++)
+        {
+                if ( *it != "default" ) {
+                        optionsChannels->add((*it), (*it), selectedChannel == (*it));
+                        if (selectedChannel == (*it))
+                                wfound = true;
+                }
+        }
+
+        if (!wfound)
+                optionsChannels->add(selectedChannel, selectedChannel, true);
+
+        s->addWithLabel(_("LOCAL NETWORK CHANNEL"), optionsChannels);
+
+	s->addSaveFunc([baseNetworkEnabled, adhocEnabled, baseSSID, baseKEY, enable_net, enable_adhoc, optionsAdhocID, selectedAdhocID, optionsChannels, selectedChannel, window]
 	{
 		bool networkenabled = enable_net->getState();
+		bool adhocenabled = enable_adhoc->getState();
+
+		SystemConf::getInstance()->setBool("network.adhoc.enabled", adhocenabled);
+		SystemConf::getInstance()->set("wifi.adhoc.id", optionsAdhocID->getSelected());
+                SystemConf::getInstance()->set("wifi.adhoc.channel", optionsChannels->getSelected());
+
 
 		SystemConf::getInstance()->setBool("network.enabled", networkenabled);
 
-		if (networkenabled)
-		{
-			std::string newSSID = SystemConf::getInstance()->get("wifi.ssid");
-			std::string newKey = SystemConf::getInstance()->get("wifi.key");
 
-			if (baseSSID != newSSID || baseKEY != newKey || !baseNetworkEnabled)
-			{
-				if (ApiSystem::getInstance()->enableWifi(newSSID, newKey))
-					window->pushGui(new GuiMsgBox(window, _("WIFI ENABLED")));
-				else
-					window->pushGui(new GuiMsgBox(window, _("WIFI CONFIGURATION ERROR")));
-			}
+		if (adhocenabled)
+		{
+			SystemConf::getInstance()->set("global.netplay.host", "192.168.80.1");
+			SystemConf::getInstance()->set("global.netplay.port", "55435");
+			SystemConf::getInstance()->set("global.netplay.relay", "none");
 		}
-		else if (baseNetworkEnabled)
+
+		SystemConf::getInstance()->saveSystemConf();
+
+                if (networkenabled)
+                {
+                        std::string newSSID = SystemConf::getInstance()->get("wifi.ssid");
+                        std::string newKey = SystemConf::getInstance()->get("wifi.key");
+
+                        if (baseSSID != newSSID || baseKEY != newKey || !baseNetworkEnabled || adhocEnabled != adhocenabled)
+                        {
+                                if (ApiSystem::getInstance()->enableWifi(newSSID, newKey))
+                                        window->pushGui(new GuiMsgBox(window, _("NETWORK CONFIGURATION UPDATED")));
+                                else
+                                        window->pushGui(new GuiMsgBox(window, _("NETWORK CONFIGURATION ERROR")));
+                        }
+                }
+                else
+		{
 			ApiSystem::getInstance()->disableWifi();
+		}
+
+	});
+
+/*
+	enable_adhoc->setOnChangedCallback([this, s, adhocEnabled, enable_adhoc, enable_net, baseNetworkEnabled]()
+	{
+
+		bool networkenabled = enable_net->getState();
+		bool adhocenabled = enable_adhoc->getState();
+
+		if (networkenabled && adhocEnabled != adhocenabled)
+		{
+			SystemConf::getInstance()->setBool("network.adhoc.enabled", adhocenabled);
+
+			if (adhocenabled)
+				ApiSystem::getInstance()->enableWifi(SystemConf::getInstance()->get("wifi.ssid"), SystemConf::getInstance()->get("wifi.key"));
+			else
+				ApiSystem::getInstance()->disableWifi();
+		}
 	});
 
 	enable_net->setOnChangedCallback([this, s, baseNetworkEnabled, enable_net]()
 	{
+
 		bool networkenabled = enable_net->getState();
+
 		if (baseNetworkEnabled != networkenabled)
 		{
 			SystemConf::getInstance()->setBool("network.enabled", networkenabled);
@@ -4319,18 +4397,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable)
 			openNetworkSettings_batocera(true);
 		}
 	});
-
-        // Enable or disable ipv6
-        auto ipv6_enable = std::make_shared<SwitchComponent>(mWindow);
-        bool ipv6Enabled = SystemConf::getInstance()->get("ipv6.enabled") == "1";
-        ipv6_enable->setState(ipv6Enabled);
-        s->addWithLabel(_("ENABLE IPV6"), ipv6_enable);
-        s->addSaveFunc([ipv6_enable] {
-                bool ipv6Enabled = ipv6_enable->getState();
-                SystemConf::getInstance()->set("ipv6.enabled", ipv6Enabled ? "1" : "0");
-                SystemConf::getInstance()->saveSystemConf();
-                runSystemCommand("/usr/bin/toggle-ipv6", "", nullptr);
-        });
+*/
 
 	s->addGroup(_("NETWORK SERVICES"));
 

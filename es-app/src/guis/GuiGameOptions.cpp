@@ -202,19 +202,23 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
                                 });
 
 				msgBox->addGroup(_("OPTIONS"));
-
-				// pubic announce
-				auto public_announce = std::make_shared<SwitchComponent>(mWindow);
-				public_announce->setState(SystemConf::getInstance()->getBool("global.netplay_public_announce"));
-				msgBox->addWithLabel(_("PUBLICLY ANNOUNCE GAME"), public_announce);
-				msgBox->addSaveFunc([public_announce] { SystemConf::getInstance()->setBool("global.netplay_public_announce", public_announce->getState()); });
-
 				msgBox->addInputTextRow(_("NETPLAY NICKNAME"), "global.netplay.nickname", false);
-				msgBox->addInputTextRow(_("NETPLAY HOST"), "global.netplay.host", false);
-				msgBox->addInputTextRow(_("NETPLAY PORT"), "global.netplay.port", false);
+				msgBox->addInputTextRow(_("NETPLAY HOST PASSWORD"), "global.netplay.password", false);
 
-				// passwords
-				msgBox->addInputTextRow(_("SET NETPLAY HOST PASSWORD"), "global.netplay.password", false);
+				bool adhocEnabled = SystemConf::getInstance()->getBool("network.adhoc.enabled");
+				if (!adhocEnabled)
+				{
+
+					// pubic announce
+					auto public_announce = std::make_shared<SwitchComponent>(mWindow);
+					public_announce->setState(SystemConf::getInstance()->getBool("global.netplay_public_announce"));
+					msgBox->addWithLabel(_("PUBLICLY ANNOUNCE GAME"), public_announce);
+					msgBox->addSaveFunc([public_announce] { SystemConf::getInstance()->setBool("global.netplay_public_announce", public_announce->getState()); });
+
+					msgBox->addInputTextRow(_("NETPLAY HOST"), "global.netplay.host", false);
+					msgBox->addInputTextRow(_("NETPLAY PORT"), "global.netplay.port", false);
+
+				}
 
 				mWindow->pushGui(msgBox);
 				close();

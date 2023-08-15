@@ -179,6 +179,9 @@ public:
     std::vector<std::string> getCPUVendor();
     std::vector<std::string> getAvailableThreads();
 
+    /* WIFI channels */
+    std::vector<std::string> getAvailableChannels();
+
     /* audio card */
     bool setAudioOutputDevice(std::string device);
     std::vector<std::string> getAvailableAudioOutputDevices();
