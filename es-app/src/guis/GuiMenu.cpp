@@ -2346,12 +2346,18 @@ void GuiMenu::openGamesSettings_batocera()
 	incrementalSaveStates->setState(SystemConf::getInstance()->get("global.incrementalsavestates") == "1");
 	s->addWithLabel(_("INCREMENTAL SAVESTATES"), incrementalSaveStates);
 	s->addSaveFunc([incrementalSaveStates] { SystemConf::getInstance()->set("global.incrementalsavestates", incrementalSaveStates->getState() ? "1" : "0"); });
+	
+	// Maximum incremental savestates
+	auto maxIncrementalSaves = std::make_shared<SwitchComponent>(mWindow,"MAX INCREMENTAL SAVESTATES");
+	maxIncrementalSaves->AddRange({ { _("UNLIMITED"), "default" },{ _("1") , "1" },{ _("2") , "2" },{ _("3") , "3" },{ _("5") , "5" },{ _("10") , "10" },{ _("20") , "20" },{ _("50") , "50" },{ _("100") , "100" },{ _("200") , "200" },{ _("500") , "500" },{ _("1000") , "1000" } }, SystemConf::getInstance()->get("global.maxincrementalsaves"));
+	s->addWithLabel(_("MAXIMUM INCREMENTAL SAVESTATES BEFORE ROLLOVER"), maxIncrementalSaves);
+	s->addSaveFunc([maxIncrementalSaves] { SystemConf::getInstance()->set("global.maxincrementalsaves", maxIncrementalSaves->getState() ? "0" : maxIncrementalSaves->getSelected()); });
 
-        // Automated Cloud Backup
-        auto cloudBackup = std::make_shared<SwitchComponent>(mWindow);
-        cloudBackup->setState(SystemConf::getInstance()->get("cloud.backup") == "1");
-        s->addWithLabel(_("BACKUP TO CLOUD ON GAME EXIT"), cloudBackup);
-        s->addSaveFunc([cloudBackup] { SystemConf::getInstance()->set("cloud.backup", cloudBackup->getState() ? "1" : "0"); });
+	// Automated Cloud Backup
+	auto cloudBackup = std::make_shared<SwitchComponent>(mWindow);
+	cloudBackup->setState(SystemConf::getInstance()->get("cloud.backup") == "1");
+	s->addWithLabel(_("BACKUP TO CLOUD ON GAME EXIT"), cloudBackup);
+	s->addSaveFunc([cloudBackup] { SystemConf::getInstance()->set("cloud.backup", cloudBackup->getState() ? "1" : "0"); });
 
 	// Shaders preset
 #ifndef _ENABLEEMUELEC
