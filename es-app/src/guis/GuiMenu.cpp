@@ -2349,7 +2349,7 @@ void GuiMenu::openGamesSettings_batocera()
 	
 	// Maximum incremental savestates
 	auto maxIncrementalSaves = std::make_shared<OptionListComponent<std::string>>(mWindow,"MAX INCREMENTAL SAVESTATES");
-	maxIncrementalSaves->AddRange({ { _("UNLIMITED"), "default" },{ _("2") , "2" },{ _("3") , "3" },{ _("5") , "5" },{ _("10") , "10" },{ _("20") , "20" },{ _("50") , "50" },{ _("100") , "100" },{ _("200") , "200" },{ _("500") , "500" },{ _("1000") , "1000" } }, SystemConf::getInstance()->get("global.maxincrementalsaves"));
+	maxIncrementalSaves->addRange({ { _("UNLIMITED"), "default" },{ _("2") , "2" },{ _("3") , "3" },{ _("5") , "5" },{ _("10") , "10" },{ _("20") , "20" },{ _("50") , "50" },{ _("100") , "100" },{ _("200") , "200" },{ _("500") , "500" },{ _("1000") , "1000" } }, SystemConf::getInstance()->get("global.maxincrementalsaves"));
 	s->addWithLabel(_("MAXIMUM INCREMENTAL SAVESTATES BEFORE ROLLOVER"), maxIncrementalSaves);
 	s->addSaveFunc([maxIncrementalSaves] { SystemConf::getInstance()->set("global.maxincrementalsaves", maxIncrementalSaves->getSelected()); });
 
