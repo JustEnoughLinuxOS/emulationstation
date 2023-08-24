@@ -75,6 +75,7 @@ private:
 	void openNetworkSettings_batocera(bool selectWifiEnable = false, bool selectAdhocEnable = false);	
 	void openQuitMenu_batocera();
 	void openSystemInformations_batocera();
+	void openChangeLog();
 	void openDeveloperSettings();
 	void openNetplaySettings();
 	void openRetroachievementsSettings();

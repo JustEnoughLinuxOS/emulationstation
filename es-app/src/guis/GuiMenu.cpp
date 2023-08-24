@@ -924,6 +924,13 @@ void GuiMenu::openSystemInformations_batocera()
 
 	window->pushGui(informationsGui);
 }
+
+void GuiMenu::openChangeLog()
+{
+	runSystemCommand("system-upgrade changelog", "", nullptr);
+	runSystemCommand("show_changelog", "", nullptr);
+}
+
 void GuiMenu::openDecorationConfiguration(Window *mWindow, std::string configName, std::vector<DecorationSetInfo> sets)
 {
 	//Using a shared pointer to ensure the memory doesn't cause issues in the other class
@@ -1623,7 +1630,7 @@ void GuiMenu::openSystemSettings_batocera()
         if (selectedBranch.empty())
                 selectedBranch = "stable";
 
-        optionsUpdates->add(_("STABLE"), "stable", selectedBranch == "stable");
+        optionsUpdates->add(_("RELEASE"), "stable", selectedBranch == "stable");
 //        optionsUpdates->add(_("DEVELOPMENT"), "dev", selectedBranch == "dev");
 
         s->addWithLabel(_("UPDATE BRANCH"), optionsUpdates);
@@ -1650,6 +1657,8 @@ void GuiMenu::openSystemSettings_batocera()
         {
                 SystemConf::getInstance()->setBool("updates.enabled", updates_enabled->getState());
         });
+
+        s->addEntry(_("CHANGE LOG"), true, [this] { openChangeLog(); });
 
                 // Start update
         s->addEntry(GuiUpdate::state == GuiUpdateState::State::UPDATE_READY ? _("APPLY UPDATE") : _("START UPDATE"), true, [this]
