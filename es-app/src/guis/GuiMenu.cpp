@@ -5153,7 +5153,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
                   gpu_performance = "default";
 
           gpuPerformance->add(_("DEFAULT"), "default", gpu_performance == "default");
-          gpuPerformance->add(_("AUTO"), "default", gpu_performance == "auto");
+          gpuPerformance->add(_("AUTO"), "auto", gpu_performance == "auto");
           gpuPerformance->add(_("LOW"), "low", gpu_performance == "low");
           gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
           gpuPerformance->add(_("PEAK"), "profile_peak", gpu_performance == "profile_peak");
