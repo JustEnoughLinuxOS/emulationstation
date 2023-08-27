@@ -1412,7 +1412,7 @@ void GuiMenu::openSystemSettings_batocera()
 	                                [this,optionsOCProfile] {
 						SystemConf::getInstance()->set("system.overclock", optionsOCProfile->getSelected());
 						SystemConf::getInstance()->saveSystemConf();
-						runSystemCommand("/usr/bin/overclock", "", nullptr);
+						runSystemCommand("/usr/bin/overclock " + optionsOCProfile->getSelected(), "", nullptr);
 	                                }, _("NO"), nullptr));
 			}
 		});
