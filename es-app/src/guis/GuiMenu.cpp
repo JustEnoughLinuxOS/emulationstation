@@ -1954,7 +1954,7 @@ void GuiMenu::openSystemSettings_batocera()
 }
 void GuiMenu::openSavestatesConfiguration(Window* mWindow, std::string configName)
 {
-	GuiSettings guiSaves = new GuiSettings(mWindow, _("SAVES CONFIGUREATION").c_str());
+	GuiSettings* guiSaves = new GuiSettings(mWindow, _("SAVES CONFIGUREATION").c_str());
 
 	// autosave/load
 	auto autosave_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("AUTO SAVE/LOAD ON GAME LAUNCH"));
