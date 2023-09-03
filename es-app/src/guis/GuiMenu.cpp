@@ -1952,7 +1952,37 @@ void GuiMenu::openSystemSettings_batocera()
 
 	mWindow->pushGui(s);
 }
+void GuiMenu::openSavestatesConfiguration(Window* mWindow, std::string configName)
+{
+	GuiSettings* guiSaves = new GuiSettings(mWindow, _("SAVES CONFIGUREATION").c_str());
 
+	// autosave/load
+	auto autosave_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("AUTO SAVE/LOAD ON GAME LAUNCH"));
+	autosave_enabled->addRange({ { _("OFF"), "default" },{ _("ON") , "1" },{ _("SHOW SAVE STATES") , "2" },{ _("SHOW SAVE STATES IF NOT EMPTY") , "3" } }, SystemConf::getInstance()->get("global.autosave"));
+	guiSaves->addWithLabel(_("AUTO SAVE/LOAD ON GAME LAUNCH"), autosave_enabled);
+	guiSaves->addSaveFunc([autosave_enabled] { SystemConf::getInstance()->set("global.autosave", autosave_enabled->getSelected()); });
+
+	// Incremental savestates
+	auto incrementalSaveStates = std::make_shared<SwitchComponent>(mWindow);
+	incrementalSaveStates->setState(SystemConf::getInstance()->get("global.incrementalsavestates") == "1");
+	guiSaves->addWithLabel(_("INCREMENTAL SAVESTATES"), incrementalSaveStates);
+	guiSaves->addSaveFunc([incrementalSaveStates] { SystemConf::getInstance()->set("global.incrementalsavestates", incrementalSaveStates->getState() ? "1" : "0"); });
+	
+	// Maximum incremental savestates
+	auto maxIncrementalSaves = std::make_shared<OptionListComponent<std::string>>(mWindow,"MAX INCREMENTAL SAVESTATES");
+	maxIncrementalSaves->addRange({ { _("UNLIMITED"), "default" },{ _("2") , "2" },{ _("3") , "3" },{ _("5") , "5" },{ _("10") , "10" },{ _("20") , "20" },{ _("50") , "50" },{ _("100") , "100" },{ _("200") , "200" },{ _("500") , "500" },{ _("1000") , "1000" } }, SystemConf::getInstance()->get("global.maxincrementalsaves"));
+	guiSaves->addWithLabel(_("MAX SAVESTATES"), maxIncrementalSaves);
+	guiSaves->addSaveFunc([maxIncrementalSaves] { SystemConf::getInstance()->set("global.maxincrementalsaves", maxIncrementalSaves->getSelected()); });
+
+	// Automated Cloud Backup
+	auto cloudBackup = std::make_shared<SwitchComponent>(mWindow);
+	cloudBackup->setState(SystemConf::getInstance()->get("cloud.backup") == "1");
+	guiSaves->addWithLabel(_("BACKUP TO CLOUD ON GAME EXIT"), cloudBackup);
+	guiSaves->addSaveFunc([cloudBackup] { SystemConf::getInstance()->set("cloud.backup", cloudBackup->getState() ? "1" : "0"); });
+
+	mWindow->pushGui(guiSaves);
+
+}
 void GuiMenu::openLatencyReductionConfiguration(Window* mWindow, std::string configName)
 {
 	GuiSettings* guiLatency = new GuiSettings(mWindow, _("LATENCY REDUCTION").c_str());
@@ -2343,24 +2373,11 @@ void GuiMenu::openGamesSettings_batocera()
 	integerscale_enabled->addRange({ { _("DEFAULT"), "default" },{ _("ON") , "1" },{ _("OFF") , "0" } }, SystemConf::getInstance()->get("global.integerscale"));
 	s->addWithLabel(_("INTEGER SCALING (PIXEL PERFECT)"), integerscale_enabled);
 	s->addSaveFunc([integerscale_enabled] { SystemConf::getInstance()->set("global.integerscale", integerscale_enabled->getSelected()); });
+	
+	// Saves Menu
+	s->addEntry(_("SAVE STATE CONFIG"), true, [this] { openSavestatesConfiguration(mWindow, "global"); });
 
-	// autosave/load
-	auto autosave_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("AUTO SAVE/LOAD ON GAME LAUNCH"));
-	autosave_enabled->addRange({ { _("OFF"), "default" },{ _("ON") , "1" },{ _("SHOW SAVE STATES") , "2" },{ _("SHOW SAVE STATES IF NOT EMPTY") , "3" } }, SystemConf::getInstance()->get("global.autosave"));
-	s->addWithLabel(_("AUTO SAVE/LOAD ON GAME LAUNCH"), autosave_enabled);
-	s->addSaveFunc([autosave_enabled] { SystemConf::getInstance()->set("global.autosave", autosave_enabled->getSelected()); });
 
-	// Incremental savestates
-	auto incrementalSaveStates = std::make_shared<SwitchComponent>(mWindow);
-	incrementalSaveStates->setState(SystemConf::getInstance()->get("global.incrementalsavestates") == "1");
-	s->addWithLabel(_("INCREMENTAL SAVESTATES"), incrementalSaveStates);
-	s->addSaveFunc([incrementalSaveStates] { SystemConf::getInstance()->set("global.incrementalsavestates", incrementalSaveStates->getState() ? "1" : "0"); });
-
-        // Automated Cloud Backup
-        auto cloudBackup = std::make_shared<SwitchComponent>(mWindow);
-        cloudBackup->setState(SystemConf::getInstance()->get("cloud.backup") == "1");
-        s->addWithLabel(_("BACKUP TO CLOUD ON GAME EXIT"), cloudBackup);
-        s->addSaveFunc([cloudBackup] { SystemConf::getInstance()->set("cloud.backup", cloudBackup->getState() ? "1" : "0"); });
 
 	// Shaders preset
 #ifndef _ENABLEEMUELEC
