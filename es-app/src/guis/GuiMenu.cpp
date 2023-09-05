@@ -101,6 +101,16 @@
 #define controllers_settings_label		gettext_controllers_and_bluetooth_settings
 #endif
 
+std::string GetEnv( const std::string & var ) {
+     const char * val = std::getenv( var.c_str() );
+     if ( val == nullptr ) { 
+         return "";
+     }
+     else {
+         return val;
+     }
+}
+
 GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(window, _("MAIN MENU").c_str()), mVersion(window)
 {
 	// MAIN MENU
@@ -1246,9 +1256,7 @@ void GuiMenu::openSystemSettings_batocera()
                 });
 #endif
 	}
-
-	bool deviceDisablePLed = getenv("DEVICE_PWR_LED_CONTROL");
-	if (deviceDisablePLed == true) {
+	if (GetEnv("DEVICE_PWR_LED_CONTROL") == "true") {
 
 		s->addGroup(_("DEVICE LEDS"));
 		// Disable Power LED
@@ -1257,15 +1265,13 @@ void GuiMenu::openSystemSettings_batocera()
 		pwr_led_disabled->setState(SystemConf::getInstance()->getBool("powerled.disabled"));
 		s->addWithLabel(_("DISABLE POWER LED"), pwr_led_disabled);
 		s->addSaveFunc([pwr_led_disabled] {
-        	bool pwrleddisabled = pwr_led_disabled->getState();
+		bool pwrleddisabled = pwr_led_disabled->getState();
 			SystemConf::getInstance()->set("powerled.disabled", pwrleddisabled ? "1" : "0");
 			SystemConf::getInstance()->saveSystemConf(); });
 	}
 	
 #if defined(AMD64)
-
-        char* deviceLedControl = getenv("DEVICE_LED_CONTROL");
-        if (deviceLedControl) {
+        if (GetEnv("DEVICE_LED_CONTROL") == "true"){
 		s->addGroup(_("DEVICE LEDS"));
 		// Provides LED management
 		auto optionsLEDProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED COLOR"), false);
@@ -1349,9 +1355,7 @@ void GuiMenu::openSystemSettings_batocera()
 	});
 
 #endif
-
-	bool deviceHasFan = getenv("DEVICE_HAS_FAN");
-	if (deviceHasFan == true) {
+	if (GetEnv("DEVICE_HAS_FAN") == "true") {
 	  // Provides cooling profile switching
 	  auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
 	  std::string selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
@@ -4094,8 +4098,7 @@ void GuiMenu::openSoundSettings()
 {
 	auto s = new GuiSettings(mWindow, _("SOUND SETTINGS").c_str());
 
-	bool deviceSWHP = getenv("DEVICE_SW_HP_SWITCH");
-	if (deviceSWHP == true) {
+	if (GetEnv("DEVICE_SW_HP_SWITCH") == "true") {
 		s->addGroup(_("OUTPUT"));
 
 		// sw headphone enable
@@ -5049,8 +5052,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
 #endif
 
-        bool deviceHasFan = getenv("DEVICE_HAS_FAN");
-        if (deviceHasFan == true) {
+        if (GetEnv("DEVICE_HAS_FAN") == "true") {
           // Provides cooling profile switching
           auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
           std::string selectedFanProfile = SystemConf::getInstance()->get(configName + ".cooling.profile");
