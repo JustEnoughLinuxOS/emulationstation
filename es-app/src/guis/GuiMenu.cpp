@@ -1296,7 +1296,8 @@ void GuiMenu::openSystemSettings_batocera()
 				runSystemCommand("/usr/bin/ledcontrol " + optionsLEDProfile->getSelected(), "", nullptr);
 			}
 		});
-
+	}
+	if (GetEnv("DEVICE_LED_BRIGHTNESS") == "true"){
 	        // Sets LED brightness
 	        auto optionsLEDBrightness = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED BRIGHTNESS"), false);
 	        std::string selectedLEDBrightness = SystemConf::getInstance()->get("led.brightness");
@@ -1360,8 +1361,9 @@ void GuiMenu::openSystemSettings_batocera()
 	  auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
 	  std::string selectedFanProfile = SystemConf::getInstance()->get("cooling.profile");
 	  if (selectedFanProfile.empty())
-		selectedFanProfile = "quiet";
+		selectedFanProfile = "auto";
 
+	  optionsFanProfile->add(_("AUTO"),"auto", selectedFanProfile == "auto");
 	  optionsFanProfile->add(_("QUIET"),"quiet", selectedFanProfile == "quiet");
 	  optionsFanProfile->add(_("MODERATE"),"moderate", selectedFanProfile == "moderate");
 	  optionsFanProfile->add(_("AGGRESSIVE"),"aggressive", selectedFanProfile == "aggressive");
@@ -5057,8 +5059,10 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
           auto optionsFanProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COOLING PROFILE"), false);
           std::string selectedFanProfile = SystemConf::getInstance()->get(configName + ".cooling.profile");
           if (selectedFanProfile.empty())
-                selectedFanProfile = "quiet";
+                selectedFanProfile = "default";
 
+          optionsFanProfile->add(_("DEFAULT"),"default", selectedFanProfile == "default");
+          optionsFanProfile->add(_("AUTO"),"auto", selectedFanProfile == "auto");
           optionsFanProfile->add(_("QUIET"),"quiet", selectedFanProfile == "quiet");
           optionsFanProfile->add(_("MODERATE"),"moderate", selectedFanProfile == "moderate");
           optionsFanProfile->add(_("AGGRESSIVE"),"aggressive", selectedFanProfile == "aggressive");
