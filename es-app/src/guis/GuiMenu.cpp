@@ -1186,20 +1186,6 @@ void GuiMenu::openSystemSettings_batocera()
 
 		s->addWithLabel(_("BRIGHTNESS"), brightnessComponent);
 
-		auto brightnessPopup = std::make_shared<SwitchComponent>(mWindow);
-		brightnessPopup->setState(Settings::getInstance()->getBool("BrightnessPopup"));
-		s->addWithLabel(_("SHOW OVERLAY WHEN BRIGHTNESS CHANGES"), brightnessPopup);
-		s->addSaveFunc([brightnessPopup]
-			{
-				bool old_value = Settings::getInstance()->getBool("BrightnessPopup");
-				int newBrightness = BrightnessControl::getInstance()->getBrightness();
-				if (old_value != brightnessPopup->getState())
-					Settings::getInstance()->setBool("BrightnessPopup", brightnessPopup->getState());
-					SystemConf::getInstance()->set("system.brightness", std::to_string(newBrightness / 10));
-					SystemConf::getInstance()->saveSystemConf();
-			}
-		);
-
 #if defined(RK3566) || defined(RK3566_X55)
 
                 // gamma
