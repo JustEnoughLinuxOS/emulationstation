@@ -40,7 +40,6 @@ set(CORE_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/AnimatedImageComponent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/AsyncNotificationComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/BatteryIndicatorComponent.h	
-	${CMAKE_CURRENT_SOURCE_DIR}/src/components/BrightnessInfoComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/BusyComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ButtonComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ControllerActivityComponent.h
@@ -145,7 +144,6 @@ set(CORE_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/AnimatedImageComponent.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/AsyncNotificationComponent.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/BatteryIndicatorComponent.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/components/BrightnessInfoComponent.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/BusyComponent.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ButtonComponent.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ControllerActivityComponent.cpp
