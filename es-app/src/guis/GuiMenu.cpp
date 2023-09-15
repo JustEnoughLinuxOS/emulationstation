@@ -1486,17 +1486,17 @@ void GuiMenu::openSystemSettings_batocera()
 
 #if defined(AMD64)
 	          // GPU performance mode with enhanced power savings
-	          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE (AMD ONLY)"), false);
+	          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU PERFORMANCE PROFILE (AMD ONLY)"), false);
 	          std::string gpu_performance = SystemConf::getInstance()->get("system.gpuperf");
 	          if (gpu_performance.empty())
 	                  gpu_performance = "auto";
 	
-	          gpuPerformance->add(_("AUTO"), "auto", gpu_performance == "auto");
-	          gpuPerformance->add(_("LOW"), "low", gpu_performance == "low");
-	          gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
-	          gpuPerformance->add(_("PEAK"), "profile_peak", gpu_performance == "profile_peak");
+	          gpuPerformance->add(_("Balanced Performance (AUTO)"), "auto", gpu_performance == "auto");
+	          gpuPerformance->add(_("Best Battery Life (LOW)"), "low", gpu_performance == "low");
+	          gpuPerformance->add(_("Standard Performance (STANDARD)"), "profile_standard", gpu_performance == "profile_standard");
+	          gpuPerformance->add(_("Best Performance (PEAK)"), "profile_peak", gpu_performance == "profile_peak");
 
-	          s->addWithLabel(_("GPU POWER SAVINGS MODE (AMD ONLY)"), gpuPerformance);
+	          s->addWithLabel(_("GPU PERFORMANCE PROFILE (AMD ONLY)"), gpuPerformance);
 	          s->addSaveFunc([this, gpuPerformance, gpu_performance]
 	          {
 	            if (gpuPerformance->changed()) {
@@ -5156,18 +5156,17 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 #if defined(AMD64)
         if (SystemConf::getInstance()->getBool("system.powersave", true)) {
           // GPU performance mode with enhanced power savings
-          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU POWER SAVINGS MODE (AMD ONLY)"), false);
+          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU PERFORMANCE PROFILE (AMD ONLY)"), false);
           std::string gpu_performance = SystemConf::getInstance()->get(configName + ".gpuperf");
           if (gpu_performance.empty())
                   gpu_performance = "default";
 
-          gpuPerformance->add(_("DEFAULT"), "default", gpu_performance == "default");
-          gpuPerformance->add(_("AUTO"), "auto", gpu_performance == "auto");
-          gpuPerformance->add(_("LOW"), "low", gpu_performance == "low");
-          gpuPerformance->add(_("STANDARD"), "profile_standard", gpu_performance == "profile_standard");
-          gpuPerformance->add(_("PEAK"), "profile_peak", gpu_performance == "profile_peak");
+		gpuPerformance->add(_("Balanced Performance (AUTO)"), "auto", gpu_performance == "auto");
+		gpuPerformance->add(_("Best Battery Life (LOW)"), "low", gpu_performance == "low");
+		gpuPerformance->add(_("Standard Performance (STANDARD)"), "profile_standard", gpu_performance == "profile_standard");
+		gpuPerformance->add(_("Best Performance (PEAK)"), "profile_peak", gpu_performance == "profile_peak");
 
-          systemConfiguration->addWithLabel(_("GPU POWER SAVINGS MODE (AMD ONLY)"), gpuPerformance);
+          systemConfiguration->addWithLabel(_("GPU PERFORMANCE PROFILE (AMD ONLY)"), gpuPerformance);
 
           systemConfiguration->addSaveFunc([configName, gpuPerformance, gpu_performance]
           {
