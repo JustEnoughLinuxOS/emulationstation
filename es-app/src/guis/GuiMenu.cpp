@@ -1485,26 +1485,26 @@ void GuiMenu::openSystemSettings_batocera()
         	});
 
 #if defined(AMD64)
-	          // GPU performance mode with enhanced power savings
-	          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU PERFORMANCE PROFILE (AMD ONLY)"), false);
-	          std::string gpu_performance = SystemConf::getInstance()->get("system.gpuperf");
-	          if (gpu_performance.empty())
-	                  gpu_performance = "auto";
-	
-	          gpuPerformance->add(_("Balanced Performance (AUTO)"), "auto", gpu_performance == "auto");
-	          gpuPerformance->add(_("Best Battery Life (LOW)"), "low", gpu_performance == "low");
-	          gpuPerformance->add(_("Standard Performance (STANDARD)"), "profile_standard", gpu_performance == "profile_standard");
-	          gpuPerformance->add(_("Best Performance (PEAK)"), "profile_peak", gpu_performance == "profile_peak");
+		// GPU performance mode with enhanced power savings
+		auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU PERFORMANCE PROFILE (AMD ONLY)"), false);
+		std::string gpu_performance = SystemConf::getInstance()->get("system.gpuperf");
+		if (gpu_performance.empty())
+			gpu_performance = "auto";
 
-	          s->addWithLabel(_("GPU PERFORMANCE PROFILE (AMD ONLY)"), gpuPerformance);
-	          s->addSaveFunc([this, gpuPerformance, gpu_performance]
-	          {
-	            if (gpuPerformance->changed()) {
-	              SystemConf::getInstance()->set("system.gpuperf", gpuPerformance->getSelected());
-	              SystemConf::getInstance()->saveSystemConf();
-	              runSystemCommand("/usr/bin/bash -lc \". /etc/profile; gpu_performance_level "+ gpuPerformance->getSelected() + "\"", "", nullptr);
-	            }
-	          });
+		gpuPerformance->add(_("Balanced"), "auto", gpu_performance == "auto");
+		gpuPerformance->add(_("Battery Focus"), "low", gpu_performance == "low");
+		gpuPerformance->add(_("Performance Focus"), "profile_standard", gpu_performance == "profile_standard");
+		gpuPerformance->add(_("Best Performance"), "profile_peak", gpu_performance == "profile_peak");
+	
+		s->addWithLabel(_("GPU PERFORMANCE PROFILE (AMD ONLY)"), gpuPerformance);
+		s->addSaveFunc([this, gpuPerformance, gpu_performance]
+		{
+			if (gpuPerformance->changed()) {
+				SystemConf::getInstance()->set("system.gpuperf", gpuPerformance->getSelected());
+				SystemConf::getInstance()->saveSystemConf();
+				runSystemCommand("/usr/bin/bash -lc \". /etc/profile; gpu_performance_level "+ gpuPerformance->getSelected() + "\"", "", nullptr);
+			}
+		});
 #endif
 	        auto enh_audiopowersave = std::make_shared<SwitchComponent>(mWindow);
 	        bool enhaudiopowersaveEnabled = SystemConf::getInstance()->get("system.power.audio") == "1";
@@ -5161,10 +5161,11 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
           if (gpu_performance.empty())
                   gpu_performance = "default";
 
-		gpuPerformance->add(_("Balanced Performance (AUTO)"), "auto", gpu_performance == "auto");
-		gpuPerformance->add(_("Best Battery Life (LOW)"), "low", gpu_performance == "low");
-		gpuPerformance->add(_("Standard Performance (STANDARD)"), "profile_standard", gpu_performance == "profile_standard");
-		gpuPerformance->add(_("Best Performance (PEAK)"), "profile_peak", gpu_performance == "profile_peak");
+		gpuPerformance->add(_("DEFAULT"), "default", gpu_performance == "default");
+		gpuPerformance->add(_("Balanced"), "auto", gpu_performance == "auto");
+		gpuPerformance->add(_("Battery Focus"), "low", gpu_performance == "low");
+		gpuPerformance->add(_("Performance Focus"), "profile_standard", gpu_performance == "profile_standard");
+		gpuPerformance->add(_("Best Performance"), "profile_peak", gpu_performance == "profile_peak");
 
           systemConfiguration->addWithLabel(_("GPU PERFORMANCE PROFILE (AMD ONLY)"), gpuPerformance);
 
