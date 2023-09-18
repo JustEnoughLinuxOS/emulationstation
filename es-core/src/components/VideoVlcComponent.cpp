@@ -519,7 +519,7 @@ void VideoVlcComponent::handleLooping()
 				}
 			}
 
-			if (!getPlayAudio() || (!mScreensaverMode && Settings::getInstance()->getBool("VideoAudio")) == false || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
+			if (!getPlayAudio() || (!mScreensaverMode && Settings::getInstance()->getBool("VideoAudio") == false) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") == true && mScreensaverMode))
 			{
 				libvlc_audio_set_mute(mMediaPlayer, 1);
 			} else {
@@ -637,7 +637,7 @@ void VideoVlcComponent::startVideo()
 			
 				if (hasAudioTrack)
 				{
-					if (!getPlayAudio() || (!mScreensaverMode && Settings::getInstance()->getBool("VideoAudio")) == false || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
+					if (!getPlayAudio() || (!mScreensaverMode && Settings::getInstance()->getBool("VideoAudio") == false) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") == true && mScreensaverMode))
 						libvlc_audio_set_mute(mMediaPlayer, 1);
 					else
 						libvlc_audio_set_mute(mMediaPlayer, 0);

@@ -174,8 +174,8 @@ void VideoPlayerComponent::startVideo()
 				const char* argv[] = { "", "--layer", "10010", "--loop", "--no-osd", "--aspect-mode", "letterbox", "--vol", "0", "-o", "both","--win", buf1, "--orientation", buf2, "", "", "", "", NULL };
 
 				// check if we want to mute the audio
-				if (!getPlayAudio() || Settings::getInstance()->getBool("VideoAudio") == false || (float)VolumeControl::getInstance()->getVolume() == 0 ||
-					(Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
+				if (!getPlayAudio() || Settings::getInstance()->getBool("VideoAudio") == true || (float)VolumeControl::getInstance()->getVolume() == 0 ||
+					(Settings::getInstance()->getBool("ScreenSaverVideoMute" == true) && mScreensaverMode))
 				{
 					argv[8] = "-1000000";
 				}
