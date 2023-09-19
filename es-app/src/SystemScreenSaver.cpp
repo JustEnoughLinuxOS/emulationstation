@@ -184,7 +184,7 @@ void SystemScreenSaver::stopScreenSaver()
 	if ( screensaver_behavior == "black" )
 	{
 		auto sysbright = SystemConf::getInstance()->get("system.brightness");
-		BrightnessControl::getInstance()->setBrightness(stoi(sysbright));
+		BrightnessControl::getInstance()->setBrightness(stoi(sysbright) * 10);
 	}
 
 	if (mLoadingNext)
