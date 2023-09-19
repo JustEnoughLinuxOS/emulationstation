@@ -1304,6 +1304,7 @@ void GuiMenu::openSystemSettings_batocera()
 	                        SystemConf::getInstance()->set("led.brightness", optionsLEDBrightness->getSelected());
 	                        SystemConf::getInstance()->saveSystemConf();
 	                        runSystemCommand("/usr/bin/ledcontrol brightness " + optionsLEDBrightness->getSelected(), "", nullptr);
+	                        runSystemCommand("/usr/bin/ledcontrol", "", nullptr);
 	                }
 	        });
 	}
