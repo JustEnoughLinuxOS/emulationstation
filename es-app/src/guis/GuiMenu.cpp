@@ -1184,7 +1184,7 @@ void GuiMenu::openSystemSettings_batocera()
 		brightnessComponent->setValue(brightness);
 		brightnessComponent->setOnValueChanged([](const float &newVal) {
 			BrightnessControl::getInstance()->setBrightness((int)Math::round(newVal));
-                        SystemConf::getInstance()->set("system.brightness", std::to_string((int)Math::round(newVal)));
+                        SystemConf::getInstance()->set("system.brightness", std::to_string((int)Math::round(newVal) / 10));
 		});
 
 		s->addWithLabel(_("BRIGHTNESS"), brightnessComponent);
