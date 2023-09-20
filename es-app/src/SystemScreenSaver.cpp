@@ -268,7 +268,7 @@ void SystemScreenSaver::renderScreenSaver()
 		Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), color, color);
 		if ( screensaver_behavior == "black" )
 		{
-			BrightnessControl::getInstance()->setBrightness(0);
+			BrightnessControl::getInstance()->setBrightness(3);
 		}
 	}
 }
