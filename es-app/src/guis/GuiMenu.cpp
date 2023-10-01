@@ -1398,6 +1398,7 @@ void GuiMenu::openSystemSettings_batocera()
 	        optionsOCProfile->add(_("22W"),"22w", selectedOCProfile == "22w");
 	        optionsOCProfile->add(_("24W"),"24w", selectedOCProfile == "24w");
 	        optionsOCProfile->add(_("28W"),"28w", selectedOCProfile == "28w");
+	        optionsOCProfile->add(_("30W"),"30w", selectedOCProfile == "30w");
 	 	s->addWithLabel(_("CPU TDP Max"), optionsOCProfile);
 
 		s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
@@ -5090,6 +5091,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	        optionsOCProfile->add(_("22W"),"22w", selectedOCProfile == "22w");
 	        optionsOCProfile->add(_("24W"),"24w", selectedOCProfile == "24w");
 	        optionsOCProfile->add(_("28W"),"28w", selectedOCProfile == "28w");
+	        optionsOCProfile->add(_("30W"),"30w", selectedOCProfile == "30w");
 
 	        systemConfiguration->addWithLabel(_("CPU TDP Max"), optionsOCProfile);
 
