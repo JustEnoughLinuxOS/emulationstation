@@ -4,13 +4,16 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include <sstream>
 #include <SystemConf.h>
 #include <unistd.h>
 #include "platform.h"
+#include <math.h>
 
 std::string BACKLIGHT_PATH = std::string(getShOutput(R"(/usr/bin/brightness path)"));
 std::string BACKLIGHT_BRIGHTNESS_NAME = BACKLIGHT_PATH + "/brightness";
 std::string BACKLIGHT_BRIGHTNESS_MAX_NAME = BACKLIGHT_PATH + "/max_brightness";
+std::vector<float> brightness_table = {0, 1};
 #define BACKLIGHT_BUFFER_SIZE 127
 
 std::weak_ptr<BrightnessControl> BrightnessControl::sInstance;
@@ -28,6 +31,11 @@ std::shared_ptr<BrightnessControl> &BrightnessControl::getInstance()
 }
 
 BrightnessControl::BrightnessControl() {}
+
+int BrightnessControl::getNumBrightness() const
+{
+  return brightness_table.size();
+}
 
 int BrightnessControl::getBrightness() const
 {
@@ -57,19 +65,21 @@ int BrightnessControl::getBrightness() const
     if (max == 0)
         return 0;
 
-    fd = open(BACKLIGHT_BRIGHTNESS_NAME.c_str(), O_RDONLY);
-    if (fd < 0)
-        return false;
+    SystemConf::getInstance()->loadSystemConf();
 
-    memset(buffer, 0, BACKLIGHT_BUFFER_SIZE + 1);
+    std::stringstream ss(SystemConf::getInstance()->get("brightness_table"));
+    brightness_table.clear();
+    float b_val;
+    while (ss >> b_val) {
+      brightness_table.push_back(b_val);
+    }
+    //TODO: need to make a rational initial condition -- this should always be populated by the brightness script on boot??
+    if (brightness_table.empty()) {
+      brightness_table = {0, 0.04, 0.08, 0.13, 0.19, 0.25, 0.33, 0.42, 0.54, 0.71, 1};
+    }
 
-    count = read(fd, buffer, BACKLIGHT_BUFFER_SIZE);
-    if (count > 0)
-        value = atoi(buffer);
-
-    close(fd);
-
-    value = (uint32_t)((value / (float)max * 100.0f) + 0.5f);
+		auto sysbright = SystemConf::getInstance()->get("system.brightness");
+    value = stoi(sysbright);
     return value;
 }
 
@@ -82,8 +92,8 @@ void BrightnessControl::setBrightness(int value)
     if (value < 0)
         value = 0;
 
-    if (value > 100)
-        value = 100;
+    if (value >= brightness_table.size())
+        value = brightness_table.size() - 1;
 
     int fd;
     int max = 100;
@@ -109,8 +119,10 @@ void BrightnessControl::setBrightness(int value)
     if (fd < 0)
         return;
 
-    float percent = (value / 100.0f * (float)max) + 0.5f;
-    sprintf(buffer, "%d\n", (uint32_t)percent);
+    float val = max * brightness_table[value] ;
+    if (val > max)
+        val = max;
+    sprintf(buffer, "%d\n", (uint32_t)val);
 
     count = write(fd, buffer, strlen(buffer));
     if (count < 0)
