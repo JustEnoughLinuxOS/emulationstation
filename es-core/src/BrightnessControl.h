@@ -21,6 +21,7 @@ public:
     bool isAvailable();
 
     int getBrightness() const;
+    int getNumBrightness() const;
     void setBrightness(int Brightness);
 };
 

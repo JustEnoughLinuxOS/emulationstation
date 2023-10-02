@@ -1180,11 +1180,13 @@ void GuiMenu::openSystemSettings_batocera()
 	{
 		// brightness
 		int brightness = BrightnessControl::getInstance()->getBrightness();
-		auto brightnessComponent = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 10.f, "%");
+    float brightness_count = BrightnessControl::getInstance()->getNumBrightness() - 1;
+    std::string brightness_count_str = "/" + std::to_string((int)brightness_count) + "  ";
+		auto brightnessComponent = std::make_shared<SliderComponent>(mWindow, 0.f, brightness_count, 1.f, brightness_count_str);
 		brightnessComponent->setValue(brightness);
 		brightnessComponent->setOnValueChanged([](const float &newVal) {
 			BrightnessControl::getInstance()->setBrightness((int)Math::round(newVal));
-                        SystemConf::getInstance()->set("system.brightness", std::to_string((int)Math::round(newVal) / 10));
+                        SystemConf::getInstance()->set("system.brightness", std::to_string((int)newVal));
 		});
 
 		s->addWithLabel(_("BRIGHTNESS"), brightnessComponent);
