@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <cstdio>
 
 #include "ApiSystem.h"
 #include "Scripting.h"
@@ -36,6 +37,79 @@ class MoonlightClient {
   std::string server_ip_;
 };
 
+// Moonlight version check function
+bool isEmbedded(void) {
+  FILE* mlver = popen ("moonlight -v", "r");
+  std::stringstream ss;
+  ss << mlver;
+  std::string output = ss.str(); 
+  if (output.find("Embedded") != std::string::npos) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+// SSL extraction function (client.pem)
+void extractClient() {
+  std::ifstream confFile("/storage/.config/Moonlight Game Streaming Project/Moonlight.conf");
+  std::ofstream clientFile("/storage/.cache/Moonlight Game Streaming Project/client.pem");
+  std::string line;
+  do{
+    std::getline(confFile, line);
+  } 
+  while (line.find("certificate=") == std::string::npos);
+  if (line.find("certificate=\"") != std::string::npos) {
+    line.erase(0, 24);
+    line.erase(line.size()-2);
+  } else {
+    line.erase(0, 23);
+    line.erase(line.size()-1);
+  }
+  std::string::size_type pos = 0;
+  do{
+    pos = line.find("\\n", pos);
+    line.replace(pos, 2, "\n");
+  }
+  while (line.find("\\n", pos) != std::string::npos);
+  clientFile << line;
+}
+
+// SSL extraction function (key.pem)
+void extractKey() {
+  std::ifstream confFile("/storage/.config/Moonlight Game Streaming Project/Moonlight.conf");
+  std::ofstream keyFile("/storage/.cache/Moonlight Game Streaming Project/key.pem");
+  std::string line;
+  do{
+    std::getline(confFile, line);
+  }
+  while (line.find("key=") == std::string::npos);
+  if (line.find("key=\"") != std::string::npos) {
+    line.erase(0, 16);
+    line.erase(line.size()-2);
+  } else {
+    line.erase(0, 15);
+    line.erase(line.size()-1);
+  }
+  std::string::size_type pos = 0;
+  do{
+    pos = line.find("\\n", pos);
+    line.replace(pos, 2, "\n");
+  }
+  while (line.find("\\n", pos) != std::string::npos);
+  keyFile << line;
+}
+
+// File existence check function
+bool fileExists (const std::string& name) {
+  if (FILE *file = fopen(name.c_str(), "r")) {
+      fclose(file);
+      return true;
+  } else {
+      return false;
+  }   
+}
+
 std::string MoonlightClient::CreateNewGuid() {
   srand(time(NULL));
 
@@ -61,7 +135,12 @@ std::string MoonlightClient::MakeUrl(
 }
 
 std::string MoonlightClient::MakeRequest(const std::string& url, std::string* filename) {
-  const std::string cert_path = "/storage/.cache/moonlight/";
+  std::string cert_path;
+  if (fileExists("/storage/.config/Moonlight Game Streaming Project/Moonlight.conf") == true) {
+    cert_path = "/storage/.cache/Moonlight Game Streaming Project/";
+  } else {
+    cert_path = "/storage/.cache/moonlight/";
+  }
 
   HttpReqOptions opts;
   opts.clientCert = cert_path + "client.pem";
@@ -147,12 +226,21 @@ bool MoonlightClient::UpdateMoonlightGames() {
     std::replace(filename.begin(), filename.end(), '/', ' ');
 
     // Write bash script
-    std::ofstream app_file("/storage/roms/moonlight/" + filename + ".sh");
-    app_file << "#!/bin/bash" << std::endl;
-    app_file << ". /etc/profile" << std::endl;
-    app_file << "jslisten set \"moonlight\"" << std::endl;
-    app_file << "moonlight stream -app \"" << title << "\" -platform sdl " << server_ip_ << std::endl;
-    app_file.close();
+    if (fileExists("/storage/.config/Moonlight Game Streaming Project/Moonlight.conf") == true) {
+      std::ofstream app_file("/storage/roms/moonlight/" + filename + ".sh");
+      app_file << "#!/bin/bash" << std::endl;
+      app_file << ". /etc/profile" << std::endl;
+      app_file << "jslisten set \"moonlight\"" << std::endl;
+      app_file << "QT_QPA_PLATFORM=wayland moonlight stream " << server_ip_ << " \"" << title << "\" --quit-after" << std::endl;
+      app_file.close();
+    } else {
+      std::ofstream app_file("/storage/roms/moonlight/" + filename + ".sh");
+      app_file << "#!/bin/bash" << std::endl;
+      app_file << ". /etc/profile" << std::endl;
+      app_file << "jslisten set \"moonlight\"" << std::endl;
+      app_file << "moonlight stream -app \"" << title << "\" -platform sdl " << server_ip_ << std::endl;
+      app_file.close();
+    }
 
     // Write box art image
     std::string app_id = app.child("ID").text().get();
@@ -214,7 +302,11 @@ GuiMoonlight::GuiMoonlight(Window* window)
     std::string server_ip = SystemConf::getInstance()->get("moonlight.host");
 
     char cmd[1024];
-    snprintf(cmd, sizeof cmd, "moonlight pair -pin %s %s", pin, server_ip.c_str());
+    if (isEmbedded() == false) {
+      snprintf(cmd, sizeof cmd, "QT_QPA_PLATFORM=wayland moonlight pair -pin %s %s", pin, server_ip.c_str());
+    } else {
+      snprintf(cmd, sizeof cmd, "moonlight pair -pin %s %s", pin, server_ip.c_str());
+    }
 		ApiSystem::executeScript(cmd, [server_ip, window](std::string line) {
       std::string new_server_ip;
       if (ParseServerIp(line, &new_server_ip) && server_ip != new_server_ip) {
@@ -225,11 +317,27 @@ GuiMoonlight::GuiMoonlight(Window* window)
       if (line == "Succesfully paired") {
         window->pushGui(new GuiMsgBox(window, _("Succesfully paired with server")));
       }
+    if (fileExists("/storage/.config/Moonlight Game Streaming Project/Moonlight.conf") == true) {
+      const std::string cert_path = "/storage/.cache/Moonlight Game Streaming Project/";
+      if (fileExists(cert_path + "client.pem") == false) {
+        extractClient();
+      }
+      if (fileExists(cert_path + "key.pem") == false) {
+        extractKey();
+      }
+    }
 		});
 	});
 
   addEntry(_("UNPAIR WITH SERVER"), false, [this, window] {
-		runSystemCommand("rm -r ~/.cache/moonlight", "", nullptr);
+		if (fileExists("/storage/.config/Moonlight Game Streaming Project/Moonlight.conf") == true) {
+      runSystemCommand("rm -r \"~/.cache/Moonlight Game Streaming Project\"", "", nullptr);
+      runSystemCommand("rm -r \"~/.config/Moonlight Game Streaming Project\"", "", nullptr);
+      window->pushGui(new GuiMsgBox(window, _("Unpaired and settings cleared")));
+    } else {
+      runSystemCommand("rm -r ~/.cache/moonlight", "", nullptr);
+      window->pushGui(new GuiMsgBox(window, _("Unpaired from server")));
+    }
 	});
 
 	addGroup(_("SETTINGS"));
