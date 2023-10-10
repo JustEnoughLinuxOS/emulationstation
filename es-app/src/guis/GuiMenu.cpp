@@ -1591,6 +1591,24 @@ void GuiMenu::openSystemSettings_batocera()
                 runSystemCommand("/usr/bin/wifictl setpowersave", "", nullptr);
         });
 
+#ifdef RK3399
+	// Add option to disable RG552 wifi gpio
+        auto internal_wifi = std::make_shared<SwitchComponent>(mWindow);
+        bool internalmoduleEnabled = SystemConf::getInstance()->get("internal.wifi") == "1";
+        internal_wifi->setState(internalmoduleEnabled);
+        s->addWithLabel(_("ENABLE INTERNAL WIFI"), internal_wifi);
+        s->addSaveFunc([internal_wifi] {
+        if (internal_wifi->getState() == false) {
+                runSystemCommand("/usr/bin/internalwifi disable", "", nullptr);
+        } else {
+                runSystemCommand("/usr/bin/internalwifi enable", "", nullptr);
+        }
+        bool internalwifi = internal_wifi->getState();
+                SystemConf::getInstance()->set("internal.wifi", internalwifi ? "1" : "0");
+                SystemConf::getInstance()->saveSystemConf();
+        });
+#endif
+
         s->addGroup(_("PREFERENCES"));
 
         // Provides a mechanism to disable use of the second device
