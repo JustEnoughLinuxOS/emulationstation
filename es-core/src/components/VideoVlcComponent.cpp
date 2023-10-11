@@ -69,7 +69,7 @@ VideoVlcComponent::VideoVlcComponent(Window* window) :
 	mColorShift = 0xFFFFFFFF;
 	mLinearSmooth = false;
 
-	mLoops = -1;
+	mLoops = 0;
 	mCurrentLoop = 0;
 
 	// Get an empty texture for rendering the video
@@ -202,6 +202,7 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 	if (!isShowing() || !isVisible())
 		return;
 
+
 	VideoComponent::render(parentTrans);
 
 	bool initFromPixels = true;
@@ -253,7 +254,7 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 #ifdef _RPI_
 			// Rpi : A lot of videos are encoded in 60fps on screenscraper
 			// Try to limit transfert to opengl textures to 30fps to save CPU
-			if (!Settings::getInstance()->getBool("OptimizeVideo") || mElapsed >= 40) // 40ms = 25fps, 33.33 = 30 fps
+			if (!Settings::getInstance()->getBool("OptimizeVideo") || mElapsed >= 33.33) // 40ms = 25fps, 33.33 = 30 fps
 #endif
 			{
 				mContext.mutexes[frame].lock();
@@ -689,10 +690,10 @@ void VideoVlcComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, cons
 			setOpacity((unsigned char)(elem->get<float>("opacity") * 255.0));
 	}
 
-	if (elem && elem->has("loops"))
-		mLoops = (int)elem->get<float>("loops");
-	else
-		mLoops = -1;
+	//if (elem && elem->has("loops"))
+	//	mLoops = (int)elem->get<float>("loops");
+	//else
+	mLoops = 0;
 
 	if (elem->has("linearSmooth"))
 		mLinearSmooth = elem->get<bool>("linearSmooth");

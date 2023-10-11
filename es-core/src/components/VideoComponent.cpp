@@ -433,6 +433,7 @@ void VideoComponent::onVideoStarted()
 
 void VideoComponent::handleLooping()
 {
+	//stopVideo();
 }
 
 void VideoComponent::startVideoWithDelay()

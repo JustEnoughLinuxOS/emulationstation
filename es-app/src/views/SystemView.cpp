@@ -171,7 +171,7 @@ void SystemView::ensureLogo(IList<SystemViewData, SystemData*>::Entry& entry)
 			auto logo = std::make_shared<ImageComponent>(mWindow, false, false); // Utils::String::toLower(Utils::FileSystem::getExtension(path)) != ".svg");
 			logo->setMaxSize(mCarousel.logoSize * mCarousel.logoScale);
 			logo->applyTheme(theme, "system", "logo", ThemeFlags::COLOR | ThemeFlags::ALIGNMENT | ThemeFlags::VISIBLE); //  ThemeFlags::PATH | 
-																														// Process here to be enable to set max picture size
+
 			auto elem = theme->getElement("system", "logo", "image");
 			if (elem && elem->has("path"))
 			{
