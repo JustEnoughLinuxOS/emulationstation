@@ -165,6 +165,7 @@ public:
 
     bool generateSupportFile();
 
+    unsigned long GetTotalRam();
     std::string getCurrentStorage();
 
     bool setStorage(std::string basic_string);

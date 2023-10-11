@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 #include "utils/StringUtil.h"
+#include "../es-app/src/ApiSystem.h"
 
 bool Settings::DebugText = false;
 bool Settings::DebugImage = false;
@@ -144,19 +145,16 @@ void Settings::setDefaults()
 	mIntMap["ScraperResizeWidth"] = 640;
 	mIntMap["ScraperResizeHeight"] = 0;
 
-#if defined(AMD64) || defined(_WIN32) || defined(TINKERBOARD) || defined(X86) || defined(X86_64) || defined(ODROIDN2) || defined(ODROIDC2) || defined(ODROIDXU4) || defined(RPI4) || defined(RK3566) || defined(RK3566_X55) || defined(RK3588) || defined(S922X)
-	// Boards > 1Gb RAM
-	mIntMap["MaxVRAM"] = 256;
-#elif defined(ODROIDGOA) || defined(GAMEFORCE) || defined(RPI2) || defined(RPI3) || defined(ROCKPRO64)
-	// Boards with 1Gb RAM
-	mIntMap["MaxVRAM"] = 128;
-#elif defined(_RPI_)
-	// Rpi 0, 1
-	mIntMap["MaxVRAM"] = 128;
-#else 
-	// Other boards
-	mIntMap["MaxVRAM"] = 100;
-#endif
+	auto totalRam = ApiSystem::getInstance()->GetTotalRam();
+	if ( totalRam <= 1000 ) {
+		mIntMap["MaxVRAM"] = 128;
+	} else if ( totalRam <= 2000 && totalRam > 1000) {
+		mIntMap["MaxVRAM"] = 256;
+	} else if ( totalRam <= 4000 && totalRam > 2000) {
+                mIntMap["MaxVRAM"] = 384;
+	} else {
+                mIntMap["MaxVRAM"] = 512;
+	}
 
 	mStringMap["TransitionStyle"] = "default";
 	mStringMap["GameTransitionStyle"] = "default";

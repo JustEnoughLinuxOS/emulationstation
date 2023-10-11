@@ -435,6 +435,11 @@ std::string ApiSystem::getIpAdress()
 	return result;
 }
 
+unsigned long ApiSystem::GetTotalRam()
+{
+    return executeScriptLegacy("echo $(( $(awk '/MemTotal/ {print $2}' /proc/meminfo) / 1000 ))");
+}
+
 bool ApiSystem::scanNewBluetooth(const std::function<void(const std::string)>& func)
 {
 	return executeScriptLegacy("batocera-bluetooth trust", func).second == 0;

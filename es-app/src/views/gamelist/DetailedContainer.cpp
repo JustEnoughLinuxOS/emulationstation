@@ -255,7 +255,7 @@ void DetailedContainer::createVideo()
 		mVideo = new VideoPlayerComponent(mWindow, "");
 	else
 #endif
-		mVideo = new VideoVlcComponent(mWindow, "");
+		mVideo = new VideoVlcComponent(mWindow);
 
 	// Default is IMAGE in Recalbox themes -> video view does not exist
 	mVideo->setSnapshotSource(IMAGE);
