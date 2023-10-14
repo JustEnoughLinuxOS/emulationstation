@@ -2903,28 +2903,11 @@ void GuiMenu::openControllersSettings_batocera(int autoSel)
 		s->addWithLabel(_("ENABLE BLUETOOTH"), bluetoothd_enabled);
 		bluetoothd_enabled->setOnChangedCallback([this, s, bluetoothd_enabled]() {
 			if (bluetoothd_enabled->getState() == false) {
-                                runSystemCommand("systemctl stop bluealsa", "", nullptr);
-                                runSystemCommand("systemctl stop bluetooth", "", nullptr);
-                                runSystemCommand("systemctl stop bluetoothsense", "", nullptr);
-                                runSystemCommand("systemctl stop bluetooth-agent", "", nullptr);
-                                runSystemCommand("rm /storage/.cache/services/bluez.conf", "", nullptr);
+                                runSystemCommand("systemctl stop bluetooth bluetoothsense bluetooth-agent", "", nullptr);
                                 runSystemCommand("rfkill block bluetooth", "", nullptr);
 			} else {
-                                runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
-                                runSystemCommand("touch /storage/.cache/services/bluez.conf", "", nullptr);
-                                runSystemCommand("systemctl start bluetooth", "", nullptr);
-                                runSystemCommand("systemctl start bluetooth-agent", "", nullptr);
-                                runSystemCommand("systemctl start bluetoothsense", "", nullptr);
-                                runSystemCommand("systemctl start bluealsa", "", nullptr);
+                                runSystemCommand("systemctl start bluetooth bluetooth-agent bluetoothsense", "", nullptr);
                                 runSystemCommand("rfkill unblock bluetooth", "", nullptr);
-				mWindow->pushGui(new GuiLoading<bool>(mWindow, _("ENABLING BLUETOOTH"),
-					[this] {
-						// batocera-bluetooth-agent sleeps 2000 to ensure hardware is
-						// initialised, extra second gives it time to initialise itself.
-						std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-						return true;
-					},
-					[this](bool ret) {}));
 			}
 			bool bluetoothenabled = bluetoothd_enabled->getState();
 			SystemConf::getInstance()->set("bluetooth.enabled", bluetoothenabled ? "1" : "0");
