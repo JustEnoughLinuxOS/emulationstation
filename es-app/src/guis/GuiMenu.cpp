@@ -5146,7 +5146,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	cpuGovUpdate->add(_("SCHEDUTIL"), "schedutil", cpu_governor == "schedutil");
 	cpuGovUpdate->add(_("ONDEMAND"), "ondemand", cpu_governor == "ondemand");
 	cpuGovUpdate->add(_("PERFORMANCE"), "performance", cpu_governor == "performance");
-	cpuGovUpdate->add(_("powersave"), "powersave", cpu_governor == "powersave");
+	cpuGovUpdate->add(_("POWERSAVE"), "powersave", cpu_governor == "powersave");
 
         systemConfiguration->addWithLabel(_("DEFAULT SCALING GOVERNOR"), cpuGovUpdate);
 
