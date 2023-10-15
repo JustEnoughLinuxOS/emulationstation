@@ -3965,9 +3965,9 @@ void GuiMenu::openUISettings()
 
 	// Enable Video Previews
 	auto enable_preview = std::make_shared<SwitchComponent>(mWindow);
-	enable_preview->setState(Settings::getInstance()->getBool("EnablePreview"));
+	enable_preview->setState(Settings::getInstance()->getBool("EnableVideoPreviews"));
 	s->addWithLabel(_("SHOW VIDEO PREVIEWS"), enable_preview);
-	s->addSaveFunc([enable_preview] { Settings::getInstance()->setBool("EnablePreview", enable_preview->getState()); });
+	s->addSaveFunc([enable_preview] { Settings::getInstance()->setBool("EnableVideoPreviews", enable_preview->getState()); });
 
 	// Show favorites first in gamelists
 	auto favoritesFirstSwitch = std::make_shared<SwitchComponent>(mWindow);

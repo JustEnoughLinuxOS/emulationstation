@@ -517,7 +517,7 @@ void VideoVlcComponent::handleLooping()
 void VideoVlcComponent::startVideo()
 {
 
-	if (Settings::getInstance()->getBool("EnablePreview") == true)
+	if (Settings::getInstance()->getBool("EnableVideoPreviews") == true)
 	{
 
 	if (mIsPlaying)
