@@ -519,121 +519,120 @@ void VideoVlcComponent::startVideo()
 
 	if (Settings::getInstance()->getBool("EnableVideoPreviews") == true)
 	{
+		if (mIsPlaying)
+			return;
 
-	if (mIsPlaying)
-		return;
+		if (hasStoryBoard("", true) && mConfig.startDelay > 0)
+			startStoryboard();
 
-	if (hasStoryBoard("", true) && mConfig.startDelay > 0)
-		startStoryboard();
-
-	mTexture = nullptr;
-	mCurrentLoop = 0;
-	mVideoWidth = 0;
-	mVideoHeight = 0;
+		mTexture = nullptr;
+		mCurrentLoop = 0;
+		mVideoWidth = 0;
+		mVideoHeight = 0;
 
 #ifdef WIN32
-	std::string path(Utils::String::replace(mVideoPath, "/", "\\"));
+		std::string path(Utils::String::replace(mVideoPath, "/", "\\"));
 #else
-	std::string path(mVideoPath);
+		std::string path(mVideoPath);
 #endif
-	// Make sure we have a video path
-	if (mVLC && (path.size() > 0))
-	{
-		// Set the video that we are going to be playing so we don't attempt to restart it
-		mPlayingVideoPath = mVideoPath;
+		// Make sure we have a video path
+		if (mVLC && (path.size() > 0))
+		{
+			// Set the video that we are going to be playing so we don't attempt to restart it
+			mPlayingVideoPath = mVideoPath;
 
-		// Open the media
-		mMedia = libvlc_media_new_path(mVLC, path.c_str());
-		if (mMedia)
-		{			
-			// use : vlc –long-help
-			// WIN32 ? libvlc_media_add_option(mMedia, ":avcodec-hw=dxva2");
-			// RPI/OMX ? libvlc_media_add_option(mMedia, ":codec=mediacodec,iomx,all"); .
-
-			std::string options = SystemConf::getInstance()->get("vlc.options");
-			if (!options.empty())
+			// Open the media
+			mMedia = libvlc_media_new_path(mVLC, path.c_str());
+			if (mMedia)
 			{
-				std::vector<std::string> tokens = Utils::String::split(options, ' ');
-				for (auto token : tokens)
-					libvlc_media_add_option(mMedia, token.c_str());
-			}
-			
-			// If we have a playlist : most videos have a fader, skip it 1 second
-			if (mPlaylist != nullptr && mConfig.startDelay == 0 && !mConfig.showSnapshotDelay && !mConfig.showSnapshotNoVideo)
-				libvlc_media_add_option(mMedia, ":start-time=0.7");			
-			libvlc_media_add_option(mMedia, ":avcodec-hw=any");
+				// use : vlc –long-help
+				// WIN32 ? libvlc_media_add_option(mMedia, ":avcodec-hw=dxva2");
+				// RPI/OMX ? libvlc_media_add_option(mMedia, ":codec=mediacodec,iomx,all"); .
 
-			bool hasAudioTrack = false;
-
-			unsigned track_count;
-			// Get the media metadata so we can find the aspect ratio
-			libvlc_media_parse(mMedia);
-			libvlc_media_track_t** tracks;
-			track_count = libvlc_media_tracks_get(mMedia, &tracks);
-			for (unsigned track = 0; track < track_count; ++track)
-			{
-				if (tracks[track]->i_type == libvlc_track_audio)
-					hasAudioTrack = true;
-				else if (tracks[track]->i_type == libvlc_track_video)
+				std::string options = SystemConf::getInstance()->get("vlc.options");
+				if (!options.empty())
 				{
-					mVideoWidth = tracks[track]->video->i_width;
-					mVideoHeight = tracks[track]->video->i_height;		
-
-					if (hasAudioTrack)
-						break;
+					std::vector<std::string> tokens = Utils::String::split(options, ' ');
+					for (auto token : tokens)
+						libvlc_media_add_option(mMedia, token.c_str());
 				}
-			}
-			libvlc_media_tracks_release(tracks, track_count);
 
-			// Make sure we found a valid video track
-			if ((mVideoWidth > 0) && (mVideoHeight > 0))
-			{			
-				if (Settings::getInstance()->getBool("OptimizeVideo"))
+				// If we have a playlist : most videos have a fader, skip it 1 second
+				if (mPlaylist != nullptr && mConfig.startDelay == 0 && !mConfig.showSnapshotDelay && !mConfig.showSnapshotNoVideo)
+					libvlc_media_add_option(mMedia, ":start-time=0.7");
+				libvlc_media_add_option(mMedia, ":avcodec-hw=any");
+
+				bool hasAudioTrack = false;
+
+				unsigned track_count;
+				// Get the media metadata so we can find the aspect ratio
+				libvlc_media_parse(mMedia);
+				libvlc_media_track_t** tracks;
+				track_count = libvlc_media_tracks_get(mMedia, &tracks);
+				for (unsigned track = 0; track < track_count; ++track)
 				{
-					// Avoid videos bigger than resolution
-					Vector2f maxSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
-										
-#ifdef _RPI_
-					// Temporary -> RPI -> Try to limit videos to 400x300 for performance benchmark
-					if (!Renderer::isSmallScreen())
-						maxSize = Vector2f(400, 300);
-#endif
-
-					if (!mTargetSize.empty() && (mTargetSize.x() < maxSize.x() || mTargetSize.y() < maxSize.y()))
-						maxSize = mTargetSize;
-
-					
-
-					// If video is bigger than display, ask VLC for a smaller image
-					auto sz = ImageIO::adjustPictureSize(Vector2i(mVideoWidth, mVideoHeight), Vector2i(maxSize.x(), maxSize.y()), mTargetIsMin);
-					if (sz.x() < mVideoWidth || sz.y() < mVideoHeight)
+					if (tracks[track]->i_type == libvlc_track_audio)
+						hasAudioTrack = true;
+					else if (tracks[track]->i_type == libvlc_track_video)
 					{
-						mVideoWidth = sz.x();
-						mVideoHeight = sz.y();
+						mVideoWidth = tracks[track]->video->i_width;
+						mVideoHeight = tracks[track]->video->i_height;
+
+						if (hasAudioTrack)
+							break;
 					}
 				}
+				libvlc_media_tracks_release(tracks, track_count);
 
-				PowerSaver::pause();
-				setupContext();
-
-				// Setup the media player
-				mMediaPlayer = libvlc_media_player_new_from_media(mMedia);
-			
-				if (hasAudioTrack)
+				// Make sure we found a valid video track
+				if ((mVideoWidth > 0) && (mVideoHeight > 0))
 				{
-					if (!getPlayAudio() || (!mScreensaverMode && Settings::getInstance()->getBool("VideoAudio") == false) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") == true && mScreensaverMode))
-						libvlc_audio_set_mute(mMediaPlayer, 1);
-					else
-						libvlc_audio_set_mute(mMediaPlayer, 0);
-						AudioManager::setVideoPlaying(true);
-				}
+					if (Settings::getInstance()->getBool("OptimizeVideo"))
+					{
+						// Avoid videos bigger than resolution
+						Vector2f maxSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
 
-				libvlc_media_player_play(mMediaPlayer);
-				libvlc_video_set_callbacks(mMediaPlayer, lock, unlock, display, (void*)&mContext);
-				libvlc_video_set_format(mMediaPlayer, "RGBA", (int)mVideoWidth, (int)mVideoHeight, (int)mVideoWidth * 4);
+#ifdef _RPI_
+						// Temporary -> RPI -> Try to limit videos to 400x300 for performance benchmark
+						if (!Renderer::isSmallScreen())
+							maxSize = Vector2f(400, 300);
+#endif
+
+						if (!mTargetSize.empty() && (mTargetSize.x() < maxSize.x() || mTargetSize.y() < maxSize.y()))
+							maxSize = mTargetSize;
+
+
+
+						// If video is bigger than display, ask VLC for a smaller image
+						auto sz = ImageIO::adjustPictureSize(Vector2i(mVideoWidth, mVideoHeight), Vector2i(maxSize.x(), maxSize.y()), mTargetIsMin);
+						if (sz.x() < mVideoWidth || sz.y() < mVideoHeight)
+						{
+							mVideoWidth = sz.x();
+							mVideoHeight = sz.y();
+						}
+					}
+
+					PowerSaver::pause();
+					setupContext();
+
+					// Setup the media player
+					mMediaPlayer = libvlc_media_player_new_from_media(mMedia);
+
+					if (hasAudioTrack)
+					{
+						if (!getPlayAudio() || (!mScreensaverMode && Settings::getInstance()->getBool("VideoAudio") == false) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") == true && mScreensaverMode))
+							libvlc_audio_set_mute(mMediaPlayer, 1);
+						else
+							libvlc_audio_set_mute(mMediaPlayer, 0);
+							AudioManager::setVideoPlaying(true);
+					}
+
+					libvlc_media_player_play(mMediaPlayer);
+					libvlc_video_set_callbacks(mMediaPlayer, lock, unlock, display, (void*)&mContext);
+					libvlc_video_set_format(mMediaPlayer, "RGBA", (int)mVideoWidth, (int)mVideoHeight, (int)mVideoWidth * 4);
+				}
 			}
 		}
-	}
 	}
 }
 
