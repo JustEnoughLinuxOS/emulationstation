@@ -516,6 +516,10 @@ void VideoVlcComponent::handleLooping()
 
 void VideoVlcComponent::startVideo()
 {
+
+	if (Settings::getInstance()->getBool("EnablePreview") == true)
+	{
+
 	if (mIsPlaying)
 		return;
 
@@ -629,6 +633,7 @@ void VideoVlcComponent::startVideo()
 				libvlc_video_set_format(mMediaPlayer, "RGBA", (int)mVideoWidth, (int)mVideoHeight, (int)mVideoWidth * 4);
 			}
 		}
+	}
 	}
 }
 
