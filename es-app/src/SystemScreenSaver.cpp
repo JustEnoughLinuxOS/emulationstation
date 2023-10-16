@@ -20,7 +20,7 @@
 #include "AudioManager.h"
 #include "math/Vector2i.h"
 #include "SystemConf.h"
-#include "BrightnessControl.h"
+//#include "BrightnessControl.h"
 #include "ImageIO.h"
 #include "utils/Randomizer.h"
 
@@ -180,12 +180,12 @@ void SystemScreenSaver::stopScreenSaver()
 	bool isExitingScreenSaver = !mLoadingNext;
 	bool isVideoScreenSaver = (mVideoScreensaver != nullptr);
 
-	std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
-	if ( screensaver_behavior == "black" )
-	{
-		auto sysbright = SystemConf::getInstance()->get("system.brightness");
-		BrightnessControl::getInstance()->setBrightness(stoi(sysbright));
-	}
+//	std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
+//	if ( screensaver_behavior == "black" )
+//	{
+//		auto sysbright = SystemConf::getInstance()->get("system.brightness");
+//		BrightnessControl::getInstance()->setBrightness(stoi(sysbright));
+//	}
 
 	if (mLoadingNext)
 		mFadingImageScreensaver = mImageScreensaver;
@@ -266,10 +266,10 @@ void SystemScreenSaver::renderScreenSaver()
 		Renderer::setMatrix(Transform4x4f::Identity());
 		unsigned char color = screensaver_behavior == "dim" ? 0x000000A0 : 0x000000FF;
 		Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), color, color);
-		if ( screensaver_behavior == "black" )
-		{
-			BrightnessControl::getInstance()->setBrightness(3);
-		}
+//		if ( screensaver_behavior == "black" )
+//		{
+//			BrightnessControl::getInstance()->setBrightness(3);
+//		}
 	}
 }
 
