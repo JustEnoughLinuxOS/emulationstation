@@ -444,6 +444,13 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 				}, _("NO"), nullptr));
      });
 
+    dangerZone->addEntry(_("FACTORY RESET"), true, [mWindow] {
+    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n\nIF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n\nRESET SYSTEM AND RESTART?"), _("YES"),
+				[] {
+				runSystemCommand("/usr/bin/run \"/usr/bin/factoryreset ALL\"", "", nullptr);
+				}, _("NO"), nullptr));
+     });
+
 mWindow->pushGui(dangerZone);
 }
 
