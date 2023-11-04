@@ -180,6 +180,9 @@ public:
     std::vector<std::string> getCPUVendor();
     std::vector<std::string> getAvailableThreads();
 
+    /* Sleep modes */
+    std::vector<std::string> getSleepModes();
+
     /* WIFI channels */
     std::vector<std::string> getAvailableChannels();
 

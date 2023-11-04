@@ -1565,24 +1565,35 @@ void GuiMenu::openSystemSettings_batocera()
 #if defined(AMD64) || defined(RK3326) || defined(RK3566) || defined(RK3566_X55) || defined(RK3588) || defined(RK3399)
         // Allow user control over how the device sleeps
         s->addGroup(_("HARDWARE / SUSPEND"));
-        auto systemSuspend = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEVICE SUSPEND MODE"), false);
-        std::string sys_suspend = SystemConf::getInstance()->get("system.suspendmode");
-        if (sys_suspend.empty())
-                sys_suspend = "default";
+        auto optionsSleep = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEVICE SUSPEND MODE"), false);
 
-        systemSuspend->add(_("DEFAULT"), "default", sys_suspend == "default");
-        systemSuspend->add(_("FREEZE (S0)"), "freeze", sys_suspend == "freeze");
-        systemSuspend->add(_("STANDBY (S1)"), "standby", sys_suspend == "standby");
-        systemSuspend->add(_("DEEP (S3)"), "mem", sys_suspend == "mem");
-        s->addWithLabel(_("DEVICE SUSPEND MODE"), systemSuspend);
+        std::vector<std::string> availableSleepModes = ApiSystem::getInstance()->getSleepModes();
+        std::string selectedSleep = SystemConf::getInstance()->get("system.suspendmode");
+        if (selectedSleep.empty())
+                selectedSleep = "default";
 
-        s->addSaveFunc([this, systemSuspend, sys_suspend]
+        bool wfound = false;
+        for (auto it = availableSleepModes.begin(); it != availableSleepModes.end(); it++)
         {
-          if (systemSuspend->changed()) {
-            SystemConf::getInstance()->set("system.suspendmode", systemSuspend->getSelected());
-            runSystemCommand("/usr/bin/suspendmode " + systemSuspend->getSelected(), "", nullptr);
-            SystemConf::getInstance()->saveSystemConf();
-          }
+                if ( *it != "default" ) {
+                        optionsSleep->add((*it), (*it), selectedSleep == (*it));
+                        if (selectedSleep == (*it))
+                                wfound = true;
+                }
+        }
+
+        if (!wfound)
+                optionsSleep->add(selectedSleep, selectedSleep, true);
+
+        s->addWithLabel(_("DEVICE SUSPEND MODE"), optionsSleep);
+
+        s->addSaveFunc([this, optionsSleep, selectedSleep]
+        {
+                if (optionsSleep->changed()) {
+                        SystemConf::getInstance()->set("system.suspendmode", optionsSleep->getSelected());
+                        runSystemCommand("/usr/bin/suspendmode " + optionsSleep->getSelected(), "", nullptr);
+                        SystemConf::getInstance()->saveSystemConf();
+                }
         });
 #endif
 

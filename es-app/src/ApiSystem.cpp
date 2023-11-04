@@ -641,6 +641,11 @@ std::vector<std::string> ApiSystem::getAvailableThreads()
         return executeEnumerationScript("/usr/bin/bash -lc \". /etc/profile; get_threads\"");
 }
 
+std::vector<std::string> ApiSystem::getSleepModes()
+{
+        return executeEnumerationScript("/usr/bin/sh -lc \"echo \\\"default\\\"; tr \\\" \\\" \\\"\\n\\\" </sys/power/state\"");
+}
+
 std::vector<std::string> ApiSystem::getCPUVendor()
 {
 	return executeEnumerationScript("awk \'/vendor_id/ {print $3;exit}\' /proc/cpuinfo");
