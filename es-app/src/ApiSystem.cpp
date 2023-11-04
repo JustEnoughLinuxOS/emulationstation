@@ -643,7 +643,7 @@ std::vector<std::string> ApiSystem::getAvailableThreads()
 
 std::vector<std::string> ApiSystem::getSleepModes()
 {
-        return executeEnumerationScript("/usr/bin/sh -lc \"echo \\\"default\\\"; tr \\\" \\\" \\\"\\n\\\" </sys/power/state\"");
+        return executeEnumerationScript("/usr/bin/sh -lc \"echo \\\"default\\\"; tr \\\" \\\" \\\"\\n\\\" </sys/power/state | grep -v disk\"");
 }
 
 std::vector<std::string> ApiSystem::getCPUVendor()
