@@ -1570,8 +1570,10 @@ void GuiMenu::openSystemSettings_batocera()
         if (sys_suspend.empty())
                 sys_suspend = "default";
 
-        systemSuspend->add(_("FREEZE (S0)"), "freeze", sys_suspend == "freeze standby mem");
-        systemSuspend->add(_("DEEP (S3)"), "mem", sys_suspend == "mem standby freeze");
+        systemSuspend->add(_("DEFAULT"), "default", sys_suspend == "default");
+        systemSuspend->add(_("FREEZE (S0)"), "freeze", sys_suspend == "freeze");
+        systemSuspend->add(_("STANDBY (S1)"), "standby", sys_suspend == "standby");
+        systemSuspend->add(_("DEEP (S3)"), "mem", sys_suspend == "mem");
         s->addWithLabel(_("DEVICE SUSPEND MODE"), systemSuspend);
 
         s->addSaveFunc([this, systemSuspend, sys_suspend]
