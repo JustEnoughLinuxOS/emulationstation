@@ -1572,17 +1572,17 @@ void GuiMenu::openSystemSettings_batocera()
         if (selectedSleep.empty())
                 selectedSleep = "default";
 
-        bool wfound = false;
+        bool xfound = false;
         for (auto it = availableSleepModes.begin(); it != availableSleepModes.end(); it++)
         {
                 if ( *it != "default" ) {
                         optionsSleep->add((*it), (*it), selectedSleep == (*it));
                         if (selectedSleep == (*it))
-                                wfound = true;
+                                xfound = true;
                 }
         }
 
-        if (!wfound)
+        if (!xfound)
                 optionsSleep->add(selectedSleep, selectedSleep, true);
 
         s->addWithLabel(_("DEVICE SUSPEND MODE"), optionsSleep);
