@@ -1580,7 +1580,7 @@ void GuiMenu::openSystemSettings_batocera()
         {
           if (systemSuspend->changed()) {
             SystemConf::getInstance()->set("system.suspendmode", systemSuspend->getSelected());
-            runSystemCommand("/usr/bin/setsuspendmode " + systemSuspend->getSelected(), "", nullptr);
+            runSystemCommand("/usr/bin/suspendmode " + systemSuspend->getSelected(), "", nullptr);
             SystemConf::getInstance()->saveSystemConf();
           }
         });
