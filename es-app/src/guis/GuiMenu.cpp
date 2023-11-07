@@ -1319,7 +1319,7 @@ void GuiMenu::openSystemSettings_batocera()
 
 #endif
 
-	s->addGroup(_("HARDWARE / CPU"));
+	s->addGroup(_("HARDWARE / PERFORMANCE"));
 
 #if defined(AMD64)
         // Allow offlining all but n threads
@@ -1473,7 +1473,30 @@ void GuiMenu::openSystemSettings_batocera()
 	  runSystemCommand("/usr/bin/bash -lc \". /etc/profile; "+ cpuGovUpdate->getSelected() + "\"", "", nullptr);
         });
 
-	s->addGroup(_("HARDWARE / GPU"));
+	// GPU performance mode with enhanced power savings
+	auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU PERFORMANCE PROFILE"), false);
+	std::string gpu_performance = SystemConf::getInstance()->get("system.gpuperf");
+	if (gpu_performance.empty())
+		gpu_performance = "auto";
+
+	gpuPerformance->add(_("Balanced"), "auto", gpu_performance == "auto");
+	gpuPerformance->add(_("Battery Focus"), "low", gpu_performance == "low");
+#if defined(AMD64)
+	gpuPerformance->add(_("Performance Focus"), "profile_standard", gpu_performance == "profile_standard");
+#endif
+	gpuPerformance->add(_("Best Performance"), "profile_peak", gpu_performance == "profile_peak");
+
+	s->addWithLabel(_("GPU PERFORMANCE PROFILE"), gpuPerformance);
+	s->addSaveFunc([this, gpuPerformance, gpu_performance]
+	{
+		if (gpuPerformance->changed()) {
+			SystemConf::getInstance()->set("system.gpuperf", gpuPerformance->getSelected());
+			SystemConf::getInstance()->saveSystemConf();
+			runSystemCommand("/usr/bin/bash -lc \". /etc/profile; gpu_performance_level "+ gpuPerformance->getSelected() + "\"", "", nullptr);
+		}
+	});
+
+	s->addGroup(_("HARDWARE / POWER SAVING"));
         // Automatically enable or disable enhanced power saving mode
         auto enh_powersave = std::make_shared<SwitchComponent>(mWindow);
         bool enhpowersaveEnabled = SystemConf::getInstance()->get("system.powersave") == "1";
@@ -1497,28 +1520,6 @@ void GuiMenu::openSystemSettings_batocera()
                	 SystemConf::getInstance()->saveSystemConf();
         	});
 
-#if defined(AMD64)
-		// GPU performance mode with enhanced power savings
-		auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU PERFORMANCE PROFILE (AMD ONLY)"), false);
-		std::string gpu_performance = SystemConf::getInstance()->get("system.gpuperf");
-		if (gpu_performance.empty())
-			gpu_performance = "auto";
-
-		gpuPerformance->add(_("Balanced"), "auto", gpu_performance == "auto");
-		gpuPerformance->add(_("Battery Focus"), "low", gpu_performance == "low");
-		gpuPerformance->add(_("Performance Focus"), "profile_standard", gpu_performance == "profile_standard");
-		gpuPerformance->add(_("Best Performance"), "profile_peak", gpu_performance == "profile_peak");
-	
-		s->addWithLabel(_("GPU PERFORMANCE PROFILE (AMD ONLY)"), gpuPerformance);
-		s->addSaveFunc([this, gpuPerformance, gpu_performance]
-		{
-			if (gpuPerformance->changed()) {
-				SystemConf::getInstance()->set("system.gpuperf", gpuPerformance->getSelected());
-				SystemConf::getInstance()->saveSystemConf();
-				runSystemCommand("/usr/bin/bash -lc \". /etc/profile; gpu_performance_level "+ gpuPerformance->getSelected() + "\"", "", nullptr);
-			}
-		});
-#endif
 	        auto enh_audiopowersave = std::make_shared<SwitchComponent>(mWindow);
 	        bool enhaudiopowersaveEnabled = SystemConf::getInstance()->get("system.power.audio") == "1";
 	        enh_audiopowersave->setState(enhaudiopowersaveEnabled);
@@ -5184,31 +5185,29 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
           }
         });
 
+	// GPU performance mode with enhanced power savings
+	auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU PERFORMANCE PROFILE"), false);
+	std::string gpu_performance = SystemConf::getInstance()->get(configName + ".gpuperf");
+	if (gpu_performance.empty())
+		gpu_performance = "default";
+
+	gpuPerformance->add(_("DEFAULT"), "default", gpu_performance == "default");
+	gpuPerformance->add(_("Balanced"), "auto", gpu_performance == "auto");
+	gpuPerformance->add(_("Battery Focus"), "low", gpu_performance == "low");
 #if defined(AMD64)
-        if (SystemConf::getInstance()->getBool("system.powersave", true)) {
-          // GPU performance mode with enhanced power savings
-          auto gpuPerformance = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU PERFORMANCE PROFILE (AMD ONLY)"), false);
-          std::string gpu_performance = SystemConf::getInstance()->get(configName + ".gpuperf");
-          if (gpu_performance.empty())
-                  gpu_performance = "default";
-
-		gpuPerformance->add(_("DEFAULT"), "default", gpu_performance == "default");
-		gpuPerformance->add(_("Balanced"), "auto", gpu_performance == "auto");
-		gpuPerformance->add(_("Battery Focus"), "low", gpu_performance == "low");
-		gpuPerformance->add(_("Performance Focus"), "profile_standard", gpu_performance == "profile_standard");
-		gpuPerformance->add(_("Best Performance"), "profile_peak", gpu_performance == "profile_peak");
-
-          systemConfiguration->addWithLabel(_("GPU PERFORMANCE PROFILE (AMD ONLY)"), gpuPerformance);
-
-          systemConfiguration->addSaveFunc([configName, gpuPerformance, gpu_performance]
-          {
-            if (gpuPerformance->changed()) {
-              SystemConf::getInstance()->set(configName + ".gpuperf", gpuPerformance->getSelected());
-              SystemConf::getInstance()->saveSystemConf();
-            }
-          });
-        }
+	gpuPerformance->add(_("Performance Focus"), "profile_standard", gpu_performance == "profile_standard");
 #endif
+	gpuPerformance->add(_("Best Performance"), "profile_peak", gpu_performance == "profile_peak");
+
+	systemConfiguration->addWithLabel(_("GPU PERFORMANCE PROFILE"), gpuPerformance);
+
+	systemConfiguration->addSaveFunc([configName, gpuPerformance, gpu_performance]
+	{
+		if (gpuPerformance->changed()) {
+			SystemConf::getInstance()->set(configName + ".gpuperf", gpuPerformance->getSelected());
+			SystemConf::getInstance()->saveSystemConf();
+		}
+	});
 
 #endif
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::latency_reduction))
