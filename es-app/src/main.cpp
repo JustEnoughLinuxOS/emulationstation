@@ -155,9 +155,6 @@ bool parseArgs(int argc, char* argv[])
 		}else if(strcmp(argv[i], "--exit-on-reboot-required") == 0)
 		{
 			Settings::getInstance()->setBool("ExitOnRebootRequired", true);
-		}else if(strcmp(argv[i], "--no-splash") == 0)
-		{
-			Settings::getInstance()->setBool("SplashScreen", false);
 		}else if(strcmp(argv[i], "--debug") == 0)
 		{
 			Settings::getInstance()->setBool("Debug", true);
@@ -470,23 +467,11 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	bool splashScreen = Settings::getInstance()->getBool("SplashScreen");
-	bool splashScreenProgress = Settings::getInstance()->getBool("SplashScreenProgress");
-
-	if (splashScreen)
-	{
-		std::string progressText = _("Loading...");
-		if (splashScreenProgress)
-			progressText = _("Loading system config...");
-
-		window.renderSplashScreen(progressText);
-	}
-
 	MameNames::init();
 
 
 	const char* errorMsg = NULL;
-	if(!loadSystemConfigFile(splashScreen && splashScreenProgress ? &window : nullptr, &errorMsg))
+	if(!loadSystemConfigFile(&window, &errorMsg))
 	{
 		// something went terribly wrong
 		if(errorMsg == NULL)
@@ -502,29 +487,8 @@ int main(int argc, char* argv[])
 
 	SystemConf* systemConf = SystemConf::getInstance();
 
-#ifdef _ENABLE_KODI_
-	if (systemConf->getBool("kodi.enabled", true) && systemConf->getBool("kodi.atstartup"))
-	{
-		if (splashScreen)
-			window.closeSplashScreen();
-
-		ApiSystem::getInstance()->launchKodi(&window);
-
-		if (splashScreen)
-		{
-			window.renderSplashScreen("");
-			splashScreen = false;
-		}
-	}
-#endif
-
-
 	auto sysbright = SystemConf::getInstance()->get("system.brightness");
 	BrightnessControl::getInstance()->setBrightness(stoi(sysbright));
-
-	// preload what we can right away instead of waiting for the user to select it
-	// this makes for no delays when accessing content, but a longer startup time
-	//ViewController::get()->preload();
 
 	// Initialize input
 	InputConfig::AssignActionButtons();
@@ -539,8 +503,6 @@ int main(int argc, char* argv[])
 
 	if (errorMsg == NULL)
 		ViewController::get()->goToStart(true);
-
-	window.closeSplashScreen();
 
 	// Create a flag in  temporary directory to signal READY state
 	ApiSystem::getInstance()->setReadyFlag();
@@ -630,9 +592,6 @@ int main(int argc, char* argv[])
 
 	while(window.peekGui() != ViewController::get())
 		delete window.peekGui();
-
-	//if (SystemData::hasDirtySystems())
-	//	window.renderSplashScreen(_("SAVING METADATAS. PLEASE WAIT..."));
 
 	ImageIO::saveImageCache();
 	MameNames::deinit();

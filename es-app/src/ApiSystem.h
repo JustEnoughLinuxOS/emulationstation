@@ -128,8 +128,6 @@ public:
 
     bool setOverscan(bool enable);
 
-    bool setOverclock(std::string mode);
-
     virtual std::pair<std::string, int> updateSystem(const std::function<void(const std::string)>& func = nullptr);
 
     std::pair<std::string, int> backupSystem(BusyComponent* ui, std::string device);

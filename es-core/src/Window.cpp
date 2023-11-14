@@ -627,39 +627,6 @@ void Window::setAllowSleep(bool sleep)
 	mAllowSleep = sleep;
 }
 
-void Window::setCustomSplashScreen(std::string imagePath, std::string customText)
-{
-	if (Settings::getInstance()->getBool("HideWindow"))
-		return;
-		
-	if (!Utils::FileSystem::exists(imagePath))
-		mSplash = std::make_shared<Splash>(this, DEFAULT_SPLASH_IMAGE, false);
-	else
-		mSplash = std::make_shared<Splash>(this, imagePath, false);
-
-	mSplash->update(customText);
-}
-
-void Window::renderSplashScreen(std::string text, float percent, float opacity)
-{
-	if (mSplash == NULL)
-		mSplash = std::make_shared<Splash>(this);
-
-	mSplash->update(text, percent);
-	mSplash->render(opacity);	
-}
-
-void Window::renderSplashScreen(float opacity, bool swapBuffers)
-{
-	if (mSplash != nullptr)
-		mSplash->render(opacity, swapBuffers);
-}
-
-void Window::closeSplashScreen()
-{
-	mSplash = nullptr;
-}
-
 void Window::renderHelpPromptsEarly()
 {
 	mHelp->render(Transform4x4f::Identity());

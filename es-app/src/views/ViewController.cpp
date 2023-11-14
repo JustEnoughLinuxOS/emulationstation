@@ -122,10 +122,8 @@ void ViewController::goToStart(bool forceImmediate)
 
 void ViewController::ReloadAndGoToStart()
 {
-	mWindow->renderSplashScreen(_("Loading..."));
 	ViewController::get()->reloadAll();
 	ViewController::get()->goToStart(true);
-	mWindow->closeSplashScreen();
 }
 
 int ViewController::getSystemId(SystemData* system)
@@ -543,9 +541,6 @@ void ViewController::launch(FileData* game, LaunchGameOptions options, Vector3f 
 
 	GuiComponent::isLaunchTransitionRunning = true;
 		
-	if (!Settings::getInstance()->getBool("HideWindow"))
-		mWindow->setCustomSplashScreen(game->getImagePath(), game->getName());
-
 	std::string transition_style = Settings::GameTransitionStyle();
 	if (transition_style.empty() || transition_style == "default")
 		transition_style = Settings::TransitionStyle();
@@ -582,7 +577,7 @@ void ViewController::launch(FileData* game, LaunchGameOptions options, Vector3f 
 			}
 			else
 			{
-				setAnimation(new LambdaAnimation(fadeFunc, 800), 0, [this] { GuiComponent::isLaunchTransitionRunning = false; mLockInput = false; mWindow->closeSplashScreen(); }, true, 3);
+				setAnimation(new LambdaAnimation(fadeFunc, 800), 0, [this] { GuiComponent::isLaunchTransitionRunning = false; mLockInput = false; }, true, 3);
 				this->onFileChanged(game, FILE_METADATA_CHANGED);
 			}
 		});
@@ -602,7 +597,7 @@ void ViewController::launch(FileData* game, LaunchGameOptions options, Vector3f 
 			else
 			{
 				mCamera = origCamera;
-				setAnimation(new LaunchAnimation(mCamera, mFadeOpacity, center, 600), 0, [this] { GuiComponent::isLaunchTransitionRunning = false; mLockInput = false; mWindow->closeSplashScreen(); }, true, 3);
+				setAnimation(new LaunchAnimation(mCamera, mFadeOpacity, center, 600), 0, [this] { GuiComponent::isLaunchTransitionRunning = false; mLockInput = false; }, true, 3);
 				this->onFileChanged(game, FILE_METADATA_CHANGED);
 			}
 		});
@@ -621,7 +616,7 @@ void ViewController::launch(FileData* game, LaunchGameOptions options, Vector3f 
 			else
 			{
 				mCamera = origCamera;
-				setAnimation(new LaunchAnimation(mCamera, mFadeOpacity, center, 10), 0, [this] { GuiComponent::isLaunchTransitionRunning = false; mLockInput = false; mWindow->closeSplashScreen(); }, true, 3);
+				setAnimation(new LaunchAnimation(mCamera, mFadeOpacity, center, 10), 0, [this] { GuiComponent::isLaunchTransitionRunning = false; mLockInput = false; }, true, 3);
 				this->onFileChanged(game, FILE_METADATA_CHANGED);
 			}
 		});
@@ -840,7 +835,6 @@ bool ViewController::input(InputConfig* config, Input input)
 #if WIN32
 		EsLocale::reset();
 #endif
-		mWindow->closeSplashScreen();
 		return true;
 	}
 
@@ -940,48 +934,9 @@ void ViewController::render(const Transform4x4f& parentTrans)
 	// fade out
 	if (mFadeOpacity)
 	{
-		if (!Settings::getInstance()->getBool("HideWindow") && mLockInput) // We're launching a game
-			mWindow->renderSplashScreen(mFadeOpacity, false);
-		else
-		{
-			unsigned int fadeColor = 0x00000000 | (unsigned char)(mFadeOpacity * 255);
-			Renderer::setMatrix(parentTrans);
-			Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), fadeColor, fadeColor);
-		}
-	}
-}
-
-void ViewController::preload()
-{
-	bool preloadUI = Settings::getInstance()->getBool("PreloadUI");
-	if (!preloadUI)
-		return;
-
-	mWindow->renderSplashScreen(_("Preloading UI"), 0);
-	getSystemListView();
-
-	int i = 1;
-	int max = SystemData::sSystemVector.size() + 1;
-	bool splash = preloadUI && Settings::getInstance()->getBool("SplashScreen") && Settings::getInstance()->getBool("SplashScreenProgress");
-
-	for(auto it = SystemData::sSystemVector.cbegin(); it != SystemData::sSystemVector.cend(); it++)
-	{		
-		if ((*it)->isGroupChildSystem() || !(*it)->isVisible())
-		{
-			i++;
-			continue;
-		}
-
-		if (splash)
-		{
-			i++;
-
-			if ((i % 4) == 0)
-				mWindow->renderSplashScreen(_("Preloading UI"), (float)i / (float)max);
-		}
-
-		(*it)->resetFilters();
-		getGameListView(*it);
+		unsigned int fadeColor = 0x00000000 | (unsigned char)(mFadeOpacity * 255);
+		Renderer::setMatrix(parentTrans);
+		Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), fadeColor, fadeColor);
 	}
 }
 
@@ -1132,22 +1087,15 @@ void ViewController::reloadAll(Window* window, bool reloadTheme)
 			pool.wait([window, &processedSystem, systemCount]
 			{
 				int px = processedSystem;
-				if (px >= 0 && px < systemCount)
-					window->renderSplashScreen(_("Loading theme"), (float)px / (float)systemCount);
 			}, 5);
 		}
 		else
 			pool.wait();
 	}
 
-	bool preloadUI = Settings::getInstance()->getBool("PreloadUI");
-
 	if (gameListCount > 0)
 	{
 		int lastTime = SDL_GetTicks() - 50;
-
-		if (window)
-			window->renderSplashScreen(_("Loading gamelists"), 0.0f);
 
 		float idx = 0;
 		// load themes, create gamelistviews and reset filters
@@ -1156,9 +1104,7 @@ void ViewController::reloadAll(Window* window, bool reloadTheme)
 			if (it->second == nullptr)
 				continue;
 
-			if (preloadUI)
-				getGameListView(it->first)->setCursor(it->second);
-			else if (mState.viewing == GAME_LIST)
+			if (mState.viewing == GAME_LIST)
 			{
 				if (mState.getSystem() == it->first)
 					getGameListView(mState.getSystem())->setCursor(it->second);
@@ -1170,13 +1116,9 @@ void ViewController::reloadAll(Window* window, bool reloadTheme)
 			if (window && time - lastTime >= 20)
 			{
 				lastTime = time;
-				window->renderSplashScreen(_("Loading gamelists"), (float)idx / (float)gameListCount);
 			}
 		}
 	}
-
-	if (window != nullptr)
-		window->renderSplashScreen(_("Loading..."));
 
 	if (SystemData::sSystemVector.size() > 0)
 	{
@@ -1276,9 +1218,6 @@ void ViewController::reloadAllGames(Window* window, bool deleteCurrentGui, bool 
 	auto viewMode = ViewController::get()->getViewMode();
 	auto systemName = ViewController::get()->getSelectedSystem()->getName();
 
-	window->closeSplashScreen();
-	window->renderSplashScreen(_("Loading..."));
-
 	if (!deleteCurrentGui)
 	{
 		GuiComponent* topGui = window->peekGui();
@@ -1309,7 +1248,6 @@ void ViewController::reloadAllGames(Window* window, bool deleteCurrentGui, bool 
 	ViewController::get()->goToSystemView(systemName, true, viewMode);	
 	ViewController::get()->reloadAll(nullptr, false); // Avoid reloading themes a second time
 
-	window->closeSplashScreen();
 	window->pushGui(ViewController::get());
 }
 

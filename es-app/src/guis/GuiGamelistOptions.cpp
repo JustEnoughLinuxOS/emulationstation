@@ -467,9 +467,7 @@ GuiGamelistOptions::~GuiGamelistOptions()
 
 	if (mReloadAll)
 	{
-		mWindow->renderSplashScreen(_("Loading..."));
 		ViewController::get()->reloadAll(mWindow);
-		mWindow->closeSplashScreen();
 	}
 	else if (mFiltersChanged || viewModeChanged)
 	{
@@ -686,8 +684,6 @@ void GuiGamelistOptions::createCollection(std::string inName)
 
 	Window* window = mWindow;
 
-	window->renderSplashScreen();
-
 	GuiComponent* topGui = window->peekGui();
 	window->removeGui(topGui);
 
@@ -700,8 +696,6 @@ void GuiGamelistOptions::createCollection(std::string inName)
 	ViewController::get()->reloadAll();
 
 	ViewController::get()->goToSystemView(newSys);
-
-	window->closeSplashScreen();
 }
 
 void GuiGamelistOptions::deleteCollection()
@@ -719,14 +713,11 @@ void GuiGamelistOptions::deleteCollection()
 
 			if (CollectionSystemManager::get()->deleteCustomCollection(&customCollection->second))
 			{
-				mWindow->renderSplashScreen();
-		
 				CollectionSystemManager::get()->loadEnabledListFromSettings();
 				CollectionSystemManager::get()->updateSystemsList();
 				ViewController::get()->goToStart();
 				ViewController::get()->reloadAll();
 
-				mWindow->closeSplashScreen();
 				delete this;
 			}
 		}, _("NO"), nullptr));

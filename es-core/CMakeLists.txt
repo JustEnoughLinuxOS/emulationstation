@@ -85,9 +85,12 @@ set(CORE_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/math/Vector3f.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/math/Vector4f.h
 
-	# Renderers
-	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/Renderer.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/GlExtensions.h	
+        # Renderers
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/Renderer.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/Renderer_GL21.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/Renderer_GLES10.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/Renderer_GLES20.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/GlExtensions.h
 
 	# Resources
 	${CMAKE_CURRENT_SOURCE_DIR}/src/resources/Font.h

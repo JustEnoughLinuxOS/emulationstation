@@ -315,7 +315,6 @@ void GuiCollectionSystemsOptions::initializeMenu()
 		if (getVariable("reloadSystems"))
 		{
 			Window* window = mWindow;
-			window->renderSplashScreen(_("Loading..."));
 
 			ViewController::get()->goToStart();
 			delete ViewController::get();
@@ -332,7 +331,6 @@ void GuiCollectionSystemsOptions::initializeMenu()
 					delete gui;
 			}
 			ViewController::get()->reloadAll(nullptr, false); // Avoid reloading themes a second time
-			window->closeSplashScreen();
 
 			window->pushGui(ViewController::get());
 		}
@@ -344,7 +342,6 @@ void GuiCollectionSystemsOptions::initializeMenu()
 			CollectionSystemManager::get()->updateSystemsList();
 			ViewController::get()->goToStart();
 			ViewController::get()->reloadAll(mWindow);
-			mWindow->closeSplashScreen();
 		}
 	});
 }
@@ -408,12 +405,10 @@ void GuiCollectionSystemsOptions::createFilterCollection(std::string inName)
 	
 	ggf->onFinalize([name, newSys, window]()
 	{
-		window->renderSplashScreen();
 
 		CollectionSystemManager::get()->reloadCollection(name, false);						
 		ViewController::get()->goToGameList(newSys, true);
 
-		window->closeSplashScreen();
 	});
 	
 	window->pushGui(ggf);

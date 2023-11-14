@@ -1105,9 +1105,6 @@ bool SystemData::loadConfig(Window* window)
 		{
 			std::string fullname = system.child("fullname").text().get();
 
-			if (window != NULL)
-				window->renderSplashScreen(fullname, systemCount == 0 ? 0 : (float)currentSystem / (float)(systemCount + 1));
-
 			std::string nm = system.child("name").text().get();
 
 			SystemData* pSystem = loadSystem(system);
@@ -1125,8 +1122,6 @@ bool SystemData::loadConfig(Window* window)
 			pThreadPool->wait([window, &processedSystem, systemCount, &systemsNames]
 			{
 				int px = processedSystem - 1;
-				if (px >= 0 && px < systemsNames.size())
-					window->renderSplashScreen(systemsNames.at(px), (float)px / (float)(systemCount + 1));
 			}, 50);
 		}
 		else
@@ -1141,15 +1136,9 @@ bool SystemData::loadConfig(Window* window)
 
 		delete[] systems;
 		delete pThreadPool;
-
-		if (window != NULL)
-			window->renderSplashScreen(_("Collections"), systemCount == 0 ? 0 : currentSystem / systemCount);
 	}
 	else
 	{
-		if (window != NULL)
-			window->renderSplashScreen(_("Collections"), systemCount == 0 ? 0 : currentSystem / systemCount);
-
 		CollectionSystemManager::get()->loadCollectionSystems();
 	}
 

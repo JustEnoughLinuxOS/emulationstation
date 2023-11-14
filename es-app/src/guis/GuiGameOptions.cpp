@@ -593,14 +593,12 @@ void GuiGameOptions::deleteCollection()
 
 			if (CollectionSystemManager::get()->deleteCustomCollection(&customCollection->second))
 			{
-				mWindow->renderSplashScreen("");
 
 				CollectionSystemManager::get()->loadEnabledListFromSettings();
 				CollectionSystemManager::get()->updateSystemsList();
 				ViewController::get()->goToStart();
 				ViewController::get()->reloadAll(mWindow);
 
-				mWindow->closeSplashScreen();			
 			}
 			delete this;
 		}, 

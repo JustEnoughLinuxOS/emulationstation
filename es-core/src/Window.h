@@ -68,12 +68,6 @@ public:
 	bool getAllowSleep();
 	void setAllowSleep(bool sleep);
 	
-	// Splash screen
-	void setCustomSplashScreen(std::string imagePath, std::string customText);
-	void renderSplashScreen(std::string text, float percent = -1, float opacity = 1);
-	void renderSplashScreen(float opacity = 1, bool swapBuffers = true);
-	void closeSplashScreen();
-
 	void renderHelpPromptsEarly(); // used to render HelpPrompts before a fade
 	void setHelpPrompts(const std::vector<HelpPrompt>& prompts, const HelpStyle& style);
 

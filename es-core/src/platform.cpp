@@ -43,8 +43,6 @@ int runRestartCommand()
 
 int runSystemCommand(const std::string& cmd_utf8, const std::string& name, Window* window)
 {
-	if (window != NULL)
-		window->renderSplashScreen();
 
 #ifdef WIN32
 	// on Windows we use _wsystem to support non-ASCII paths
@@ -106,8 +104,6 @@ int runSystemCommand(const std::string& cmd_utf8, const std::string& name, Windo
 				while (SDL_PollEvent(&event))
 					polled = true;
 
-				if (window != NULL && polled)
-					window->renderSplashScreen();
 			}
 		}
 

@@ -155,17 +155,6 @@ bool ApiSystem::setOverscan(bool enable)
 	return executeScriptLegacy("batocera-config overscan " + std::string(enable ? "enable" : "disable"));
 }
 
-bool ApiSystem::setOverclock(std::string mode) 
-{
-#ifdef _ENABLEEMUELEC
-	return true;
-#endif
-	if (mode.empty())
-		return false;
-
-	return executeScriptLegacy("batocera-overclock set " + mode);
-}
-
 // BusyComponent* ui
 std::pair<std::string, int> ApiSystem::updateSystem(const std::function<void(const std::string)>& func)
 {
@@ -290,8 +279,8 @@ std::pair<std::string, int> ApiSystem::scrape(BusyComponent* ui)
 
 bool ApiSystem::ping() 
 {
-	if (!executeScriptLegacy("timeout 1 ping -c 1 -t 1000 8.8.8.8")) // ping Google DNS
-		return executeScriptLegacy("timeout 2 ping -c 1 -t 2000 8.8.4.4"); // ping Google secondary DNS & give 2 seconds
+	if (!executeScriptLegacy("timeout 1 ping -c 1 -t 255 -w 1 8.8.8.8")) // ping Google DNS
+		return executeScriptLegacy("timeout 2 ping -c 1 -t 255 -w 1 8.8.4.4"); // ping Google secondary DNS & give 2 seconds
 
 	return true;
 }
@@ -633,12 +622,12 @@ std::vector<std::string> ApiSystem::getAvailableAudioOutputDevices()
 
 std::vector<std::string> ApiSystem::getAvailableChannels()
 {
-        return executeEnumerationScript("/usr/bin/bash -lc \"/usr/bin/wifictl channels\"");
+        return executeEnumerationScript("/usr/bin/sh -lc \"/usr/bin/wifictl channels\"");
 }
 
 std::vector<std::string> ApiSystem::getAvailableThreads()
 {
-        return executeEnumerationScript("/usr/bin/bash -lc \". /etc/profile; get_threads\"");
+        return executeEnumerationScript("/usr/bin/sh -lc \". /etc/profile.d/099-freqfunctions; get_threads\"");
 }
 
 std::vector<std::string> ApiSystem::getSleepModes()
