@@ -36,12 +36,7 @@
 #include "InputConfig.h"
 #include "RetroAchievements.h"
 #include "TextToSpeech.h"
-
-#ifdef WIN32
-#include <Windows.h>
-#include <direct.h>
-#define PATH_MAX MAX_PATH
-#endif
+#include "BrightnessControl.h"
 
 static std::string gPlayVideo;
 static int gPlayVideoDuration = 0;
@@ -190,13 +185,11 @@ bool parseArgs(int argc, char* argv[])
 			int maxVRAM = atoi(argv[i + 1]);
 			Settings::getInstance()->setInt("MaxVRAM", maxVRAM);
 		}
-#ifdef _ENABLEEMUELEC
 		else if(strcmp(argv[i], "--log-path") == 0)
 		{
 			std::string logPATH = argv[i + 1];
 			Settings::getInstance()->setString("LogPath", logPATH);
 		}
-#endif
 		else if (strcmp(argv[i], "--force-kiosk") == 0)
 		{
 			Settings::getInstance()->setBool("ForceKiosk", true);
@@ -211,14 +204,6 @@ bool parseArgs(int argc, char* argv[])
 		}
 		else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
 		{
-#ifdef WIN32
-			// This is a bit of a hack, but otherwise output will go to nowhere
-			// when the application is compiled with the "WINDOWS" subsystem (which we usually are).
-			// If you're an experienced Windows programmer and know how to do this
-			// the right way, please submit a pull request!
-			AttachConsole(ATTACH_PARENT_PROCESS);
-			freopen("CONOUT$", "wb", stdout);
-#endif
 			std::cout <<
 				"EmulationStation, a graphical front-end for ROM browsing.\n"
 				"Written by Alec \"Aloshi\" Lofquist.\n"
@@ -238,9 +223,7 @@ bool parseArgs(int argc, char* argv[])
 				"--force-kiosk		Force the UI mode to be Kiosk\n"
 				"--force-disable-filters		Force the UI to ignore applied filters in gamelist\n"
 				"--home [path]		Directory to use as home path\n"
-#ifdef _ENABLEEMUELEC
 				"--log-path [path]		Directory to use for log\n"
-#endif
 				"--help, -h			summon a sentient, angry tuba\n\n"
 				"--monitor [index]			monitor index\n\n"				
 				"More information available in README.md.\n";
@@ -305,21 +288,12 @@ void onExit()
 	Log::close();
 }
 
-#ifdef WIN32
-#define PATH_MAX MAX_PATH
-#include <direct.h>
-#endif
-
 int setLocale(char * argv1)
 {
-#if WIN32
-	std::locale::global(std::locale("en-US"));
-#else
 	if (Utils::FileSystem::exists("./locale/lang")) // for local builds
 		EsLocale::init("", "./locale/lang");	
 	else
 		EsLocale::init("", "/usr/share/locale");	
-#endif
 
 	setlocale(LC_TIME, "");
 
@@ -449,39 +423,6 @@ int main(int argc, char* argv[])
 	if(!parseArgs(argc, argv))
 		return 0;
 
-	// only show the console on Windows if HideConsole is false
-#ifdef WIN32
-	// MSVC has a "SubSystem" option, with two primary options: "WINDOWS" and "CONSOLE".
-	// In "WINDOWS" mode, no console is automatically created for us.  This is good,
-	// because we can choose to only create the console window if the user explicitly
-	// asks for it, preventing it from flashing open and then closing.
-	// In "CONSOLE" mode, a console is always automatically created for us before we
-	// enter main. In this case, we can only hide the console after the fact, which
-	// will leave a brief flash.
-	// TL;DR: You should compile ES under the "WINDOWS" subsystem.
-	// I have no idea how this works with non-MSVC compilers.
-	if(!Settings::getInstance()->getBool("HideConsole"))
-	{
-		// we want to show the console
-		// if we're compiled in "CONSOLE" mode, this is already done.
-		// if we're compiled in "WINDOWS" mode, no console is created for us automatically;
-		// the user asked for one, so make one and then hook stdin/stdout/sterr up to it
-		if(AllocConsole()) // should only pass in "WINDOWS" mode
-		{
-			freopen("CONIN$", "r", stdin);
-			freopen("CONOUT$", "wb", stdout);
-			freopen("CONOUT$", "wb", stderr);
-		}
-	}else{
-		// we want to hide the console
-		// if we're compiled with the "WINDOWS" subsystem, this is already done.
-		// if we're compiled with the "CONSOLE" subsystem, a console is already created;
-		// it'll flash open, but we hide it nearly immediately
-		if(GetConsoleWindow()) // should only pass in "CONSOLE" mode
-			ShowWindow(GetConsoleWindow(), SW_HIDE);
-	}
-#endif
-
 	// call this ONLY when linking with FreeImage as a static library
 #ifdef FREEIMAGE_LIB
 	FreeImage_Initialise();
@@ -508,10 +449,8 @@ int main(int argc, char* argv[])
 	// Set locale
 	setLocale(argv[0]);	
 
-#if !WIN32
 	// Run boot game, before Window Create for linux
 	launchStartupGame();
-#endif
 
 	// metadata init
 	Genres::init();
@@ -531,11 +470,6 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-#if WIN32
-	// Run boot game, after Window Create for Windows, or wnd won't be activated when returning back
-	launchStartupGame();
-#endif
-
 	bool splashScreen = Settings::getInstance()->getBool("SplashScreen");
 	bool splashScreenProgress = Settings::getInstance()->getBool("SplashScreenProgress");
 
@@ -546,8 +480,6 @@ int main(int argc, char* argv[])
 			progressText = _("Loading system config...");
 
 		window.renderSplashScreen(progressText);
-	} else {
-		runSystemCommand("/usr/bin/bash -c \"clear >/dev/console\"", "", nullptr);
 	}
 
 	MameNames::init();
@@ -586,11 +518,13 @@ int main(int argc, char* argv[])
 	}
 #endif
 
-	ApiSystem::getInstance()->getIpAdress();
+
+	auto sysbright = SystemConf::getInstance()->get("system.brightness");
+	BrightnessControl::getInstance()->setBrightness(stoi(sysbright));
 
 	// preload what we can right away instead of waiting for the user to select it
 	// this makes for no delays when accessing content, but a longer startup time
-	ViewController::get()->preload();
+	//ViewController::get()->preload();
 
 	// Initialize input
 	InputConfig::AssignActionButtons();
@@ -620,24 +554,6 @@ int main(int argc, char* argv[])
 		AudioManager::getInstance()->playRandomMusic();
 
 
-#ifdef WIN32	
-	DWORD displayFrequency = 60;
-
-	DEVMODE lpDevMode;
-	memset(&lpDevMode, 0, sizeof(DEVMODE));
-	lpDevMode.dmSize = sizeof(DEVMODE);
-	lpDevMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFLAGS | DM_DISPLAYFREQUENCY;
-	lpDevMode.dmDriverExtra = 0;
-
-	if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &lpDevMode) != 0) {
-		displayFrequency = lpDevMode.dmDisplayFrequency; // default value if cannot retrieve from user settings.
-	}
-
-	int timeLimit = (1000 / displayFrequency) - 10;	 // Margin for vsync
-	if (timeLimit < 0)
-		timeLimit = 0;
-#endif
-
 	int lastTime = SDL_GetTicks();
 	int ps_time = SDL_GetTicks();
 
@@ -647,9 +563,6 @@ int main(int argc, char* argv[])
 
 	while(running)
 	{
-#ifdef WIN32	
-		int processStart = SDL_GetTicks();
-#endif
 
 		SDL_Event event;
 
@@ -701,16 +614,6 @@ int main(int argc, char* argv[])
 
 		TRYCATCH("Window.update" ,window.update(deltaTime))	
 		TRYCATCH("Window.render", window.render())
-
-#ifdef WIN32		
-		int processDuration = SDL_GetTicks() - processStart;
-		if (processDuration < timeLimit)
-		{
-			int timeToWait = timeLimit - processDuration;
-			if (timeToWait > 0 && timeToWait < 25 && Settings::getInstance()->getBool("VSync"))
-				Sleep(timeToWait);
-		}
-#endif
 
 		Renderer::swapBuffers();
 
