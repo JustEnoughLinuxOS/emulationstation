@@ -1,7 +1,7 @@
 #include "InputConfig.h"
 
 #include "Log.h"
-#include <pugixml/src/pugixml.hpp>
+#include <pugixml.hpp>
 #include "Settings.h"
 
 

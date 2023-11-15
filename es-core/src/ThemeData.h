@@ -11,7 +11,7 @@
 #include <memory>
 #include <sstream>
 #include <vector>
-#include <pugixml/src/pugixml.hpp>
+#include <pugixml.hpp>
 
 namespace pugi { class xml_node; }
 

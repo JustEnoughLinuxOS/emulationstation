@@ -14,7 +14,7 @@
 #include "Log.h"
 #include "SystemConf.h"
 #include "HttpReq.h"
-#include <pugixml/src/pugixml.hpp>
+#include <pugixml.hpp>
 
 class MoonlightClient {
  public:

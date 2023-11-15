@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ThemeAnimation.h"
-#include <pugixml/src/pugixml.hpp>
+#include <pugixml.hpp>
 #include <vector>
 
 class ThemeStoryboard

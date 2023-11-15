@@ -7,7 +7,7 @@
 #include "Log.h"
 #include "Settings.h"
 #include "SystemData.h"
-#include <pugixml/src/pugixml.hpp>
+#include <pugixml.hpp>
 #include "Genres.h"
 
 #ifdef WIN32

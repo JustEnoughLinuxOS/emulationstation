@@ -5,7 +5,7 @@
 #include "Scripting.h"
 #include "SystemConf.h"
 #include "platform.h"
-#include <pugixml/src/pugixml.hpp>
+#include <pugixml.hpp>
 #include <algorithm>
 #include <vector>
 #include "utils/StringUtil.h"

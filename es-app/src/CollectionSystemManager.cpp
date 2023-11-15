@@ -13,7 +13,7 @@
 #include "SystemData.h"
 #include "ThemeData.h"
 #include "LocaleES.h"
-#include <pugixml/src/pugixml.hpp>
+#include <pugixml.hpp>
 #include <fstream>
 #include "Gamelist.h"
 #include "FileSorts.h"

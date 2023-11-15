@@ -47,7 +47,7 @@
 #include "Win32ApiSystem.h"
 #endif
 
-#include <pugixml/src/pugixml.hpp>
+#include <pugixml.hpp>
 #include "platform.h"
 #include "RetroAchievements.h"
 #include "utils/ZipFile.h"
