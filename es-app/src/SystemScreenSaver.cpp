@@ -26,6 +26,16 @@
 
 #define FADE_TIME 			500
 
+std::string FromEnv( const std::string & var ) {
+     const char * val = std::getenv( var.c_str() );
+     if ( val == nullptr ) {
+         return "";
+     }
+     else {
+         return val;
+     }
+}
+
 SystemScreenSaver::SystemScreenSaver(Window* window) :
 	mVideoScreensaver(NULL),
 	mImageScreensaver(NULL),
@@ -262,16 +272,20 @@ void SystemScreenSaver::renderScreenSaver()
 	else if (mState != STATE_INACTIVE)
 	{
 		std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
-		if ( screensaver_behavior == "dim" )
+		int minBright = 0;
+		if (FromEnv("PANEL_FULL_OFF") == "false")
+			minBright=2;
+
+		Renderer::setMatrix(Transform4x4f::Identity());
+		unsigned char color = screensaver_behavior == "dim" ? 0x000000A0 : 0x000000FF;
+		Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), color, color);
+
+		if ( screensaver_behavior == "black" )
 		{
-			BrightnessControl::getInstance()->setBrightness(2);
-		}
-		else if ( screensaver_behavior == "black" )
-		{
-			Renderer::setMatrix(Transform4x4f::Identity());
-			unsigned char color = screensaver_behavior == "dim" ? 0x000000A0 : 0x000000FF;
-			Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), color, color);
-			BrightnessControl::getInstance()->setBrightness(0);
+			BrightnessControl::getInstance()->setBrightness(minBright);
+		} else {
+			// Dim..
+			BrightnessControl::getInstance()->setBrightness((minBright + 1));
 		}
 	}
 }
