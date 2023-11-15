@@ -80,6 +80,8 @@ std::map<std::string, std::map<std::string, ThemeData::ElementPropertyType>> The
 		{ "verticalAlignment", STRING },
 		{ "roundCorners", FLOAT },
 		{ "opacity", FLOAT },
+                { "saturation", FLOAT },
+                { "shader", PATH },
 		{ "flipX", BOOLEAN },
 		{ "flipY", BOOLEAN },
 		{ "linearSmooth", BOOLEAN },

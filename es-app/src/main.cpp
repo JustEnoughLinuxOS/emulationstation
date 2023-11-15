@@ -255,8 +255,14 @@ bool loadSystemConfigFile(Window* window, const char** errorString)
 	*errorString = NULL;
 
 	StopWatch stopWatch("loadSystemConfigFile :", LogDebug);
+	
+	// Jump to performance mode to load system metadata.
+	std::string cpu_governor = SystemConf::getInstance()->get("system.cpugovernor");
+	runSystemCommand("/usr/bin/sh -lc \". /etc/profile.d/099-freqfunctions; performance\"", "", nullptr);
 
 	ImageIO::loadImageCache();
+
+	runSystemCommand("/usr/bin/sh -lc \". /etc/profile.d/099-freqfunctions; "+ cpu_governor + "\"", "", nullptr);
 
 	if(!SystemData::loadConfig(window))
 	{

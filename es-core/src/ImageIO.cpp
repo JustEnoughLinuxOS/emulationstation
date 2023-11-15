@@ -109,6 +109,7 @@ unsigned char* ImageIO::loadFromMemoryRGBA32(const unsigned char * data, const s
 
 							if (packedSize != nullptr)
 								*packedSize = Vector2i(width, height);
+
 						}
 					}
 
