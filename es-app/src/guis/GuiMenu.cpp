@@ -200,6 +200,7 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 
 	GuiSettings* dangerZone = new GuiSettings(mWindow, _("DANGER ZONE").c_str());
 
+    dangerZone->addGroup(_("DATA MANAGEMENT"));
     dangerZone->addEntry(_("BACKUP CONFIGURATIONS"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL RESTART EMULATIONSTATION!\n\nAFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/JELOS_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n\nBACKUP CURRENT CONFIG AND RESTART?"), _("YES"),
 				[] {
@@ -233,6 +234,7 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 	}, _("NO"), nullptr));
       });
 
+    dangerZone->addGroup(_("EMULATOR MANAGEMENT"));
     dangerZone->addEntry(_("RESET RETROARCH CONFIG TO DEFAULT"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n\nPER-CORE CONFIGURATIONS WILL NOT BE AFFECTED BUT NO BACKUP WILL BE CREATED!\n\nRESET RETROARCH CONFIG TO DEFAULT?"), _("YES"),
 				[] {
@@ -249,7 +251,7 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 				}, _("NO"), nullptr));
      });
 #endif
-	
+    dangerZone->addGroup(_("SYSTEM MANAGEMENT"));
     dangerZone->addEntry(_("FACTORY RESET"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n\nIF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n\nRESET SYSTEM AND RESTART?"), _("YES"),
 				[] {
