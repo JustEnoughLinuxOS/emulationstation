@@ -193,8 +193,9 @@ void SystemScreenSaver::stopScreenSaver()
 	std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
 	if ( screensaver_behavior == "black" || screensaver_behavior == "dim")
 	{
+		int brightness = BrightnessControl::getInstance()->getBrightness();
 		auto sysbright = SystemConf::getInstance()->get("system.brightness");
-		BrightnessControl::getInstance()->setBrightness((int)Math::round(std::stof(sysbright)));
+		BrightnessControl::getInstance()->setBrightness(stoi(sysbright));
 	}
 
 	if (mLoadingNext)

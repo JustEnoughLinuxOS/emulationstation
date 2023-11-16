@@ -493,8 +493,9 @@ int main(int argc, char* argv[])
 
 	SystemConf* systemConf = SystemConf::getInstance();
 
+	int brightness = BrightnessControl::getInstance()->getBrightness();
 	auto sysbright = SystemConf::getInstance()->get("system.brightness");
-	BrightnessControl::getInstance()->setBrightness((int)Math::round(std::stof(sysbright)));
+	BrightnessControl::getInstance()->setBrightness(stoi(sysbright));
 
 	// Initialize input
 	InputConfig::AssignActionButtons();
