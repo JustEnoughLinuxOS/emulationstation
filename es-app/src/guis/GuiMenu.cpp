@@ -1762,32 +1762,17 @@ void GuiMenu::openGamesSettings_batocera()
 	s->addEntry(_("SAVE STATE CONFIG"), true, [this] { openSavestatesConfiguration(mWindow, "global"); });
 
 
+	std::string currentShader = SystemConf::getInstance()->get("global.shaderset");
 
 	// Shaders preset
-	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SHADERS))
-	{
-		auto installedShaders = ApiSystem::getInstance()->getShaderList();
-		if (installedShaders.size() > 0)
-		{
-			std::string currentShader = SystemConf::getInstance()->get("global.shaderset");
-
-			auto shaders_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("SHADER SET"), false);
-			shaders_choices->add(_("DEFAULT"), "default", currentShader.empty() || currentShader == "default");
-			shaders_choices->add(_("NONE"), "none", currentShader == "none");
-
-			std::string a;
-			for(std::stringstream ss(getShOutput(R"(/usr/bin/getshaders)")); getline(ss, a, ','); )
-				shaders_choices->add(a, a, currentShader == a); // emuelec
-			for (auto shader : installedShaders)
-				shaders_choices->add(_(Utils::String::toUpper(shader).c_str()), shader, currentShader == shader);
-
-			if (!shaders_choices->hasSelection())
-				shaders_choices->selectFirstItem();
-
-			s->addWithLabel(_("SHADER SET"), shaders_choices);
-			s->addSaveFunc([shaders_choices] { SystemConf::getInstance()->set("global.shaderset", shaders_choices->getSelected()); });
-		}
-	}
+	auto shaders_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("SHADER SET"), false);
+	shaders_choices->add(_("DEFAULT"), "default", currentShader.empty() || currentShader == "default");
+	shaders_choices->add(_("NONE"), "none", currentShader == "none");
+	std::string a;
+	for(std::stringstream ss(getShOutput(R"(/usr/bin/getshaders)")); getline(ss, a, ','); )
+	shaders_choices->add(a, a, currentShader == a); // emuelec
+	s->addWithLabel(_("SHADER SET"), shaders_choices);
+	s->addSaveFunc([shaders_choices] { SystemConf::getInstance()->set("global.shaderset", shaders_choices->getSelected()); });
 
 	// Filters preset
 	std::string currentFilter = SystemConf::getInstance()->get("global.filterset");
