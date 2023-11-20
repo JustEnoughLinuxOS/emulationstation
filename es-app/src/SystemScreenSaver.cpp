@@ -193,9 +193,12 @@ void SystemScreenSaver::stopScreenSaver()
 	std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
 	if ( screensaver_behavior == "black" || screensaver_behavior == "dim")
 	{
-		int brightness = BrightnessControl::getInstance()->getBrightness();
-		auto sysbright = SystemConf::getInstance()->get("system.brightness");
-		BrightnessControl::getInstance()->setBrightness(stoi(sysbright));
+		if (BrightnessControl::getInstance()->isAvailable())
+		{
+			int brightness = BrightnessControl::getInstance()->getBrightness();
+			auto sysbright = SystemConf::getInstance()->get("system.brightness");
+			BrightnessControl::getInstance()->setBrightness(stoi(sysbright));
+		}
 	}
 
 	if (mLoadingNext)
@@ -281,12 +284,15 @@ void SystemScreenSaver::renderScreenSaver()
 		unsigned char color = screensaver_behavior == "dim" ? 0x000000A0 : 0x000000FF;
 		Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), color, color);
 
-		if ( screensaver_behavior == "black" )
+		if (BrightnessControl::getInstance()->isAvailable())
 		{
-			BrightnessControl::getInstance()->setBrightness(minBright);
-		} else {
-			// Dim..
-			BrightnessControl::getInstance()->setBrightness((minBright + 1));
+			if ( screensaver_behavior == "black" )
+			{
+				BrightnessControl::getInstance()->setBrightness(minBright);
+			} else {
+				// Dim..
+				BrightnessControl::getInstance()->setBrightness((minBright + 1));
+			}
 		}
 	}
 }
