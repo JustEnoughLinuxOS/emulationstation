@@ -61,24 +61,6 @@ public:
 			}
 		});
 
-		if (updateStatus.second == 0)
-		{
-			GuiUpdate::state = GuiUpdateState::State::UPDATE_READY;
-
-			mWndNotification->updateTitle(_U("\uF019 ") + _("UPDATE IS READY"));
-			mWndNotification->updateText(_("REBOOT SYSTEM TO APPLY THE UPDATE"));
-
-			std::this_thread::yield();
-			std::this_thread::sleep_for(std::chrono::hours(12));
-		}
-		else
-		{
-			GuiUpdate::state = GuiUpdateState::State::NO_UPDATE;
-
-			std::string error = _("AN ERROR OCCURED") + std::string(": ") + updateStatus.first;
-			mWindow->displayNotificationMessage(error);
-		}
-
 		delete this;
 	}
 
