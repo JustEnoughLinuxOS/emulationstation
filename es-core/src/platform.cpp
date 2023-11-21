@@ -359,8 +359,10 @@ BatteryInformation queryBatteryInformation()
 		ret.hasBattery = true;
 		ret.isCharging = (Utils::String::replace(Utils::FileSystem::readAllText(batteryStatusPath), "\n", "") != "Discharging");
 		ret.level = atoi(Utils::FileSystem::readAllText(batteryCapacityPath).c_str());
-		if ( ret.level > 100 )
+		if ( ret.level >= 100 )
+		{
 			ret.level = 100;
+		}
 	}
 
 	return ret;
