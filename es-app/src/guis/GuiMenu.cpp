@@ -4362,7 +4362,11 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 								 "Special 1",
 								 "Special 2",
 								 "Special 3",
-								 "Special 4 (TI-83 Legacy)"};
+								 "Special 4 (TI-83 Legacy)",
+								 "TWB64 - Pack 1",
+								 "TWB64 - Pack 2",
+								 "TWB64 - Pack 3",
+								 "PixelShift - Pack 1"};
 
 		int n_all_gambate_gc_colors_modes = 126;
 		for (int i = 0; i < n_all_gambate_gc_colors_modes; i++)
