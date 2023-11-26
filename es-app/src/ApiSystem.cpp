@@ -632,7 +632,7 @@ std::vector<std::string> ApiSystem::getAvailableThreads()
 
 std::vector<std::string> ApiSystem::getAvailableGovernors()
 {
-	return executeEnumerationScript("/usr/bin/sh -lc \"cat /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors\"");
+	return executeEnumerationScript("/usr/bin/sh -lc \"tr \\\" \\\" \\\"\\n\\\" < /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors\"");
 }
 
 std::vector<std::string> ApiSystem::getSleepModes()
