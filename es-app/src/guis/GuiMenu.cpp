@@ -4751,13 +4751,13 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		for (int i = 0; i < n_all_gambate_gc_colors_modes; i++)
 			colorizations_choices->add(all_gambate_gc_colors_modes[i], all_gambate_gc_colors_modes[i], currentColorization == std::string(all_gambate_gc_colors_modes[i]));
 		for (int i = 0; i < n_twb1_colors_modes; i++)
-			twb1_colorizations_choices->add(twb1_colors_modes[i], twb1_colors_modes[i], currentColorization == std::string(twb1_colors_modes[i]));
+			twb1_colorizations_choices->add(twb1_colors_modes[i], twb1_colors_modes[i], twb1_currentColorization == std::string(twb1_colors_modes[i]));
 		for (int i = 0; i < n_twb2_colors_modes; i++)
-			twb2_colorizations_choices->add(twb2_colors_modes[i], twb2_colors_modes[i], currentColorization == std::string(twb2_colors_modes[i]));
+			twb2_colorizations_choices->add(twb2_colors_modes[i], twb2_colors_modes[i], twb2_currentColorization == std::string(twb2_colors_modes[i]));
 		for (int i = 0; i < n_twb3_colors_modes; i++)
-			twb3_colorizations_choices->add(twb3_colors_modes[i], twb3_colors_modes[i], currentColorization == std::string(twb3_colors_modes[i]));
+			twb3_colorizations_choices->add(twb3_colors_modes[i], twb3_colors_modes[i], twb3_currentColorization == std::string(twb3_colors_modes[i]));
 		for (int i = 0; i < n_pixelshift1_colors_modes; i++)
-			pixelshift1_colorizations_choices->add(pixelshift1_colors_modes[i], pixelshift1_colors_modes[i], currentColorization == std::string(pixelshift1_colors_modes[i]));
+			pixelshift1_colorizations_choices->add(pixelshift1_colors_modes[i], pixelshift1_colors_modes[i], pixelshift1_currentColorization == std::string(pixelshift1_colors_modes[i]));
 
         if (SystemData::es_features_loaded || (!SystemData::es_features_loaded && (systemData->getName() == "gb" || systemData->getName() == "gbc" || systemData->getName() == "gb2players" || systemData->getName() == "gbc2players" || systemData->getName() == "gbh" || systemData->getName() == "gbch"))) // only for gb, gbc and gb2players gbh gbch
 		{
