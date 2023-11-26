@@ -4662,7 +4662,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 			systemConfiguration->addSaveFunc([colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.colorization", colorizations_choices->getSelected()); });
 			systemConfiguration->addSaveFunc([twb1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb1_colorization", twb1_colorizations_choices->getSelected()); });
 			systemConfiguration->addSaveFunc([twb2_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb2_colorization", twb2_colorizations_choices->getSelected()); });
-			systemConfiguration->addSaveFunc([pixelshift1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.pîxelshift1_colorization", pixelshift1_colorizations_choices->getSelected()); });
+			systemConfiguration->addSaveFunc([pixelshift1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.pixelshift1_colorization", pixelshift1_colorizations_choices->getSelected()); });
 		}
 	}
 
