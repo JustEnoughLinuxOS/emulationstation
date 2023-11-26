@@ -4305,13 +4305,13 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		auto colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COLORIZATION"), false);
 		auto twb1_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 1 PALETTE"), false);
 		auto twb2_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 2 PALETTE"), false);
-		auto twb3_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 3 PALETTE"), false);
+//		auto twb3_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 3 PALETTE"), false);
 		auto pixelshift1_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("PIXELSHIFT - PACK 1 PALETTE"), false);
 
 		std::string currentColorization = SystemConf::getInstance()->get(configName + ".renderer.colorization");
 		std::string twb1_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb1_colorization");
 		std::string twb2_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb2_colorization");
-		std::string twb3_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb3_colorization");
+//		std::string twb3_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb3_colorization");
 		std::string pixelshift1_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.pixelshift1_colorization");
 
 
@@ -4323,8 +4323,8 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 			twb1_currentColorization = std::string("TWB64 001 - Aqours Blue");
 		if (twb2_currentColorization.empty())
 			twb2_currentColorization = std::string("TWB64 101 - 765PRO Pink");
-		if (twb3_currentColorization.empty())
-			twb3_currentColorization = std::string("TWB64 201 - DMG-GOLD");
+/*		if (twb3_currentColorization.empty())
+			twb3_currentColorization = std::string("TWB64 201 - DMG-GOLD"); */
 		if (pixelshift1_currentColorization.empty())
 			pixelshift1_currentColorization = std::string("PixelShift 01 - Arctic Green");
 
@@ -4387,7 +4387,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 								 "Special 4 (TI-83 Legacy)",
 								 "TWB64 - Pack 1",
 								 "TWB64 - Pack 2",
-								 "TWB64 - Pack 3",
 								 "PixelShift - Pack 1"};
 
 		const char* twb1_colors_modes[] = {
@@ -4594,7 +4593,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 								 "TWB64 199 - Duracell Copper",          
 								 "TWB64 200 - TOKYO SKYTREE CLOUDY BLUE"};
 
-		const char* twb3_colors_modes[] = {
+/*		const char* twb3_colors_modes[] = {
 								 "TWB64 201 - DMG-GOLD",                 
 								 "TWB64 202 - LCD Clock Green",          
 								 "TWB64 203 - Famicom Frenzy",           
@@ -4694,7 +4693,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 								 "TWB64 297 - Spider-Verse Red",         
 								 "TWB64 298 - Baja Blast Beach",         
 								 "TWB64 299 - 3DS Virtual Console Green",
-								 "TWB64 300 - Wonder Purple"};
+								 "TWB64 300 - Wonder Purple"}; */
 
 		const char* pixelshift1_colors_modes[] = {
 								 "PixelShift 01 - Arctic Green",              
@@ -4743,10 +4742,10 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 								 "PixelShift 44 - Virtual Boy",               
 								 "PixelShift 45 - Wish"}; 
 
-		int n_all_gambate_gc_colors_modes = 54;
+		int n_all_gambate_gc_colors_modes = 55;
 		int n_twb1_colors_modes = 100;
 		int n_twb2_colors_modes = 100;
-		int n_twb3_colors_modes = 100;
+//		int n_twb3_colors_modes = 100;
 		int n_pixelshift1_colors_modes = 45;
 
 		for (int i = 0; i < n_all_gambate_gc_colors_modes; i++)
@@ -4758,8 +4757,8 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		for (int i = 0; i < n_twb2_colors_modes; i++)
 			twb2_colorizations_choices->add(twb2_colors_modes[i], twb2_colors_modes[i], twb2_currentColorization == std::string(twb2_colors_modes[i]));
 		
-		for (int i = 0; i < n_twb3_colors_modes; i++)
-			twb3_colorizations_choices->add(twb3_colors_modes[i], twb3_colors_modes[i], twb3_currentColorization == std::string(twb3_colors_modes[i]));
+/*		for (int i = 0; i < n_twb3_colors_modes; i++)
+			twb3_colorizations_choices->add(twb3_colors_modes[i], twb3_colors_modes[i], twb3_currentColorization == std::string(twb3_colors_modes[i])); */
 		
 		for (int i = 0; i < n_pixelshift1_colors_modes; i++)
 			pixelshift1_colorizations_choices->add(pixelshift1_colors_modes[i], pixelshift1_colors_modes[i], pixelshift1_currentColorization == std::string(pixelshift1_colors_modes[i]));
@@ -4774,7 +4773,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 			systemConfiguration->addSaveFunc([colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.colorization", colorizations_choices->getSelected()); });
 			systemConfiguration->addSaveFunc([twb1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb1_colorization", twb1_colorizations_choices->getSelected()); });
 			systemConfiguration->addSaveFunc([twb2_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb2_colorization", twb2_colorizations_choices->getSelected()); });
-			systemConfiguration->addSaveFunc([twb3_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb3_colorization", twb3_colorizations_choices->getSelected()); });
+//			systemConfiguration->addSaveFunc([twb3_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb3_colorization", twb3_colorizations_choices->getSelected()); });
 			systemConfiguration->addSaveFunc([pixelshift1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.pîxelshift1_colorization", pixelshift1_colorizations_choices->getSelected()); });
 		}
 	}
