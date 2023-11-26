@@ -4319,7 +4319,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		if (currentColorization.empty())
 			currentColorization = std::string("default");
 		if (twb1_currentColorization.empty())
-			twb_currentColorization = std::string("TWB64 001 - Aqours Blue");
+			twb1_currentColorization = std::string("TWB64 001 - Aqours Blue");
 		if (twb2_currentColorization.empty())
 			twb2_currentColorization = std::string("TWB64 101 - 765PRO Pink");
 		if (twb3_currentColorization.empty())
