@@ -4636,7 +4636,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 								 "PixelShift 44 - Virtual Boy",               
 								 "PixelShift 45 - Wish"}; 
 
-		int n_all_gambate_gc_colors_modes = 53;
+		int n_all_gambate_gc_colors_modes = 54;
 		int n_twb1_colors_modes = 100;
 		int n_twb2_colors_modes = 100;
 		int n_pixelshift1_colors_modes = 45;
