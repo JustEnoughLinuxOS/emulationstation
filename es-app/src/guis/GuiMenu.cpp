@@ -4300,6 +4300,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::colorization))
 	{
+
 		// gameboy colorize
 		auto colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COLORIZATION"), false);
 		auto twb1_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 1 PALETTE"), false);
@@ -4307,7 +4308,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		auto twb3_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 3 PALETTE"), false);
 		auto pixelshift1_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("PIXELSHIFT - PACK 1 PALETTE"), false);
 
-		std::string currentColorization = SystemConf::getInstance()->get(configName + ".renderer.colorization");
 		std::string twb1_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb1_colorization");
 		std::string twb2_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb2_colorization");
 		std::string twb3_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb3_colorization");
@@ -4750,17 +4750,21 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
 		for (int i = 0; i < n_all_gambate_gc_colors_modes; i++)
 			colorizations_choices->add(all_gambate_gc_colors_modes[i], all_gambate_gc_colors_modes[i], currentColorization == std::string(all_gambate_gc_colors_modes[i]));
+		
 		for (int i = 0; i < n_twb1_colors_modes; i++)
 			twb1_colorizations_choices->add(twb1_colors_modes[i], twb1_colors_modes[i], twb1_currentColorization == std::string(twb1_colors_modes[i]));
+		
 		for (int i = 0; i < n_twb2_colors_modes; i++)
 			twb2_colorizations_choices->add(twb2_colors_modes[i], twb2_colors_modes[i], twb2_currentColorization == std::string(twb2_colors_modes[i]));
+		
 		for (int i = 0; i < n_twb3_colors_modes; i++)
 			twb3_colorizations_choices->add(twb3_colors_modes[i], twb3_colors_modes[i], twb3_currentColorization == std::string(twb3_colors_modes[i]));
+		
 		for (int i = 0; i < n_pixelshift1_colors_modes; i++)
 			pixelshift1_colorizations_choices->add(pixelshift1_colors_modes[i], pixelshift1_colors_modes[i], pixelshift1_currentColorization == std::string(pixelshift1_colors_modes[i]));
 
         if (SystemData::es_features_loaded || (!SystemData::es_features_loaded && (systemData->getName() == "gb" || systemData->getName() == "gbc" || systemData->getName() == "gb2players" || systemData->getName() == "gbc2players" || systemData->getName() == "gbh" || systemData->getName() == "gbch"))) // only for gb, gbc and gb2players gbh gbch
-		{
+		{e
 			systemConfiguration->addWithLabel(_("COLORIZATION"), colorizations_choices);
 			systemConfiguration->addWithLabel(_("TWB64 - PACK 1 PALETTE"), twb1_colorizations_choices);
 			systemConfiguration->addWithLabel(_("TWB64 - PACK 2 PALETTE"), twb2_colorizations_choices);
@@ -4768,7 +4772,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 			systemConfiguration->addWithLabel(_("PIXELSHIFT - PACK 1 PALETTE"), pixelshift1_colorizations_choices);
 			systemConfiguration->addSaveFunc([colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.colorization", colorizations_choices->getSelected()); });
 			systemConfiguration->addSaveFunc([twb1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb1_colorization", twb1_colorizations_choices->getSelected()); });
-			systemConfiguration->addSaveFunc([twb1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb2_colorization", twb2_colorizations_choices->getSelected()); });
+			systemConfiguration->addSaveFunc([twb2_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb2_colorization", twb2_colorizations_choices->getSelected()); });
 			systemConfiguration->addSaveFunc([twb3_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb3_colorization", twb3_colorizations_choices->getSelected()); });
 			systemConfiguration->addSaveFunc([pixelshift1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.pîxelshift1_colorization", pixelshift1_colorizations_choices->getSelected()); });
 		}
