@@ -4768,7 +4768,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 			systemConfiguration->addWithLabel(_("COLORIZATION"), colorizations_choices);
 			systemConfiguration->addWithLabel(_("TWB64 - PACK 1 PALETTE"), twb1_colorizations_choices);
 			systemConfiguration->addWithLabel(_("TWB64 - PACK 2 PALETTE"), twb2_colorizations_choices);
-			systemConfiguration->addWithLabel(_("TWB64 - PACK 3 PALETTE"), twb3_colorizations_choices);
+//			systemConfiguration->addWithLabel(_("TWB64 - PACK 3 PALETTE"), twb3_colorizations_choices);
 			systemConfiguration->addWithLabel(_("PIXELSHIFT - PACK 1 PALETTE"), pixelshift1_colorizations_choices);
 			systemConfiguration->addSaveFunc([colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.colorization", colorizations_choices->getSelected()); });
 			systemConfiguration->addSaveFunc([twb1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb1_colorization", twb1_colorizations_choices->getSelected()); });
