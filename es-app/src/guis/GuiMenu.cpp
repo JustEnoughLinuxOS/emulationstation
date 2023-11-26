@@ -1071,9 +1071,9 @@ void GuiMenu::openSystemSettings_batocera()
 		});
 	}
 
-        if (*it == "GenuineIntel") {
+        if (Utils::FileSystem::exists("/sys/devices/system/cpu/cpufreq/policy0/energy_performance_preference")) {
                 // Provides EPP Profile switching
-                auto optionsEPP = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU Energy Performance Preference"), false);
+                auto optionsEPP = std::make_shared<OptionListComponent<std::string> >(mWindow, _("Energy Performance Preference"), false);
                 std::string selectedEPP = SystemConf::getInstance()->get("system.power.epp");
                 if (selectedEPP.empty())
                         selectedEPP = "default";
@@ -1085,7 +1085,7 @@ void GuiMenu::openSystemSettings_batocera()
                 optionsEPP->add(_("Balance Power Saving"),"balance_power", selectedEPP == "balance_power");
                 optionsEPP->add(_("Power Saving"),"power", selectedEPP == "power");
 
-                s->addWithLabel(_("CPU Energy Performance Preference"), optionsEPP);
+                s->addWithLabel(_("Energy Performance Preference"), optionsEPP);
 
                 s->addSaveFunc([this, optionsEPP, selectedEPP]
                 {
@@ -1098,27 +1098,35 @@ void GuiMenu::openSystemSettings_batocera()
         }
 #endif
         // Default Scaling governor
+        auto optionsGovernors = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEFAULT SCALING GOVERNOR"), false);
 
-        auto cpuGovUpdate = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEFAULT SCALING GOVERNOR"), false);
+        std::vector<std::string> availableGovernors = ApiSystem::getInstance()->getAvailableGovernors();
+        std::string selectedGovernors = SystemConf::getInstance()->get("system.cpugovernor");
+        if (selectedGovernors.empty())
+                selectedGovernors = "default";
 
-        std::string cpu_governor = SystemConf::getInstance()->get("system.cpugovernor");
-        if (cpu_governor.empty())
-                cpu_governor = "schedutil";
-
-        cpuGovUpdate->add(_("SCHEDUTIL"), "schedutil", cpu_governor == "schedutil");
-        cpuGovUpdate->add(_("ONDEMAND"), "ondemand", cpu_governor == "ondemand");
-        cpuGovUpdate->add(_("PERFORMANCE"), "performance", cpu_governor == "performance");
-        cpuGovUpdate->add(_("POWERSAVE"), "powersave", cpu_governor == "powersave");
-
-        s->addWithLabel(_("DEFAULT SCALING GOVERNOR"), cpuGovUpdate);
-
-        s->addSaveFunc([this, cpuGovUpdate, cpu_governor]
+        bool cfound = false;
+        for (auto it = availableGovernors.begin(); it != availableGovernors.end(); it++)
         {
-          if (cpuGovUpdate->changed()) {
-            SystemConf::getInstance()->set("system.cpugovernor", cpuGovUpdate->getSelected());
+                if ( *it != "default" ) {
+                        optionsGovernors->add((*it), (*it), selectedGovernors == (*it));
+                        if (selectedGovernors == (*it))
+                                cfound = true;
+                }
+        }
+        if (!cfound)
+                optionsGovernors->add(selectedGovernors, selectedGovernors, true);
+
+        s->addWithLabel(_("DEFAULT SCALING GOVERNOR"), optionsGovernors);
+
+
+        s->addSaveFunc([selectedGovernors, optionsGovernors]
+        {
+          if (optionsGovernors->changed()) {
+            SystemConf::getInstance()->set("system.cpugovernor", optionsGovernors->getSelected());
             SystemConf::getInstance()->saveSystemConf();
           }
-	  runSystemCommand("/usr/bin/sh -lc \". /etc/profile.d/099-freqfunctions; "+ cpuGovUpdate->getSelected() + "\"", "", nullptr);
+          runSystemCommand("/usr/bin/sh -lc \". /etc/profile.d/099-freqfunctions; "+ optionsGovernors->getSelected() + "\"", "", nullptr);
         });
 
 	// GPU performance mode with enhanced power savings
@@ -4222,9 +4230,9 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	        });
 	}
 
-        if (*it == "GenuineIntel") {
+	if (Utils::FileSystem::exists("/sys/devices/system/cpu/cpufreq/policy0/energy_performance_preference")) {
                 // Provides EPP Profile switching
-                auto optionsEPP = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU Energy Performance Preference"), false);
+                auto optionsEPP = std::make_shared<OptionListComponent<std::string> >(mWindow, _("Energy Performance Preference"), false);
                 std::string selectedEPP = SystemConf::getInstance()->get(configName + ".power.epp");
                 if (selectedEPP.empty())
                         selectedEPP = "default";
@@ -4236,7 +4244,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
                 optionsEPP->add(_("Balance Power Saving"),"balance_power", selectedEPP == "balance_power");
                 optionsEPP->add(_("Power Saving"),"power", selectedEPP == "power");
 
-                systemConfiguration->addWithLabel(_("CPU Energy Performance Preference"), optionsEPP);
+                systemConfiguration->addWithLabel(_("Energy Performance Preference"), optionsEPP);
 
                 systemConfiguration->addSaveFunc([optionsEPP, selectedEPP, configName]
                 {
@@ -4250,25 +4258,31 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 #endif
 
         // Per game/core/emu CPU governor
+        auto optionsGovernors = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU SCALING GOVERNOR"), false);
 
-        auto cpuGovUpdate = std::make_shared<OptionListComponent<std::string> >(mWindow, _("CPU GOVERNOR"), false);
+        std::vector<std::string> availableGovernors = ApiSystem::getInstance()->getAvailableGovernors();
+        std::string selectedGovernors = SystemConf::getInstance()->get(configName + ".cpugovernor");
+        if (selectedGovernors.empty())
+                selectedGovernors = "default";
 
-	std::string cpu_governor = SystemConf::getInstance()->get(configName + ".cpugovernor");
-	if (cpu_governor.empty())
-		cpu_governor = "default";
-
-	cpuGovUpdate->add(_("DEFAULT"), "default", cpu_governor == "default");
-	cpuGovUpdate->add(_("SCHEDUTIL"), "schedutil", cpu_governor == "schedutil");
-	cpuGovUpdate->add(_("ONDEMAND"), "ondemand", cpu_governor == "ondemand");
-	cpuGovUpdate->add(_("PERFORMANCE"), "performance", cpu_governor == "performance");
-	cpuGovUpdate->add(_("POWERSAVE"), "powersave", cpu_governor == "powersave");
-
-        systemConfiguration->addWithLabel(_("DEFAULT SCALING GOVERNOR"), cpuGovUpdate);
-
-        systemConfiguration->addSaveFunc([configName, cpuGovUpdate, cpu_governor]
+        bool cfound = false;
+        for (auto it = availableGovernors.begin(); it != availableGovernors.end(); it++)
         {
-          if (cpuGovUpdate->changed()) {
-            SystemConf::getInstance()->set(configName + ".cpugovernor", cpuGovUpdate->getSelected());
+                if ( *it != "default" ) {
+                        optionsGovernors->add((*it), (*it), selectedGovernors == (*it));
+                        if (selectedGovernors == (*it))
+                                cfound = true;
+                }
+        }
+        if (!cfound)
+                optionsGovernors->add(selectedGovernors, selectedGovernors, true);
+
+        systemConfiguration->addWithLabel(_("CPU SCALING GOVERNOR"), optionsGovernors);
+
+        systemConfiguration->addSaveFunc([configName, selectedGovernors, optionsGovernors]
+        {
+          if (optionsGovernors->changed()) {
+            SystemConf::getInstance()->set(configName + ".cpugovernor", optionsGovernors->getSelected());
             SystemConf::getInstance()->saveSystemConf();
           }
         });
