@@ -4765,7 +4765,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 			pixelshift1_colorizations_choices->add(pixelshift1_colors_modes[i], pixelshift1_colors_modes[i], pixelshift1_currentColorization == std::string(pixelshift1_colors_modes[i]));
 
         if (SystemData::es_features_loaded || (!SystemData::es_features_loaded && (systemData->getName() == "gb" || systemData->getName() == "gbc" || systemData->getName() == "gb2players" || systemData->getName() == "gbc2players" || systemData->getName() == "gbh" || systemData->getName() == "gbch"))) // only for gb, gbc and gb2players gbh gbch
-		{e
+		{
 			systemConfiguration->addWithLabel(_("COLORIZATION"), colorizations_choices);
 			systemConfiguration->addWithLabel(_("TWB64 - PACK 1 PALETTE"), twb1_colorizations_choices);
 			systemConfiguration->addWithLabel(_("TWB64 - PACK 2 PALETTE"), twb2_colorizations_choices);
