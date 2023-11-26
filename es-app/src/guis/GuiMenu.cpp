@@ -1047,6 +1047,7 @@ void GuiMenu::openSystemSettings_batocera()
 
 	        optionsOCProfile->add(_("2.5W"),"2.5w", selectedOCProfile == "2.5w");
 	        optionsOCProfile->add(_("4.5W"),"4.5w", selectedOCProfile == "4.5w");
+	        optionsOCProfile->add(_("6W"),"6w", selectedOCProfile == "6w");
 	        optionsOCProfile->add(_("9W"),"9w", selectedOCProfile == "9w");
 	        optionsOCProfile->add(_("12W"),"12w", selectedOCProfile == "12w");
 	        optionsOCProfile->add(_("15W"),"15w", selectedOCProfile == "15w");
@@ -4197,6 +4198,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		optionsOCProfile->add(_("DEFAULT"), "default", selectedOCProfile == "default");
 	        optionsOCProfile->add(_("2.5W"),"2.5w", selectedOCProfile == "2.5w");
 	        optionsOCProfile->add(_("4.5W"),"4.5w", selectedOCProfile == "4.5w");
+		optionsOCProfile->add(_("6W"),"6w", selectedOCProfile == "6w");
 	        optionsOCProfile->add(_("9W"),"9w", selectedOCProfile == "9w");
 	        optionsOCProfile->add(_("12W"),"12w", selectedOCProfile == "12w");
 	        optionsOCProfile->add(_("15W"),"15w", selectedOCProfile == "15w");
