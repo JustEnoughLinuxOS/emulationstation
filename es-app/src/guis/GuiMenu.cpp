@@ -4308,6 +4308,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		auto twb3_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 3 PALETTE"), false);
 		auto pixelshift1_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("PIXELSHIFT - PACK 1 PALETTE"), false);
 
+		std::string currentColorization = SystemConf::getInstance()->get(configName + ".renderer.colorization");
 		std::string twb1_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb1_colorization");
 		std::string twb2_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb2_colorization");
 		std::string twb3_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb3_colorization");
