@@ -215,13 +215,6 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 				}, _("NO"), nullptr));
      });
 
-    dangerZone->addEntry(_("SPLIT ROM SYSTEMS"), true, [mWindow] {
-    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL RESTART EMULATIONSTATION!\n\nTHIS SCRIPT WILL LOOK FOR SYSTEMS IN '/STORAGE/ROMS_LOCAL' AND '/STORAGE/ROMS' AND UPDATE EMULATIONSTATION ROM LOCATIONS\n\nSPLIT SYSTEM FOLDERS AND RESTART?"), _("YES"),
-				[] {
-				runSystemCommand("/usr/bin/run \"/usr/bin/rom_system_split\"", "", nullptr);
-				}, _("NO"), nullptr));
-     });
-
     dangerZone->addEntry(_("CLEAN GAMELISTS & REMOVE UNUSED MEDIA"), true, [mWindow] {
 	mWindow->pushGui(new GuiMsgBox(mWindow, _("ARE YOU SURE?"), _("YES"), [&]
 	{
@@ -965,6 +958,23 @@ void GuiMenu::openSystemSettings_batocera()
 	}
 
 #endif
+	if (GetEnv("DEVICE_MMC_EJECT") != "false") {
+		s->addGroup(_("HARDWARE / STORAGE"));
+
+		// Provides a mechanism to disable use of the second device
+		bool MountGamesEnabled = SystemConf::getInstance()->getBool("system.automount");
+		auto mount_games = std::make_shared<SwitchComponent>(mWindow);
+		mount_games->setState(MountGamesEnabled);
+		s->addWithLabel(_("AUTODETECT GAMES CARD"), mount_games);
+		s->addSaveFunc([mount_games] {
+			SystemConf::getInstance()->setBool("system.automount", mount_games->getState());
+		});
+
+		s->addEntry(_("EJECT MICROSD CARD"), false, [window] {
+			runSystemCommand("/usr/bin/systemctl stop storage-roms.mount; /usr/bin/umount /storage/games-mmc; /usr/bin/systemctl start storage-roms.mount", "", nullptr);
+			window->pushGui(new GuiMsgBox(window, _("You may now remove the card.")));
+		});
+	}
 
 	s->addGroup(_("HARDWARE / PERFORMANCE"));
 
@@ -1285,26 +1295,6 @@ void GuiMenu::openSystemSettings_batocera()
                 SystemConf::getInstance()->saveSystemConf();
         });
 #endif
-
-        s->addGroup(_("PREFERENCES"));
-
-        // Provides a mechanism to disable use of the second device
-        bool MountGamesEnabled = SystemConf::getInstance()->getBool("system.automount");
-        auto mount_games = std::make_shared<SwitchComponent>(mWindow);
-        mount_games->setState(MountGamesEnabled);
-        s->addWithLabel(_("AUTODETECT GAMES CARD"), mount_games);
-        s->addSaveFunc([mount_games] {
-          SystemConf::getInstance()->setBool("system.automount", mount_games->getState());
-        });
-
-        // Provides a mechanism to disable automatic hotkey assignment
-        bool HotKeysEnabled = SystemConf::getInstance()->getBool("system.autohotkeys");
-        auto autohotkeys = std::make_shared<SwitchComponent>(mWindow);
-        autohotkeys->setState(HotKeysEnabled);
-        s->addWithLabel(_("AUTOCONFIGURE RETROARCH HOTKEYS"), autohotkeys);
-        s->addSaveFunc([autohotkeys] {
-          SystemConf::getInstance()->setBool("system.autohotkeys", autohotkeys->getState());
-        });
 
 #ifdef _ENABLEUPDATES
 	s->addGroup(_("SYSTEM UPDATE"));
@@ -2164,6 +2154,16 @@ void GuiMenu::openControllersSettings_batocera(int autoSel)
 	Window *window = mWindow;
 
 	// CONTROLLER CONFIGURATION
+
+	// Provides a mechanism to disable automatic hotkey assignment
+	bool HotKeysEnabled = SystemConf::getInstance()->getBool("system.autohotkeys");
+	auto autohotkeys = std::make_shared<SwitchComponent>(mWindow);
+	autohotkeys->setState(HotKeysEnabled);
+	s->addWithLabel(_("AUTOCONFIGURE RETROARCH HOTKEYS"), autohotkeys);
+	s->addSaveFunc([autohotkeys] {
+		SystemConf::getInstance()->setBool("system.autohotkeys", autohotkeys->getState());
+	});
+
 	s->addEntry(_("CONTROLLER MAPPING"), false, [window, this, s]
 	{
 		window->pushGui(new GuiMsgBox(window,
