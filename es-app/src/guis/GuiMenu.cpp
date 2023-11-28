@@ -3583,7 +3583,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
 	s->addSaveFunc([this, enable_net, enable_adhoc, wifiSSID] {
 		SystemConf::getInstance()->saveSystemConf();
 		const std::string wifissid = SystemConf::getInstance()->get("wifi.ssid");
-                if (enable_net->getState() == true && enable_adhoc->getState() == true)
+                if (enable_net->getState() == true && enable_adhoc->getState() == false)
                 {
                         std::string wifikey = SystemConf::getInstance()->get("wifi.key");
 			ApiSystem::getInstance()->disableWifi();
@@ -3596,7 +3596,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
         s->addSaveFunc([this, enable_net, enable_adhoc, wifiKEY] {
                 SystemConf::getInstance()->saveSystemConf();
                 const std::string wifikey = SystemConf::getInstance()->get("wifi.key");
-                if (enable_net->getState() == true && enable_adhoc->getState() == true)
+                if (enable_net->getState() == true && enable_adhoc->getState() == false)
                 {
                         std::string wifissid = SystemConf::getInstance()->get("wifi.ssid");
 			ApiSystem::getInstance()->disableWifi();
