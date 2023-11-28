@@ -968,12 +968,29 @@ void GuiMenu::openSystemSettings_batocera()
 		s->addWithLabel(_("AUTODETECT GAMES CARD"), mount_games);
 		s->addSaveFunc([mount_games] {
 			SystemConf::getInstance()->setBool("system.automount", mount_games->getState());
+			SystemConf::getInstance()->saveSystemConf();
 		});
 
 		s->addEntry(_("EJECT MICROSD CARD"), false, [window] {
 			runSystemCommand("/usr/bin/systemctl stop storage-roms.mount; /usr/bin/umount /storage/games-mmc; /usr/bin/systemctl start storage-roms.mount", "", nullptr);
 			window->pushGui(new GuiMsgBox(window, _("You may now remove the card.")));
 		});
+
+                auto overlayState = std::make_shared<SwitchComponent>(mWindow);
+                bool overlayStateEnabled = SystemConf::getInstance()->getBool("system.merged.storage");
+                overlayState->setState(overlayStateEnabled);
+                s->addWithLabel(_("ENABLE MERGED STORAGE"), overlayState);
+                overlayState->setOnChangedCallback([this, s, overlayState] {
+                        bool overlayStateEnabled = overlayState->getState();
+                        if (overlayStateEnabled) {
+                          runSystemCommand("/usr/bin/systemctl start storage-roms.mount", "", nullptr);
+                        } else {
+                          runSystemCommand("/usr/bin/systemctl stop storage-roms.mount", "", nullptr);
+                        }
+			SystemConf::getInstance()->setBool("system.merged.storage", overlayState->getState());
+			SystemConf::getInstance()->saveSystemConf();
+                });
+
 	}
 
 	s->addGroup(_("HARDWARE / PERFORMANCE"));
