@@ -3578,12 +3578,14 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
 
         s->addWithLabel(_("ENABLE NETWORK"), enable_net, selectWifiEnable);
 
-	auto wifiSSID = std::make_shared<TextComponent>(mWindow, SystemConf::getInstance()->get("wifi.ssid"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
+	const std::string wifiSSID = SystemConf::getInstance()->get("wifi.ssid");
+	const std::string wifiKEY = SystemConf::getInstance()->get("wifi.key");
+
         s->addInputTextRow(_("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
 	s->addSaveFunc([this, enable_net, enable_adhoc, wifiSSID] {
 		SystemConf::getInstance()->saveSystemConf();
 		const std::string wifissid = SystemConf::getInstance()->get("wifi.ssid");
-                if (enable_net->getState() == true && enable_adhoc->getState() == false)
+                if (enable_net->getState() == true && enable_adhoc->getState() == false && wifiSSID != wifissid)
                 {
                         std::string wifikey = SystemConf::getInstance()->get("wifi.key");
 			ApiSystem::getInstance()->disableWifi();
@@ -3591,12 +3593,11 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
                 }
 	});
 
-	auto wifiKEY = std::make_shared<TextComponent>(mWindow, SystemConf::getInstance()->get("wifi.key"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
         s->addInputTextRow(_("WIFI KEY"), "wifi.key", true);
         s->addSaveFunc([this, enable_net, enable_adhoc, wifiKEY] {
                 SystemConf::getInstance()->saveSystemConf();
                 const std::string wifikey = SystemConf::getInstance()->get("wifi.key");
-                if (enable_net->getState() == true && enable_adhoc->getState() == false)
+                if (enable_net->getState() == true && enable_adhoc->getState() == false && wifiKEY != wifikey)
                 {
                         std::string wifissid = SystemConf::getInstance()->get("wifi.ssid");
 			ApiSystem::getInstance()->disableWifi();
@@ -3664,22 +3665,22 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
 		SystemConf::getInstance()->set("wifi.adhoc.id", optionsAdhocID->getSelected());
 		SystemConf::getInstance()->set("wifi.adhoc.channel", optionsChannels->getSelected());
 
-		if (enable_net->getState() == true && enable_adhoc->getState() == false)
+		std::string newSSID = SystemConf::getInstance()->get("wifi.ssid");
+		std::string newKey = SystemConf::getInstance()->get("wifi.key");
+
+		SystemConf::getInstance()->set("global.netplay.host", "192.168.80.1");
+		SystemConf::getInstance()->set("global.netplay.port", "55435");
+		SystemConf::getInstance()->set("global.netplay.relay", "none");
+
+		bool adhocenabled = enable_adhoc->getState();
+		SystemConf::getInstance()->setBool("network.adhoc.enabled", adhocenabled);
+		SystemConf::getInstance()->saveSystemConf();
+
+		if (enable_net->getState() == true)
 		{
-			std::string newSSID = SystemConf::getInstance()->get("wifi.ssid");
-			std::string newKey = SystemConf::getInstance()->get("wifi.key");
+			ApiSystem::getInstance()->disableWifi();
 			ApiSystem::getInstance()->enableWifi(newSSID, newKey);
 		}
-		else
-		{
-       	                SystemConf::getInstance()->set("global.netplay.host", "192.168.80.1");
-       	                SystemConf::getInstance()->set("global.netplay.port", "55435");
-       	                SystemConf::getInstance()->set("global.netplay.relay", "none");
-			ApiSystem::getInstance()->disableWifi();
-		}
-		bool adhocenabled = enable_adhoc->getState();
-		SystemConf::getInstance()->setBool("network.adhoc.enabled", adhocenabled ? "1" : "0");
-		SystemConf::getInstance()->saveSystemConf();
 	});
 
         enable_net->setOnChangedCallback([enable_net, enable_adhoc, networkEnabled, adhocEnabled, window]
@@ -3695,7 +3696,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
                         ApiSystem::getInstance()->disableWifi();
                 }
 		bool networkenabled = enable_net->getState();
-		SystemConf::getInstance()->setBool("network.enabled", networkenabled ? "1" : "0");
+		SystemConf::getInstance()->setBool("network.enabled", networkenabled);
                 SystemConf::getInstance()->saveSystemConf();
         });
 
