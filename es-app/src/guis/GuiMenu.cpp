@@ -797,7 +797,7 @@ void GuiMenu::openSystemSettings_batocera()
 	auto tmFormat = std::make_shared<SwitchComponent>(mWindow);
 	tmFormat->setState(Settings::getInstance()->getBool("ClockMode12"));
 	s->addWithLabel(_("SHOW CLOCK IN 12-HOUR FORMAT"), tmFormat);
-	s->addSaveFunc([tmFormat] { Settings::getInstance()->setBool("ClockMode12", tmFormat->getState()); });
+	tmFormat->setOnChangedCallback([tmFormat] { Settings::getInstance()->setBool("ClockMode12", tmFormat->getState()); });
 
         s->addGroup(_("AUTHENTICATION"));
         bool rotateRootPassEnabled = SystemConf::getInstance()->getBool("rotate.root.password");
@@ -805,7 +805,7 @@ void GuiMenu::openSystemSettings_batocera()
         rotate_root_pass->setState(rotateRootPassEnabled);
         s->addWithLabel(_("ROTATE ROOT PASSWORD"), rotate_root_pass);
 
-        s->addSaveFunc([this, rotate_root_pass]
+        rotate_root_pass->setOnChangedCallback([this, rotate_root_pass]
         {
                 SystemConf::getInstance()->setBool("rotate.root.password", rotate_root_pass->getState());
                 SystemConf::getInstance()->saveSystemConf();
@@ -902,10 +902,11 @@ void GuiMenu::openSystemSettings_batocera()
 		bool pwrleddisabled = SystemConf::getInstance()->get("powerled.disabled") == "1";
 		pwr_led_disabled->setState(SystemConf::getInstance()->getBool("powerled.disabled"));
 		s->addWithLabel(_("DISABLE POWER LED"), pwr_led_disabled);
-		s->addSaveFunc([pwr_led_disabled] {
-		bool pwrleddisabled = pwr_led_disabled->getState();
-			SystemConf::getInstance()->set("powerled.disabled", pwrleddisabled ? "1" : "0");
-			SystemConf::getInstance()->saveSystemConf(); });
+		pwr_led_disabled->setOnChangedCallback([pwr_led_disabled] {
+			bool pwrleddisabled = pwr_led_disabled->getState();
+				SystemConf::getInstance()->set("powerled.disabled", pwrleddisabled ? "1" : "0");
+				SystemConf::getInstance()->saveSystemConf();
+		});
 	}
 	
 #if defined(AMD64)
@@ -1204,7 +1205,7 @@ void GuiMenu::openSystemSettings_batocera()
         	bool enhcpupowersaveEnabled = SystemConf::getInstance()->get("system.power.cpu") == "1";
         	enh_cpupowersave->setState(enhcpupowersaveEnabled);
         	s->addWithLabel(_("CPU POWER SAVING"), enh_cpupowersave);
-        	s->addSaveFunc([enh_cpupowersave] {
+        	enh_cpupowersave->setOnChangedCallback([enh_cpupowersave] {
         	        bool enhcpupowersaveEnabled = enh_cpupowersave->getState();
                	 SystemConf::getInstance()->set("system.power.cpu", enhcpupowersaveEnabled ? "1" : "0");
                	 SystemConf::getInstance()->saveSystemConf();
@@ -1214,7 +1215,7 @@ void GuiMenu::openSystemSettings_batocera()
 	        bool enhaudiopowersaveEnabled = SystemConf::getInstance()->get("system.power.audio") == "1";
 	        enh_audiopowersave->setState(enhaudiopowersaveEnabled);
 	        s->addWithLabel(_("AUDIO POWER SAVING"), enh_audiopowersave);
-	        s->addSaveFunc([enh_audiopowersave] {
+	        enh_audiopowersave->setOnChangedCallback([enh_audiopowersave] {
 	                bool enhaudiopowersaveEnabled = enh_audiopowersave->getState();
 	                SystemConf::getInstance()->set("system.power.audio", enhaudiopowersaveEnabled ? "1" : "0");
 	                SystemConf::getInstance()->saveSystemConf();
@@ -1227,25 +1228,27 @@ void GuiMenu::openSystemSettings_batocera()
 	        bool enhpciepowersaveEnabled = SystemConf::getInstance()->get("system.power.pcie") == "1";
 	        enh_pciepowersave->setState(enhpciepowersaveEnabled);
 	        s->addWithLabel(_("PCIE ACTIVE STATE POWER MANAGEMENT"), enh_pciepowersave);
-	        s->addSaveFunc([enh_pciepowersave] {
+	        enh_pciepowersave->setOnChangedCallback([enh_pciepowersave] {
 	                bool enhpciepowersaveEnabled = enh_pciepowersave->getState();
 	                SystemConf::getInstance()->set("system.power.pcie", enhpciepowersaveEnabled ? "1" : "0");
 	                SystemConf::getInstance()->saveSystemConf();
 	        });
+
 	        auto wakeevents = std::make_shared<SwitchComponent>(mWindow);
 	        bool wakeeventsEnabled = SystemConf::getInstance()->get("system.power.wakeevents") == "1";
 	        wakeevents->setState(wakeeventsEnabled);
 	        s->addWithLabel(_("ENABLE WAKE EVENTS"), wakeevents);
-	        s->addSaveFunc([wakeevents] {
+	        wakeevents->setOnChangedCallback([wakeevents] {
 	                bool wakeeventsEnabled = wakeevents->getState();
 	                SystemConf::getInstance()->set("system.power.wakeevents", wakeeventsEnabled ? "1" : "0");
 	                SystemConf::getInstance()->saveSystemConf();
 	        });
+
 	        auto rtpm = std::make_shared<SwitchComponent>(mWindow);
 	        bool rtpmEnabled = SystemConf::getInstance()->get("system.power.rtpm") == "1";
 	        rtpm->setState(rtpmEnabled);
 	        s->addWithLabel(_("RUNTIME POWER MANAGEMENT"), rtpm);
-	        s->addSaveFunc([rtpm] {
+	        rtpm->setOnChangedCallback([rtpm] {
 	                bool rtpmEnabled = rtpm->getState();
 	                SystemConf::getInstance()->set("system.power.rtpm", rtpmEnabled ? "1" : "0");
 	                SystemConf::getInstance()->saveSystemConf();
@@ -1295,7 +1298,7 @@ void GuiMenu::openSystemSettings_batocera()
         bool wifipowersaveEnabled = SystemConf::getInstance()->get("system.power.wifi") == "1";
         wifi_powersave->setState(wifipowersaveEnabled);
         s->addWithLabel(_("ENABLE WIFI POWER SAVING"), wifi_powersave);
-        s->addSaveFunc([wifi_powersave] {
+        wifi_powersave->setOnChangedCallback([wifi_powersave] {
                 bool wifipowersaveEnabled = wifi_powersave->getState();
                 SystemConf::getInstance()->set("system.power.wifi", wifipowersaveEnabled ? "1" : "0");
 		SystemConf::getInstance()->saveSystemConf();
@@ -1308,7 +1311,7 @@ void GuiMenu::openSystemSettings_batocera()
         bool internalmoduleEnabled = SystemConf::getInstance()->get("internal.wifi") == "1";
         internal_wifi->setState(internalmoduleEnabled);
         s->addWithLabel(_("ENABLE INTERNAL WIFI"), internal_wifi);
-        s->addSaveFunc([internal_wifi] {
+        internal_wifi->setOnChangedCallback([internal_wifi] {
         if (internal_wifi->getState() == false) {
                 runSystemCommand("/usr/bin/internalwifi disable", "", nullptr);
         } else {
@@ -1326,7 +1329,7 @@ void GuiMenu::openSystemSettings_batocera()
         // Enable updates
         auto updates_enabled = std::make_shared<SwitchComponent>(mWindow);
         updates_enabled->setState(SystemConf::getInstance()->getBool("updates.enabled"));
-        s->addSaveFunc([updates_enabled] {
+        updates_enabled->setOnChangedCallback([updates_enabled] {
                 bool updatesenabled = updates_enabled->getState();
 		SystemConf::getInstance()->set("updates.enabled", updatesenabled ? "1" : "0");
 	});
@@ -1354,7 +1357,7 @@ void GuiMenu::openSystemSettings_batocera()
         auto force_update = std::make_shared<SwitchComponent>(mWindow);
         force_update->setState(ForceUpdateEnabled);
         s->addWithLabel(_("FORCE NEXT UPDATE"), force_update);
-        s->addSaveFunc([force_update] {
+        force_update->setOnChangedCallback([force_update] {
                 bool forceupdate = force_update->getState();
                 SystemConf::getInstance()->set("updates.force", forceupdate ? "1" : "0");
         });
@@ -3539,9 +3542,6 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 
 void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdhocEnable)
 {
-	bool baseNetworkEnabled = SystemConf::getInstance()->getBool("network.enabled");
-	bool adhocEnabled = SystemConf::getInstance()->getBool("network.adhoc.enabled");
-
 	auto theme = ThemeData::getMenuTheme();
 	std::shared_ptr<Font> font = theme->Text.font;
 	unsigned int color = theme->Text.color;
@@ -3561,7 +3561,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
 	auto networkIndicator = std::make_shared<SwitchComponent>(mWindow);
 	networkIndicator->setState(Settings::getInstance()->getBool("ShowNetworkIndicator"));
 	s->addWithLabel(_("SHOW NETWORK INDICATOR"), networkIndicator);
-	s->addSaveFunc([networkIndicator] { Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState()); });
+	networkIndicator->setOnChangedCallback([networkIndicator] { Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState()); });
 
 	s->addGroup(_("NETWORK CONFIGURATION"));
 
@@ -3570,19 +3570,39 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
 
         // Wifi enable
         auto enable_net = std::make_shared<SwitchComponent>(mWindow);
-        auto enable_adhoc = std::make_shared<SwitchComponent>(mWindow);
+        bool networkEnabled = SystemConf::getInstance()->getBool("network.enabled");
+        enable_net->setState(networkEnabled);
 
-        enable_net->setState(baseNetworkEnabled);
-	enable_adhoc->setState(adhocEnabled);
+	// Define enable_adhoc early so it is available to addSaveFunc.
+	auto enable_adhoc = std::make_shared<SwitchComponent>(mWindow);
 
         s->addWithLabel(_("ENABLE NETWORK"), enable_net, selectWifiEnable);
 
-	// window, title, settingstring,
-	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
-	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
-
+	auto wifiSSID = std::make_shared<TextComponent>(mWindow, SystemConf::getInstance()->get("wifi.ssid"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
         s->addInputTextRow(_("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
+	s->addSaveFunc([this, enable_net, enable_adhoc, wifiSSID] {
+		SystemConf::getInstance()->saveSystemConf();
+		const std::string wifissid = SystemConf::getInstance()->get("wifi.ssid");
+                if (enable_net->getState() == true && enable_adhoc->getState() == true)
+                {
+                        std::string wifikey = SystemConf::getInstance()->get("wifi.key");
+			ApiSystem::getInstance()->disableWifi();
+                        ApiSystem::getInstance()->enableWifi(wifissid, wifikey);
+                }
+	});
+
+	auto wifiKEY = std::make_shared<TextComponent>(mWindow, SystemConf::getInstance()->get("wifi.key"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
         s->addInputTextRow(_("WIFI KEY"), "wifi.key", true);
+        s->addSaveFunc([this, enable_net, enable_adhoc, wifiKEY] {
+                SystemConf::getInstance()->saveSystemConf();
+                const std::string wifikey = SystemConf::getInstance()->get("wifi.key");
+                if (enable_net->getState() == true && enable_adhoc->getState() == true)
+                {
+                        std::string wifissid = SystemConf::getInstance()->get("wifi.ssid");
+			ApiSystem::getInstance()->disableWifi();
+                        ApiSystem::getInstance()->enableWifi(wifissid, wifikey);
+                }
+        });
 
 	auto optionsAdhocID = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LOCAL PLAY ID"), false);
 	std::string selectedAdhocID = SystemConf::getInstance()->get("wifi.adhoc.id");
@@ -3597,7 +3617,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
         bool ipv6Enabled = SystemConf::getInstance()->get("ipv6.enabled") == "1";
         ipv6_enable->setState(ipv6Enabled);
         s->addWithLabel(_("ENABLE IPV6"), ipv6_enable);
-        s->addSaveFunc([ipv6_enable] {
+        ipv6_enable->setOnChangedCallback([ipv6_enable] {
                 bool ipv6Enabled = ipv6_enable->getState();
                 SystemConf::getInstance()->set("ipv6.enabled", ipv6Enabled ? "1" : "0");
                 SystemConf::getInstance()->saveSystemConf();
@@ -3605,9 +3625,11 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
         });
 
 	s->addGroup(_("LOCAL NETPLAY SETTINGS"));
+
 	// Adhoc mode options
-       enable_adhoc->setState(adhocEnabled);
-       s->addWithLabel(_("LOCAL PLAY MODE"), enable_adhoc, selectAdhocEnable);
+	bool adhocEnabled = SystemConf::getInstance()->getBool("network.adhoc.enabled");
+	enable_adhoc->setState(adhocEnabled);
+	s->addWithLabel(_("LOCAL PLAY MODE"), enable_adhoc, selectAdhocEnable);
 
 	if (selectedAdhocID.empty())
 	{
@@ -3637,47 +3659,45 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
 
         s->addWithLabel(_("LOCAL NETWORK CHANNEL"), optionsChannels);
 
-	s->addSaveFunc([baseNetworkEnabled, adhocEnabled, baseSSID, baseKEY, enable_net, enable_adhoc, optionsAdhocID, selectedAdhocID, optionsChannels, selectedChannel, window]
+	enable_adhoc->setOnChangedCallback([adhocEnabled, networkEnabled, enable_net, enable_adhoc, optionsAdhocID, selectedAdhocID, optionsChannels, selectedChannel, window]
 	{
-		bool networkenabled = enable_net->getState();
-		bool adhocenabled = enable_adhoc->getState();
-
-		SystemConf::getInstance()->setBool("network.adhoc.enabled", adhocenabled);
 		SystemConf::getInstance()->set("wifi.adhoc.id", optionsAdhocID->getSelected());
-                SystemConf::getInstance()->set("wifi.adhoc.channel", optionsChannels->getSelected());
+		SystemConf::getInstance()->set("wifi.adhoc.channel", optionsChannels->getSelected());
 
-
-		SystemConf::getInstance()->setBool("network.enabled", networkenabled);
-
-
-		if (adhocenabled)
+		if (enable_net->getState() == true && enable_adhoc->getState() == false)
 		{
-			SystemConf::getInstance()->set("global.netplay.host", "192.168.80.1");
-			SystemConf::getInstance()->set("global.netplay.port", "55435");
-			SystemConf::getInstance()->set("global.netplay.relay", "none");
+			std::string newSSID = SystemConf::getInstance()->get("wifi.ssid");
+			std::string newKey = SystemConf::getInstance()->get("wifi.key");
+			ApiSystem::getInstance()->enableWifi(newSSID, newKey);
 		}
-
+		else
+		{
+       	                SystemConf::getInstance()->set("global.netplay.host", "192.168.80.1");
+       	                SystemConf::getInstance()->set("global.netplay.port", "55435");
+       	                SystemConf::getInstance()->set("global.netplay.relay", "none");
+			ApiSystem::getInstance()->disableWifi();
+		}
+		bool adhocenabled = enable_adhoc->getState();
+		SystemConf::getInstance()->setBool("network.adhoc.enabled", adhocenabled ? "1" : "0");
 		SystemConf::getInstance()->saveSystemConf();
+	});
 
-                if (networkenabled)
+        enable_net->setOnChangedCallback([enable_net, enable_adhoc, networkEnabled, adhocEnabled, window]
+        {
+                if (enable_net->getState() == true && enable_adhoc->getState() == false)
                 {
                         std::string newSSID = SystemConf::getInstance()->get("wifi.ssid");
                         std::string newKey = SystemConf::getInstance()->get("wifi.key");
-
-                        if (baseSSID != newSSID || baseKEY != newKey || !baseNetworkEnabled || adhocEnabled != adhocenabled)
-                        {
-                                if (ApiSystem::getInstance()->enableWifi(newSSID, newKey))
-                                        window->pushGui(new GuiMsgBox(window, _("NETWORK CONFIGURATION UPDATED")));
-                                else
-                                        window->pushGui(new GuiMsgBox(window, _("NETWORK CONFIGURATION ERROR")));
-                        }
+                        ApiSystem::getInstance()->enableWifi(newSSID, newKey);
                 }
                 else
-		{
-			ApiSystem::getInstance()->disableWifi();
-		}
-
-	});
+                {
+                        ApiSystem::getInstance()->disableWifi();
+                }
+		bool networkenabled = enable_net->getState();
+		SystemConf::getInstance()->setBool("network.enabled", networkenabled ? "1" : "0");
+                SystemConf::getInstance()->saveSystemConf();
+        });
 
 	s->addGroup(_("NETWORK SERVICES"));
 
@@ -3685,7 +3705,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
                 bool sshbaseEnabled = SystemConf::getInstance()->get("ssh.enabled") == "1";
                 sshd_enabled->setState(sshbaseEnabled);
                 s->addWithLabel(_("ENABLE SSH"), sshd_enabled);
-                s->addSaveFunc([sshd_enabled] {
+                sshd_enabled->setOnChangedCallback([sshd_enabled] {
                         if (sshd_enabled->getState() == false) {
                                 runSystemCommand("systemctl stop sshd", "", nullptr);
                                 runSystemCommand("systemctl disable sshd", "", nullptr);
@@ -3696,16 +3716,16 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
                                 runSystemCommand("systemctl enable sshd", "", nullptr);
                                 runSystemCommand("systemctl start sshd", "", nullptr);
                         }
-                bool sshenabled = sshd_enabled->getState();
-                SystemConf::getInstance()->set("ssh.enabled", sshenabled ? "1" : "0");
-                                SystemConf::getInstance()->saveSystemConf();
+			bool sshenabled = sshd_enabled->getState();
+			SystemConf::getInstance()->set("ssh.enabled", sshenabled ? "1" : "0");
+			SystemConf::getInstance()->saveSystemConf();
                 });
 
        auto samba_enabled = std::make_shared<SwitchComponent>(mWindow);
                 bool smbbaseEnabled = SystemConf::getInstance()->get("samba.enabled") == "1";
                 samba_enabled->setState(smbbaseEnabled);
                 s->addWithLabel(_("ENABLE SAMBA"), samba_enabled);
-                s->addSaveFunc([samba_enabled] {
+                samba_enabled->setOnChangedCallback([samba_enabled] {
                         if (samba_enabled->getState() == false) {
                                 runSystemCommand("systemctl stop nmbd", "", nullptr);
                                 runSystemCommand("systemctl stop smbd", "", nullptr);
@@ -3728,7 +3748,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
                 bool syncthingEnabled = SystemConf::getInstance()->get("syncthing.enabled") == "1";
                 enable_syncthing->setState(syncthingEnabled);
                 s->addWithLabel(_("ENABLE SYNCTHING"), enable_syncthing);
-                s->addSaveFunc([enable_syncthing] {
+                enable_syncthing->setOnChangedCallback([enable_syncthing] {
                         if (enable_syncthing->getState() == false) {
                                 runSystemCommand("systemctl stop syncthing", "", nullptr);
                         } else {
@@ -3743,7 +3763,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
                 bool mntcloudEnabled = SystemConf::getInstance()->get("clouddrive.mounted") == "1";
                 mount_cloud->setState(mntcloudEnabled);
                 s->addWithLabel(_("MOUNT CLOUD DRIVE"), mount_cloud);
-                s->addSaveFunc([mount_cloud] {
+                mount_cloud->setOnChangedCallback([mount_cloud] {
                         if (mount_cloud->getState() == false) {
                                 runSystemCommand("rclonectl unmount", "", nullptr);
                         } else {
@@ -3762,7 +3782,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
 		bool wgUp = SystemConf::getInstance()->get("wireguard.up") == "1";
 		wireguard->setState(wgUp);
 		s->addWithLabel(_("WIREGUARD VPN"), wireguard);
-		s->addSaveFunc([wireguard, wireguardConfigFile] {
+		wireguard->setOnChangedCallback([wireguard, wireguardConfigFile] {
 			if (wireguard->getState() == false) {
 				runSystemCommand("wg-quick down " + wireguardConfigFile, "", nullptr);
 				runSystemCommand("systemctl stop connman-vpn", "", nullptr);
@@ -3779,7 +3799,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
 	bool tsUp = SystemConf::getInstance()->get("tailscale.up") == "1";
 	tailscale->setState(tsUp);
 	s->addWithLabel(_("TAILSCALE VPN"), tailscale);
-	s->addSaveFunc([tailscale] {
+	tailscale->setOnChangedCallback([tailscale] {
   	bool tsEnabled = tailscale->getState();
 		if (tsEnabled) {
 			runSystemCommand("systemctl start tailscaled", "", nullptr);
@@ -3803,7 +3823,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
 	bool ztUp = SystemConf::getInstance()->get("zerotier.up") == "1";
 	zerotier->setState(ztUp);
 	s->addWithLabel(_("ZeroTier One"), zerotier);
-	s->addSaveFunc([zerotier] {
+	zerotier->setOnChangedCallback([zerotier] {
 	bool ztEnabled = zerotier->getState();
 	    if(ztEnabled) {
 			runSystemCommand("systemctl start zerotier-one", "", nullptr);
