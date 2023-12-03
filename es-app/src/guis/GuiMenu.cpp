@@ -980,13 +980,9 @@ void GuiMenu::openSystemSettings_batocera()
 	                s->addWithLabel(_("ENABLE MERGED STORAGE"), overlayState);
 	                overlayState->setOnChangedCallback([this, s, overlayState] {
 	                        bool overlayStateEnabled = overlayState->getState();
-	                        if (overlayStateEnabled) {
-	                          runSystemCommand("/usr/bin/systemctl start storage-roms.mount", "", nullptr);
-	                        } else {
-	                          runSystemCommand("/usr/bin/systemctl stop storage-roms.mount", "", nullptr);
-	                        }
 				SystemConf::getInstance()->setBool("system.merged.storage", overlayState->getState());
 				SystemConf::getInstance()->saveSystemConf();
+	                        runSystemCommand("/usr/bin/systemctl restart jelos-automount", "", nullptr);
 			});
 
 			auto optionsMSDevice = std::make_shared<OptionListComponent<std::string> >(mWindow, _("MERGED STORAGE PRIMARY CARD"), false);
