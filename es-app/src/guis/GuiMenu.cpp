@@ -988,7 +988,28 @@ void GuiMenu::openSystemSettings_batocera()
 				SystemConf::getInstance()->setBool("system.merged.storage", overlayState->getState());
 				SystemConf::getInstance()->saveSystemConf();
 			});
+
+			auto optionsMSDevice = std::make_shared<OptionListComponent<std::string> >(mWindow, _("MERGED STORAGE PRIMARY CARD"), false);
+			std::string selectedMSDevice = SystemConf::getInstance()->get("system.merged.device");
+			if (selectedMSDevice.empty())
+				selectedMSDevice = "default";
+
+			optionsMSDevice->add(_("DEFAULT"),"default", selectedMSDevice == "default");
+			optionsMSDevice->add(_("EXTERNAL"),"external", selectedMSDevice == "external");
+			optionsMSDevice->add(_("INTERNAL"),"internal", selectedMSDevice == "internal");
+			s->addWithLabel(_("MERGED STORAGE PRIMARY CARD"), optionsMSDevice);
+
+			s->addSaveFunc([this, optionsMSDevice, selectedMSDevice]
+			{
+				if (optionsMSDevice->changed()) {
+					SystemConf::getInstance()->set("system.merged.device", optionsMSDevice->getSelected());
+					SystemConf::getInstance()->saveSystemConf();
+					runSystemCommand("/usr/bin/systemctl restart jelos-automount " + optionsMSDevice->getSelected(), "", nullptr);
+				}
+			});
 		}
+
+
 
 		s->addEntry(_("EJECT MICROSD CARD"), false, [window] {
 			if (Utils::FileSystem::exists("/storage/.overlay_supported"))
