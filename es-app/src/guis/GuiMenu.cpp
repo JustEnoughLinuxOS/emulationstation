@@ -997,10 +997,14 @@ void GuiMenu::openSystemSettings_batocera()
 
 			s->addSaveFunc([this, optionsMSDevice, selectedMSDevice]
 			{
+
 				if (optionsMSDevice->changed()) {
-					SystemConf::getInstance()->set("system.merged.device", optionsMSDevice->getSelected());
-					SystemConf::getInstance()->saveSystemConf();
-					runSystemCommand("/usr/bin/systemctl restart jelos-automount " + optionsMSDevice->getSelected(), "", nullptr);
+					mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"), _("YES"), [this, optionsMSDevice, selectedMSDevice]
+					{
+						SystemConf::getInstance()->set("system.merged.device", optionsMSDevice->getSelected());
+						SystemConf::getInstance()->saveSystemConf();
+						runSystemCommand("/usr/bin/systemctl restart jelos-automount " + optionsMSDevice->getSelected(), "", nullptr);
+					}, _("NO"), nullptr));
 				}
 			});
 		}
