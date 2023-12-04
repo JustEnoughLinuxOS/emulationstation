@@ -985,25 +985,24 @@ void GuiMenu::openSystemSettings_batocera()
 	                        runSystemCommand("/usr/bin/systemctl restart jelos-automount", "", nullptr);
 			});
 
-			// Disabled, there are too many ways this can break so we shouldn't make it this easy to access.
-			//auto optionsMSDevice = std::make_shared<OptionListComponent<std::string> >(mWindow, _("MERGED STORAGE PRIMARY CARD"), false);
-			//std::string selectedMSDevice = SystemConf::getInstance()->get("system.merged.device");
-			//if (selectedMSDevice.empty())
-			//	selectedMSDevice = "default";
+			auto optionsMSDevice = std::make_shared<OptionListComponent<std::string> >(mWindow, _("MERGED STORAGE PRIMARY CARD"), false);
+			std::string selectedMSDevice = SystemConf::getInstance()->get("system.merged.device");
+			if (selectedMSDevice.empty())
+				selectedMSDevice = "default";
 
-			//optionsMSDevice->add(_("DEFAULT"),"default", selectedMSDevice == "default");
-			//optionsMSDevice->add(_("EXTERNAL"),"external", selectedMSDevice == "external");
-			//optionsMSDevice->add(_("INTERNAL"),"internal", selectedMSDevice == "internal");
-			//s->addWithLabel(_("MERGED STORAGE PRIMARY CARD"), optionsMSDevice);
+			optionsMSDevice->add(_("DEFAULT"),"default", selectedMSDevice == "default");
+			optionsMSDevice->add(_("EXTERNAL"),"external", selectedMSDevice == "external");
+			optionsMSDevice->add(_("INTERNAL"),"internal", selectedMSDevice == "internal");
+			s->addWithLabel(_("MERGED STORAGE PRIMARY CARD"), optionsMSDevice);
 
-			//s->addSaveFunc([this, optionsMSDevice, selectedMSDevice]
-			//{
-			//	if (optionsMSDevice->changed()) {
-			//		SystemConf::getInstance()->set("system.merged.device", optionsMSDevice->getSelected());
-			//		SystemConf::getInstance()->saveSystemConf();
-			//		runSystemCommand("/usr/bin/systemctl restart jelos-automount " + optionsMSDevice->getSelected(), "", nullptr);
-			//	}
-			//});
+			s->addSaveFunc([this, optionsMSDevice, selectedMSDevice]
+			{
+				if (optionsMSDevice->changed()) {
+					SystemConf::getInstance()->set("system.merged.device", optionsMSDevice->getSelected());
+					SystemConf::getInstance()->saveSystemConf();
+					runSystemCommand("/usr/bin/systemctl restart jelos-automount " + optionsMSDevice->getSelected(), "", nullptr);
+				}
+			});
 		}
 
 
