@@ -4374,9 +4374,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		}
 	});
 
-	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::latency_reduction))
-		systemConfiguration->addEntry(_("LATENCY REDUCTION"), true, [mWindow, configName] { openLatencyReductionConfiguration(mWindow, configName); });
-
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::colorization))
 	{
 
@@ -4384,11 +4381,13 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		auto colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COLORIZATION"), false);
 		auto twb1_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 1 PALETTE"), false);
 		auto twb2_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 2 PALETTE"), false);
+		auto twb3_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 3 PALETTE"), false);
 		auto pixelshift1_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("PIXELSHIFT - PACK 1 PALETTE"), false);
 
 		std::string currentColorization = SystemConf::getInstance()->get(configName + ".renderer.colorization");
 		std::string twb1_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb1_colorization");
 		std::string twb2_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb2_colorization");
+		std::string twb3_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb3_colorization");
 		std::string pixelshift1_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.pixelshift1_colorization");
 
 
@@ -4400,6 +4399,8 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 			twb1_currentColorization = std::string("TWB64 001 - Aqours Blue");
 		if (twb2_currentColorization.empty())
 			twb2_currentColorization = std::string("TWB64 101 - 765PRO Pink");
+		if (twb3_currentColorization.empty())
+			twb3_currentColorization = std::string("TWB64 201 - DMG-GOLD");
 		if (pixelshift1_currentColorization.empty())
 			pixelshift1_currentColorization = std::string("PixelShift 01 - Arctic Green");
 
@@ -4462,6 +4463,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 								 "Special 4 (TI-83 Legacy)",
 								 "TWB64 - Pack 1",
 								 "TWB64 - Pack 2",
+								 "TWB64 - Pack 3",
 								 "PixelShift - Pack 1"};
 
 		const char* twb1_colors_modes[] = {
@@ -4668,6 +4670,108 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 								 "TWB64 199 - Duracell Copper",          
 								 "TWB64 200 - TOKYO SKYTREE CLOUDY BLUE"};
 
+		const char* twb3_colors_modes[] = {
+								 "TWB64 201 - DMG-GOLD",               
+								 "TWB64 202 - LCD Clock Green",        
+								 "TWB64 203 - Famicom Frenzy",         
+								 "TWB64 204 - DK Arcade Blue",         
+								 "TWB64 205 - Advanced Indigo",        
+								 "TWB64 206 - Ultra Black",            
+								 "TWB64 207 - Chaos Emerald Green",    
+								 "TWB64 208 - Blue Bomber Azure",      
+								 "TWB64 209 - Garry's Blue",           
+								 "TWB64 210 - Steam Gray",             
+								 "TWB64 211 - Dream Land GB Ver.",     
+								 "TWB64 212 - Pokemon Pinball Ver.",   
+								 "TWB64 213 - Poketch Ver.",           
+								 "TWB64 214 - COLLECTION of SaGa Ver.",
+								 "TWB64 215 - Rocky-Valley Holiday",   
+								 "TWB64 216 - Giga Kiwi DMG",          
+								 "TWB64 217 - DMG Pea Green",          
+								 "TWB64 218 - Timing Hero Ver.",       
+								 "TWB64 219 - Invincible Blue",        
+								 "TWB64 220 - Grinchy Green",          
+								 "TWB64 221 - Winter Icy Blue",        
+								 "TWB64 222 - School Idol Mix",        
+								 "TWB64 223 - Green Awakening",        
+								 "TWB64 224 - Goomba Brown",           
+								 "TWB64 225 - Devil Red",              
+								 "TWB64 226 - Simpson Yellow",         
+								 "TWB64 227 - Spooky Purple",          
+								 "TWB64 228 - Treasure Gold",          
+								 "TWB64 229 - Cherry Blossom Pink",    
+								 "TWB64 230 - Golden Trophy",          
+								 "TWB64 231 - Winter Icy Blue",        
+								 "TWB64 232 - Leprechaun Green",       
+								 "TWB64 233 - SAITAMA SUPER BLUE",     
+								 "TWB64 234 - SAITAMA SUPER GREEN",    
+								 "TWB64 235 - Duolingo Green",         
+								 "TWB64 236 - Super Mushroom Vision",  
+								 "TWB64 237 - Ancient Hisuian Brown",  
+								 "TWB64 238 - Sky Pop Ivory",          
+								 "TWB64 239 - LAWSON BLUE",            
+								 "TWB64 240 - Anime Expo Red",         
+								 "TWB64 241 - Brilliant Diamond Blue", 
+								 "TWB64 242 - Shining Pearl Pink",     
+								 "TWB64 243 - Funimation Melon",       
+								 "TWB64 244 - Teyvat Brown",           
+								 "TWB64 245 - Chozo Blue",             
+								 "TWB64 246 - Spotify Green",          
+								 "TWB64 247 - Dr Pepper Red",          
+								 "TWB64 248 - NHK Silver Gray",        
+								 "TWB64 249 - Starbucks Green",        
+								 "TWB64 250 - Tokyo Disney Magic",     
+								 "TWB64 251 - Kingdom Key Gold",       
+								 "TWB64 252 - Hogwarts Goldius",       
+								 "TWB64 253 - Kentucky Fried Red",     
+								 "TWB64 254 - Cheeto Orange",          
+								 "TWB64 255 - Namco Idol Pink",        
+								 "TWB64 256 - Domino's Blue",          
+								 "TWB64 257 - Pac-Man Vision",         
+								 "TWB64 258 - Bill's PC Screen",       
+								 "TWB64 259 - Sonic Mega Blue",        
+								 "TWB64 260 - Fool's Gold and Silver", 
+								 "TWB64 261 - UTA RED",                
+								 "TWB64 262 - Metallic Paldea Brass",  
+								 "TWB64 263 - Classy Christmas",       
+								 "TWB64 264 - Winter Christmas",       
+								 "TWB64 265 - IDOL WORLD TRICOLOR!!!", 
+								 "TWB64 266 - Inkling Tricolor",       
+								 "TWB64 267 - 7-Eleven Color Combo",   
+								 "TWB64 268 - PAC-PALETTE",            
+								 "TWB64 269 - Vulnerable Blue",        
+								 "TWB64 270 - Nightvision Green",      
+								 "TWB64 271 - Bandai Namco Tricolor",  
+								 "TWB64 272 - Gold, Silver, and Bronze",
+								 "TWB64 273 - Arendelle Winter Blue",  
+								 "TWB64 274 - Super Famicom Supreme",  
+								 "TWB64 275 - Absorbent and Yellow",   
+								 "TWB64 276 - 765PRO TRICOLOR",        
+								 "TWB64 277 - GameCube Glimmer",       
+								 "TWB64 278 - 1st Vision Pastel",      
+								 "TWB64 279 - Perfect Majin Emperor",  
+								 "TWB64 280 - J-Pop Idol Sherbet",     
+								 "TWB64 281 - Ryuuguu Sunset",         
+								 "TWB64 282 - Tropical Starfall",      
+								 "TWB64 283 - Colorful Horizons",      
+								 "TWB64 284 - BLACKPINK BLINK PINK",   
+								 "TWB64 285 - DMG-SWITCH",             
+								 "TWB64 286 - POCKET SWITCH",          
+								 "TWB64 287 - Sunny Passion Paradise", 
+								 "TWB64 288 - Saiyan Beast Silver",    
+								 "TWB64 289 - RADIANT SMILE RAMP",     
+								 "TWB64 290 - A-RISE BLUE",            
+								 "TWB64 291 - TROPICAL TWICE APRICOT", 
+								 "TWB64 292 - Odyssey Boy",            
+								 "TWB64 293 - Frog Coin Green",        
+								 "TWB64 294 - Garfield Vision",        
+								 "TWB64 295 - Bedrock Caveman Vision", 
+								 "TWB64 296 - BANGTAN ARMY PURPLE",    
+								 "TWB64 297 - Spider-Verse Red",       
+								 "TWB64 298 - Baja Blast Beach",       
+								 "TWB64 299 - 3DS Virtual Console Green",
+								 "TWB64 300 - Wonder Purple"};
+
 		const char* pixelshift1_colors_modes[] = {
 								 "PixelShift 01 - Arctic Green",              
 								 "PixelShift 02 - Arduboy",                   
@@ -4715,9 +4819,12 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 								 "PixelShift 44 - Virtual Boy",               
 								 "PixelShift 45 - Wish"}; 
 
-		int n_all_gambate_gc_colors_modes = 54;
+
+
+		int n_all_gambate_gc_colors_modes = 55;
 		int n_twb1_colors_modes = 100;
 		int n_twb2_colors_modes = 100;
+		int n_twb3_colors_modes = 100;
 		int n_pixelshift1_colors_modes = 45;
 
 		for (int i = 0; i < n_all_gambate_gc_colors_modes; i++)
@@ -4728,6 +4835,9 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		
 		for (int i = 0; i < n_twb2_colors_modes; i++)
 			twb2_colorizations_choices->add(twb2_colors_modes[i], twb2_colors_modes[i], twb2_currentColorization == std::string(twb2_colors_modes[i]));
+
+		for (int i = 0; i < n_twb3_colors_modes; i++)
+			twb3_colorizations_choices->add(twb3_colors_modes[i], twb3_colors_modes[i], twb3_currentColorization == std::string(twb3_colors_modes[i]));
 		
 		for (int i = 0; i < n_pixelshift1_colors_modes; i++)
 			pixelshift1_colorizations_choices->add(pixelshift1_colors_modes[i], pixelshift1_colors_modes[i], pixelshift1_currentColorization == std::string(pixelshift1_colors_modes[i]));
@@ -4737,10 +4847,12 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 			systemConfiguration->addWithLabel(_("COLORIZATION"), colorizations_choices);
 			systemConfiguration->addWithLabel(_("TWB64 - PACK 1 PALETTE"), twb1_colorizations_choices);
 			systemConfiguration->addWithLabel(_("TWB64 - PACK 2 PALETTE"), twb2_colorizations_choices);
+			systemConfiguration->addWithLabel(_("TWB64 - PACK 3 PALETTE"), twb3_colorizations_choices);
 			systemConfiguration->addWithLabel(_("PIXELSHIFT - PACK 1 PALETTE"), pixelshift1_colorizations_choices);
 			systemConfiguration->addSaveFunc([colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.colorization", colorizations_choices->getSelected()); });
 			systemConfiguration->addSaveFunc([twb1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb1_colorization", twb1_colorizations_choices->getSelected()); });
 			systemConfiguration->addSaveFunc([twb2_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb2_colorization", twb2_colorizations_choices->getSelected()); });
+			systemConfiguration->addSaveFunc([twb3_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb3_colorization", twb2_colorizations_choices->getSelected()); });
 			systemConfiguration->addSaveFunc([pixelshift1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.pixelshift1_colorization", pixelshift1_colorizations_choices->getSelected()); });
 		}
 	}
