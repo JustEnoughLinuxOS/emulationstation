@@ -1481,25 +1481,31 @@ void GuiMenu::openCustomAspectRatioConfiguration(Window* mWindow, std::string co
 {
 	GuiSettings* guiRatio = new GuiSettings(mWindow, _("CUSTOM ASPECT RATIO").c_str());
 
-	// run-ahead
-	auto runahead_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("RUN-AHEAD FRAMES"));
-	runahead_enabled->addRange({ { _("DEFAULT"), "" }, { _("NONE"), "0" }, { "1", "1" }, { "2", "2" }, { "3", "3" }, { "4", "4" }, { "5", "5" }, { "6", "6" } }, SystemConf::getInstance()->get(configName + ".runahead"));
-	guiLatency->addWithLabel(_("USE RUN-AHEAD FRAMES"), runahead_enabled);
-	guiLatency->addSaveFunc([configName, runahead_enabled] { SystemConf::getInstance()->set(configName + ".runahead", runahead_enabled->getSelected()); });
+	// X Position
+	auto positionx = std::make_shared<OptionListComponent<std::string>>(mWindow, _("POSITION X"));
+	runahead_enabled->addRange({ { _("DEFAULT"), "" }, { _("NONE"), "0" }, { "1", "1" }, { "2", "2" }, { "3", "3" }, { "4", "4" } }, SystemConf::getInstance()->get(configName + ".positionx"));
+	guiLatency->addWithLabel(_("POSITION X"), positionx);
+	guiLatency->addSaveFunc([configName, positionx] { SystemConf::getInstance()->set(configName + ".positionx", runahead_enabled->getSelected()); });
 
-	// second instance
-	auto secondinstance = std::make_shared<OptionListComponent<std::string>>(mWindow, _("RUN-AHEAD USE SECOND INSTANCE"));
-	secondinstance->addRange({ { _("DEFAULT"), "" }, { _("ON"), "1" }, { _("OFF"), "0" } }, SystemConf::getInstance()->get(configName + ".secondinstance"));
-	guiLatency->addWithLabel(_("RUN-AHEAD USE SECOND INSTANCE"), secondinstance);
-	guiLatency->addSaveFunc([configName, secondinstance] { SystemConf::getInstance()->set(configName + ".secondinstance", secondinstance->getSelected()); });
+	// Y Position
+	auto positiony = std::make_shared<OptionListComponent<std::string>>(mWindow, _("POSITION Y"));
+	secondinstance->addRange({ { _("DEFAULT"), "" }, { _("ON"), "1" }, { _("OFF"), "0" } }, SystemConf::getInstance()->get(configName + ".positiony"));
+	guiLatency->addWithLabel(_("POSITION Y"), positiony);
+	guiLatency->addSaveFunc([configName, positiony] { SystemConf::getInstance()->set(configName + ".positiony", secondinstance->getSelected()); });
 
-	// audio-latency
-	auto audio_latency = std::make_shared<OptionListComponent<std::string>>(mWindow, _("AUDIO LATENCY MILLISECONDS"));
-	audio_latency->addRange({ { _("DEFAULT"), "" }, { "2", "2" }, { "4", "4" }, { "8", "8" }, { "16", "16" }, { "24", "24" }, { "32", "32" }, { "40", "40" }, { "48", "48" }, { "56", "56" }, { "64", "64" }, { "72", "72" }, { "80", "80" }, { "88", "88" }, { "96", "96" }, { "104", "104" }, { "112", "112" }, { "120", "120" }, { "128", "128" } }, SystemConf::getInstance()->get(configName + ".audiolatency"));
-	guiLatency->addWithLabel(_("AUDIO LATENCY MILLISECONDS"), audio_latency);
-	guiLatency->addSaveFunc([configName, audio_latency] { SystemConf::getInstance()->set(configName + ".audiolatency", audio_latency->getSelected()); });
+	// Width
+	auto width = std::make_shared<OptionListComponent<std::string>>(mWindow, _("WIDTH"));
+	audio_latency->addRange({ { _("DEFAULT"), "" }, { "2", "2" }, { "4", "4" }, { "8", "8" }, { "16", "16" }, { "24", "24" }, { "32", "32" } }, SystemConf::getInstance()->get(configName + ".width"));
+	guiLatency->addWithLabel(_("WIDTH"), width);
+	guiLatency->addSaveFunc([configName, width] { SystemConf::getInstance()->set(configName + ".width", audio_latency->getSelected()); });
 	
-	mWindow->pushGui(guiLatency);
+	// Height
+	auto height = std::make_shared<OptionListComponent<std::string>>(mWindow, _("HEIGHT"));
+	audio_latency->addRange({ { _("DEFAULT"), "" }, { "2", "2" }, { "4", "4" }, { "8", "8" }, { "16", "16" }, { "24", "24" }, { "32", "32" } }, SystemConf::getInstance()->get(configName + ".height"));
+	guiLatency->addWithLabel(_("HEIGHT"), height);
+	guiLatency->addSaveFunc([configName, height] { SystemConf::getInstance()->set(configName + ".height", audio_latency->getSelected()); });
+	
+	mWindow->pushGui(guiAspect);
 }
 void GuiMenu::openRetroachievementsSettings()
 {
@@ -4118,7 +4124,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		systemConfiguration->addWithLabel(_("GAME ASPECT RATIO"), ratio_choice);
 		systemConfiguration->addSaveFunc([configName, ratio_choice] { SystemConf::getInstance()->set(configName + ".ratio", ratio_choice->getSelected()); });
 		if (ratio_choice->getSelected() == "Custom")
-i			systemConfiguration->addEntry(_("CUSTOM ASPECT RATIO"), true, [mWindow, configName] { openLatencyReductionConfiguration(mWindow, configName); });
+i			systemConfiguration->addEntry(_("CUSTOM ASPECT RATIO"), true, [mWindow, configName] { openCustomAspectRatioConfiguration(mWindow, configName); });
 	}
 
 	// video resolution mode
