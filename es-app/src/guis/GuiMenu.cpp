@@ -4124,7 +4124,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		systemConfiguration->addWithLabel(_("GAME ASPECT RATIO"), ratio_choice);
 		systemConfiguration->addSaveFunc([configName, ratio_choice] { SystemConf::getInstance()->set(configName + ".ratio", ratio_choice->getSelected()); });
 		if (ratio_choice->getSelected() == "Custom")
-i			systemConfiguration->addEntry(_("CUSTOM ASPECT RATIO"), true, [mWindow, configName] { openCustomAspectRatioConfiguration(mWindow, configName); });
+			systemConfiguration->addEntry(_("CUSTOM ASPECT RATIO"), true, [mWindow, configName] { openCustomAspectRatioConfiguration(mWindow, configName); });
 	}
 
 	// video resolution mode
