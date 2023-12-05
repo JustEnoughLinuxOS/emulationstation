@@ -102,6 +102,8 @@ private:
 	static void openSavestatesConfiguration(Window* mWindow, std::string configName);
 	
 	static void openLatencyReductionConfiguration(Window* mWindow, std::string configName);
+	static void openCustomAspectRatioConfiguration(Window* mWindow, std::string configName);
+
 
 	std::vector<StrInputConfig*> mLoadedInput; // used to keep information about loaded devices in case there are unpluged between device window load and save
 	void clearLoadedInput();
