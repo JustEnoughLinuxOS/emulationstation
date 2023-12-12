@@ -972,7 +972,7 @@ void GuiMenu::openSystemSettings_batocera()
 			SystemConf::getInstance()->saveSystemConf();
 		});
 
-		if (Utils::FileSystem::exists("/storage/.overlay_supported") && MountGamesEnabled) 
+		if (Utils::FileSystem::exists("/storage/.ms_supported") && MountGamesEnabled) 
 		{
 	                auto overlayState = std::make_shared<SwitchComponent>(mWindow);
 	                bool overlayStateEnabled = SystemConf::getInstance()->getBool("system.merged.storage");
@@ -1012,7 +1012,7 @@ void GuiMenu::openSystemSettings_batocera()
 
 
 		s->addEntry(_("EJECT MICROSD CARD"), false, [window] {
-			if (Utils::FileSystem::exists("/storage/.overlay_supported"))
+			if (Utils::FileSystem::exists("/storage/.ms_supported"))
 			{
 				runSystemCommand("/usr/bin/systemctl stop storage-roms.mount; /usr/bin/umount /storage/games-mmc; /usr/bin/systemctl start storage-roms.mount", "", nullptr);
 			} else {
