@@ -1009,14 +1009,16 @@ void GuiMenu::openSystemSettings_batocera()
 			});
 		}
 
-
+		s->addEntry(_("CREATE GAME DIRECTORIES"), false, [window] {
+			runSystemCommand("systemd-tmpfiles --create /usr/config/system-dirs.conf", "", nullptr);
+		});
 
 		s->addEntry(_("EJECT MICROSD CARD"), false, [window] {
 			if (Utils::FileSystem::exists("/storage/.ms_supported"))
 			{
-				runSystemCommand("/usr/bin/systemctl stop storage-roms.mount; /usr/bin/umount /storage/games-mmc; /usr/bin/systemctl start storage-roms.mount", "", nullptr);
+				runSystemCommand("/usr/bin/umount -f /storage/roms; /usr/bin/umount -f /storage/games-external", "", nullptr);
 			} else {
-				runSystemCommand("/usr/bin/umount /storage/roms", "", nullptr);
+				runSystemCommand("/usr/bin/umount -f /storage/roms", "", nullptr);
 			}
 			window->pushGui(new GuiMsgBox(window, _("You may now remove the card.")));
 		});
