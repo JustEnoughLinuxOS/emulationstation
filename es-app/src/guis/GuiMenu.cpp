@@ -4115,7 +4115,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 				SystemConf::getInstance()->set(configName + ".emulator", newEmul);
 				SystemConf::getInstance()->set(configName + ".core", newCore);
 			}
-
 			popSpecificConfigurationGui(mWindow, title, configName, systemData, fileData);
 			delete systemConfiguration;
 
@@ -4130,10 +4129,9 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		auto ratio_choice = createRatioOptionList(mWindow, configName);
 		systemConfiguration->addWithLabel(_("GAME ASPECT RATIO"), ratio_choice);
 		systemConfiguration->addSaveFunc([configName, ratio_choice] { SystemConf::getInstance()->set(configName + ".ratio", ratio_choice->getSelected()); });
-
-		if (ratio_choice->getSelected() == "custom")
+		if (ratio_choice->getSelected() == "custom") {
 			systemConfiguration->addEntry(_("CUSTOM ASPECT RATIO"), true, [mWindow, configName] { openCustomAspectRatioConfiguration(mWindow, configName); });
-
+		}
 		auto rotation_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SCREEN ROTATION"));
 		rotation_choice->addRange({{_("DEFAULT"), "default"}, {_("90"), "1"}, {_("180"), "2"}, {_("270"), "3"}}, SystemConf::getInstance()->get(configName + ".rotation"));
 		systemConfiguration->addWithLabel(_("SCREEN ROTATION"), rotation_choice);
