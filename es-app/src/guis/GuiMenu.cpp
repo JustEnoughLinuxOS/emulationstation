@@ -4184,7 +4184,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		overlays_choices->add(_("NONE"), "none", currentOverlay == "none");
 		for(std::stringstream ss(getShOutput(R"(/usr/bin/getoverlays)")); getline(ss, a, ','); )
 		overlays_choices->add(a, a, currentOverlay == a); // emuelec
-		systemConfiguration->addWithLabel(_("OVERLAY SET"), filters_choices);
+		systemConfiguration->addWithLabel(_("OVERLAY SET"), overlays_choices);
 		systemConfiguration->addSaveFunc([overlays_choices, configName] { SystemConf::getInstance()->set(configName + ".overlayset", overlays_choices->getSelected()); });
 	}
 
