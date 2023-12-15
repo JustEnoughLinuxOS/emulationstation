@@ -1486,15 +1486,26 @@ void GuiMenu::openLatencyReductionConfiguration(Window* mWindow, std::string con
 }
 void GuiMenu::openCustomAspectRatioConfiguration(Window* mWindow, std::string configName)
 {
-	GuiSettings* guiViewport = new GuiSettings(mWindow, _("CUSTOM ASPECT RATIO").c_str());
+	GuiSettings* guiViewport = new GuiSettings(mWindow, _("WIDTH/HEIGHT").c_str());
 	std::vector<std::string> NativeResolution;
 	NativeResolution = SystemData::getNativeResolution(configName);
 
 	// X Position
-	guiViewport->addInputTextRow(_("POSITION X"), (configName + ".positionx").c_str(), false, true);
+	//auto positionx = std::make_shared<OptionListComponent<std::string>>(mWindow, _("POSITION X"));
+	//positionx->addRange({ { _("DEFAULT"), "" }, {_("20"), "20"}}, SystemConf::getInstance()->get(configName + ".positionx"));
+	//positionx->addRange({ { _("40"), "40" }, {_("60"), "60"}}, SystemConf::getInstance()->get(configName + ".positionx"));
+	//guiViewport->addWithLabel(_("POSITION X"), positionx);
+	//guiViewport->addSaveFunc([configName, positionx] { SystemConf::getInstance()->set(configName + ".positionx", positionx->getSelected()); });
+
+	//guiViewport->addInputTextRow(_("POSITION X"), positionx.c_str(), false);
+	//LOG(LogError) << positionx->getSelected();
+	//guiViewport->addSaveFunc([configName, positionx] { SystemConf::getInstance()->set(configName + ".positionx", positionx); });
+
 
 	// Y Position
-	guiViewport->addInputTextRow(_("POSITION Y"), (configName + ".positiony").c_str(), false, true);
+//	guiViewport->addInputTextRow(_("POSITION Y"), positiony.c_str(), false);
+	//LOG(LogError) << positiony;
+	//guiViewport->addSaveFunc([configName, positiony] { SystemConf::getInstance()->set(configName + ".positiony", positiony); });
 
 	// Width
 	auto width = std::make_shared<OptionListComponent<std::string>>(mWindow, _("WIDTH"));
@@ -4126,8 +4137,9 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		systemConfiguration->addWithLabel(_("GAME ASPECT RATIO"), ratio_choice);
 		systemConfiguration->addSaveFunc([configName, ratio_choice] { SystemConf::getInstance()->set(configName + ".ratio", ratio_choice->getSelected()); });
 		if (ratio_choice->getSelected() == "custom") {
-			systemConfiguration->addEntry(_("CUSTOM ASPECT RATIO"), true, [mWindow, configName] { openCustomAspectRatioConfiguration(mWindow, configName); });
+			systemConfiguration->addEntry(_("WIDTH/HEIGHT"), true, [mWindow, configName] { openCustomAspectRatioConfiguration(mWindow, configName); });
 		}
+
 		auto rotation_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SCREEN ROTATION"));
 		rotation_choice->addRange({{_("DEFAULT"), "default"}, {_("90"), "1"}, {_("180"), "2"}, {_("270"), "3"}}, SystemConf::getInstance()->get(configName + ".rotation"));
 		systemConfiguration->addWithLabel(_("SCREEN ROTATION"), rotation_choice);
@@ -4187,6 +4199,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		systemConfiguration->addWithLabel(_("OVERLAY SET"), overlays_choices);
 		systemConfiguration->addSaveFunc([overlays_choices, configName] { SystemConf::getInstance()->set(configName + ".overlayset", overlays_choices->getSelected()); });
 	}
+	
 
 	// Shaders preset
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SHADERS) &&
