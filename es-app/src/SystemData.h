@@ -318,6 +318,9 @@ public:
 	static void resetSettings();
 
 	SaveStateRepository* getSaveStateRepository();
+	static std::vector<std::string> getNativeResolution(std::string systemName);
+
+
 
 private:
 	std::string getKeyboardMappingFilePath();

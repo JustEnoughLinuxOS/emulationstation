@@ -2254,3 +2254,52 @@ int SystemData::getShowFlags()
 	return Utils::String::toInteger(spf);
 }
 
+std::vector<std::string> SystemData::getNativeResolution(std::string systemName)
+{
+
+	std::map< std::string, std::vector<std::string>> listSystems;
+
+	listSystems["atari2600"] = {"160","192"};
+	listSystems["atari5200"] = {"320","192"};
+	listSystems["atarilynx"] = {"160","102"};
+	listSystems["colecovision"] = {"256","192"};
+	listSystems["gamecube"] = {"640","480"};
+	listSystems["gamegear"] = {"160,144"};
+	listSystems["gb"] = {"160","144"};
+	listSystems["gba"] = {"240","160"};
+	listSystems["gbc"] = {"160","144"};
+	listSystems["genesis"] = {"320","224"};
+	listSystems["intellivision"] = {"240","192"};
+	listSystems["mastersystem"] = {"256","224"};
+	listSystems["megacd"] = {"320","224"};
+	listSystems["megadrive"] = {"320","224"};
+	listSystems["msx"] = {"256","192"};
+	listSystems["msx2"] = {"256","192"};
+	listSystems["n64"] = {"320","240"};
+	listSystems["neogeo"] = {"320","224"};
+	listSystems["nes"] = {"256","240"};
+	listSystems["ngp"] = {"160","152"};
+	listSystems["ngpc"] = {"160","152"};
+	listSystems["odyssey2"] = {"160","200"};
+	listSystems["pcengine"] = {"256","240"};
+	listSystems["pcenginecd"] = {"256","240"};
+	listSystems["pokemini"] = {"96","64"};
+	listSystems["psp"] = {"480","272"};
+	listSystems["psx"] = {"320","240"};
+	listSystems["sega32x"] = {"320","224"};
+	listSystems["segacd"] = {"320","224"};
+	listSystems["sg-1000"] = {"256","192"};
+	listSystems["snes"] = {"256","224"};
+	listSystems["snesmsu1"] = {"256","224"};
+	listSystems["supervision"] = {"160","160"};
+//	listSystems["switch"] = {"1280","720"};
+	listSystems["tg16"] = {"256","240"};
+	listSystems["tg16cd"] = {"256","240"};
+	listSystems["vectrex"] = {"434","540"};
+	listSystems["virtualboy"] = {"384","224"};
+	listSystems["wii"] = {"640","480"};
+	listSystems["wonderswan"] = {"224","144"};
+	listSystems["wonderswancolor"] = {"224","144"};
+
+	return listSystems[systemName];
+}
