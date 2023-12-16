@@ -1484,7 +1484,8 @@ void GuiMenu::openLatencyReductionConfiguration(Window* mWindow, std::string con
 	
 	mWindow->pushGui(guiLatency);
 }
-void GuiMenu::openCustomAspectRatioConfiguration(Window* mWindow, std::string configName)
+
+/*void GuiMenu::openCustomAspectRatioConfiguration(Window* mWindow, std::string configName)
 {
 	GuiSettings* guiViewport = new GuiSettings(mWindow, _("WIDTH/HEIGHT").c_str());
 	std::vector<std::string> NativeResolution;
@@ -1521,6 +1522,7 @@ void GuiMenu::openCustomAspectRatioConfiguration(Window* mWindow, std::string co
 	
 	mWindow->pushGui(guiViewport);
 }
+*/
 void GuiMenu::openRetroachievementsSettings()
 {
 	Window* window = mWindow;
@@ -4136,10 +4138,10 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		auto ratio_choice = createRatioOptionList(mWindow, configName);
 		systemConfiguration->addWithLabel(_("GAME ASPECT RATIO"), ratio_choice);
 		systemConfiguration->addSaveFunc([configName, ratio_choice] { SystemConf::getInstance()->set(configName + ".ratio", ratio_choice->getSelected()); });
-		if (ratio_choice->getSelected() == "custom") {
+/*		if (ratio_choice->getSelected() == "custom") {
 			systemConfiguration->addEntry(_("WIDTH/HEIGHT"), true, [mWindow, configName] { openCustomAspectRatioConfiguration(mWindow, configName); });
 		}
-
+*/
 		auto rotation_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SCREEN ROTATION"));
 		rotation_choice->addRange({{_("DEFAULT"), "default"}, {_("90"), "1"}, {_("180"), "2"}, {_("270"), "3"}}, SystemConf::getInstance()->get(configName + ".rotation"));
 		systemConfiguration->addWithLabel(_("SCREEN ROTATION"), rotation_choice);
@@ -4462,6 +4464,10 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::colorization))
 	{
+
+		std::string currentEmulator = fileData != nullptr ? fileData->getEmulator(false) : systemData->getEmulator(false);
+		LOG(LogError) << currentEmulator;
+
 
 		// gameboy colorize
 		auto colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COLORIZATION"), false);
