@@ -3810,6 +3810,21 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
                                 SystemConf::getInstance()->saveSystemConf();
                 });
 
+     auto simple_http_enabled = std::make_shared<SwitchComponent>(mWindow);
+                bool simplehttpEnabled = SystemConf::getInstance()->get("simplehttp.enabled") == "1";
+                simple_http_enabled->setState(simplehttpEnabled);
+                s->addWithLabel(_("ENABLE SIMPLE HTTP SERVER"), simple_http_enabled);
+                simple_http_enabled->setOnChangedCallback([simple_http_enabled] {
+                        if(simple_http_enabled->getState() == false) {
+                                runSystemCommand("systemctl disable --now simple-http-server", "", nullptr);
+                        } else {
+                                runSystemCommand("systemctl enable --now simple-http-server", "", nullptr);
+                        }
+                bool simplehttpenabled = simple_http_enabled->getState();
+                SystemConf::getInstance()->set("simplehttp.enabled", simplehttpenabled ? "1" : "0");
+                                SystemConf::getInstance()->saveSystemConf();
+                });
+
 
 	s->addGroup(_("CLOUD SERVICES"));
 
