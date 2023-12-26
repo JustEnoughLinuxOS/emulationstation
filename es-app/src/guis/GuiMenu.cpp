@@ -209,14 +209,14 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
      });
 
     dangerZone->addEntry(_("RESTORE FROM BACKUP"), true, [mWindow] {
-    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL RESTART EMULATIONSTATION AND REBOOT!\n\nYOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n\nRESTORE FROM BACKUP AND RESTART?"), _("YES"),
+    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL REBOOT YOUR DEVICE!\n\nYOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n\nRESTORE FROM BACKUP AND RESTART?"), _("YES"),
 				[] {
 				runSystemCommand("/usr/bin/run \"/usr/bin/backuptool restore\"", "", nullptr);
 				}, _("NO"), nullptr));
      });
 
     dangerZone->addEntry(_("DELETE EMPTY GAME DIRECTORIES"), true, [mWindow] {
-    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL RESTART EMULATIONSTATION AND REBOOT!\n\nDELETE EMPTY GAME DIRECTORIES??"
+    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL REBOOT YOUR DEVICE!\n\nDELETE EMPTY GAME DIRECTORIES??"
 ), _("YES"),
                                 [] {
                                 runSystemCommand("/usr/bin/run \"/usr/bin/cleanup_overlay\"", "", nullptr);
