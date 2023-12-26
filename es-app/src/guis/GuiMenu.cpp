@@ -215,6 +215,14 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 				}, _("NO"), nullptr));
      });
 
+    dangerZone->addEntry(_("DELETE EMPTY GAME DIRECTORIES"), true, [mWindow] {
+    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL RESTART EMULATIONSTATION AND REBOOT!\n\nDELETE EMPTY GAME DIRECTORIES??"
+), _("YES"),
+                                [] {
+                                runSystemCommand("/usr/bin/run \"/usr/bin/cleanup_overlay\"", "", nullptr);
+                                }, _("NO"), nullptr));
+     });
+
     dangerZone->addEntry(_("CLEAN GAMELISTS & REMOVE UNUSED MEDIA"), true, [mWindow] {
 	mWindow->pushGui(new GuiMsgBox(mWindow, _("ARE YOU SURE?"), _("YES"), [&]
 	{
@@ -246,7 +254,7 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 #endif
     dangerZone->addGroup(_("SYSTEM MANAGEMENT"));
     dangerZone->addEntry(_("FACTORY RESET"), true, [mWindow] {
-    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n\nIF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n\nRESET SYSTEM AND RESTART?"), _("YES"),
+    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n\nIF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n\nEJECT YOUR GAME CARD BEFORE PROCEEDING!\n\nRESET SYSTEM AND RESTART?"), _("YES"),
 				[] {
 				runSystemCommand("/usr/bin/run \"/usr/bin/factoryreset ALL\"", "", nullptr);
 				}, _("NO"), nullptr));
