@@ -3882,8 +3882,8 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
 				runSystemCommand("systemctl start connman-vpn", "", nullptr);
 				runSystemCommand("wg-quick up " + wireguardConfigFile, "", nullptr);
 			}
-      SystemConf::getInstance()->set("wireguard.up", wireguard->getState() ? "1" : "0");
-      SystemConf::getInstance()->saveSystemConf();
+			SystemConf::getInstance()->set("wireguard.up", wireguard->getState() ? "1" : "0");
+			SystemConf::getInstance()->saveSystemConf();
 		});
 	}
 
@@ -3892,7 +3892,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
 	tailscale->setState(tsUp);
 	s->addWithLabel(_("TAILSCALE VPN"), tailscale);
 	tailscale->setOnChangedCallback([tailscale] {
-  	bool tsEnabled = tailscale->getState();
+  		bool tsEnabled = tailscale->getState();
 		if (tsEnabled) {
 			runSystemCommand("systemctl start tailscaled", "", nullptr);
 			runSystemCommand("tailscale up --timeout=7s", "", nullptr);
@@ -3906,12 +3906,14 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
 	});
 
 	std::string tsUrl;
-	if (!IsTailscaleUp(&tsUrl) && !tsUrl.empty()) {
-		s->addGroup("TAILSCALE REAUTHENTICATE:");
-		s->addGroup(tsUrl);
+	if ( tsUp == true) {
+		if (!IsTailscaleUp(&tsUrl) && !tsUrl.empty()) {
+			s->addGroup("TAILSCALE REAUTHENTICATE:");
+			s->addGroup(tsUrl);
+		}
 	}
 
-    auto zerotier = std::make_shared<SwitchComponent>(mWindow);
+	auto zerotier = std::make_shared<SwitchComponent>(mWindow);
 	bool ztUp = SystemConf::getInstance()->get("zerotier.up") == "1";
 	zerotier->setState(ztUp);
 	s->addWithLabel(_("ZeroTier One"), zerotier);
@@ -3931,7 +3933,7 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
 }
 
 bool GuiMenu::IsTailscaleUp(std::string* loginUrl) {
-  bool loggedOut = false;
+	bool loggedOut = false;
 	ApiSystem::executeScript("tailscale status", [loginUrl, &loggedOut](std::string line) {
 		 const std::string prompt = "Log in at: ";
 		 if (loginUrl && line.find(prompt) == 0)
@@ -3944,11 +3946,11 @@ bool GuiMenu::IsTailscaleUp(std::string* loginUrl) {
 
 bool GuiMenu::IsZeroTierUp(std::string* networkId) {
 	bool running = false;
-      ApiSystem::executeScript("zerotier-cli -D/storage/.config/zerotier/ info", [networkId, &running](std::string line) {
-          if (line.find("Error connecting to the ZeroTier") != std::string::npos ) running = false;
-          else running = true;
-      });
-	 return running;
+	ApiSystem::executeScript("zerotier-cli -D/storage/.config/zerotier/ info", [networkId, &running](std::string line) {
+		if (line.find("Error connecting to the ZeroTier") != std::string::npos ) running = false;
+		else running = true;
+	});
+	return running;
 }
 
 void GuiMenu::openQuitMenu_batocera()
