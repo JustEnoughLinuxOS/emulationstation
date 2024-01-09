@@ -237,10 +237,24 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 
     dangerZone->addGroup(_("EMULATOR MANAGEMENT"));
     dangerZone->addEntry(_("RESET RETROARCH CONFIG TO DEFAULT"), true, [mWindow] {
-    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n\nPER-CORE CONFIGURATIONS WILL NOT BE AFFECTED BUT NO BACKUP WILL BE CREATED!\n\nRESET RETROARCH CONFIG TO DEFAULT?"), _("YES"),
+    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n\nPER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n\nRESET RETROARCH CONFIG TO DEFAULT?"), _("YES"),
 				[] {
 				runSystemCommand("/usr/bin/run \"/usr/bin/factoryreset retroarch\"", "", nullptr);
 				}, _("NO"), nullptr));
+     });
+
+    dangerZone->addEntry(_("RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"), true, [mWindow] {
+    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n\nCUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n\nRESET RETROARCH OVERLAYS TO DEFAULT?"), _("YES"),
+                                [] {
+                                runSystemCommand("/usr/bin/run \"/usr/bin/factoryreset overlays\"", "", nullptr);
+                                }, _("NO"), nullptr));
+     });
+
+    dangerZone->addEntry(_("FULLY RESET RETROARCH"), true, [mWindow] {
+    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n\nPER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n\nRESET RETROARCH?"), _("YES"),
+                                [] {
+                                runSystemCommand("/usr/bin/run \"/usr/bin/factoryreset retroarch-full && /usr/bin/factoryreset overlays\"", "", nullptr);
+                                }, _("NO"), nullptr));
      });
 
 //Only show on devices that currently support Mednafen
@@ -252,6 +266,7 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 				}, _("NO"), nullptr));
      });
 #endif
+
     dangerZone->addGroup(_("SYSTEM MANAGEMENT"));
     dangerZone->addEntry(_("FACTORY RESET"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n\nIF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n\nEJECT YOUR GAME CARD BEFORE PROCEEDING!\n\nRESET SYSTEM AND RESTART?"), _("YES"),
