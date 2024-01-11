@@ -25,7 +25,7 @@ std::string ScreenScraperRequest::ensureUrl(const std::string url)
 {
 	return Utils::String::replace(
 		Utils::String::replace(url, " ", "%20") ,
-		"#screenscraperserveur#", "https://www.screenscraper.fr/");
+		"#screenscraperserveur#", "https://api.screenscraper.fr/");
 }
 
 /**
