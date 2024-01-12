@@ -993,6 +993,7 @@ void GuiMenu::openSystemSettings_batocera()
 		mount_games->setOnChangedCallback([this, s, mount_games] {
 			SystemConf::getInstance()->setBool("system.automount", mount_games->getState());
 			SystemConf::getInstance()->saveSystemConf();
+			runSystemCommand("/usr/bin/systemctl restart jelos-automount", "", nullptr);
 		});
 
 		if (Utils::FileSystem::exists("/storage/.ms_supported") && MountGamesEnabled) 
