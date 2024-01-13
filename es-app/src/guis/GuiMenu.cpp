@@ -982,8 +982,8 @@ void GuiMenu::openSystemSettings_batocera()
 	}
 
 #endif
+	s->addGroup(_("HARDWARE / STORAGE"));
 	if (GetEnv("DEVICE_MMC_EJECT") != "false") {
-		s->addGroup(_("HARDWARE / STORAGE"));
 
 		// Provides a mechanism to disable use of the second device
 		bool MountGamesEnabled = SystemConf::getInstance()->getBool("system.automount");
