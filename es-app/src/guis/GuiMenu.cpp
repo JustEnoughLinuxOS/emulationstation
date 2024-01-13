@@ -982,8 +982,8 @@ void GuiMenu::openSystemSettings_batocera()
 	}
 
 #endif
+	s->addGroup(_("HARDWARE / STORAGE"));
 	if (GetEnv("DEVICE_MMC_EJECT") != "false") {
-		s->addGroup(_("HARDWARE / STORAGE"));
 
 		// Provides a mechanism to disable use of the second device
 		bool MountGamesEnabled = SystemConf::getInstance()->getBool("system.automount");
@@ -1033,11 +1033,6 @@ void GuiMenu::openSystemSettings_batocera()
 			});
 		}
 
-		s->addEntry(_("CREATE GAME DIRECTORIES"), false, [window] {
-			runSystemCommand("systemd-tmpfiles --create /usr/config/system-dirs.conf", "", nullptr);
-			window->pushGui(new GuiMsgBox(window, _("Game directory creation complete.")));
-		});
-
 		s->addEntry(_("EJECT MICROSD CARD"), false, [window] {
 			if (Utils::FileSystem::exists("/storage/.ms_supported"))
 			{
@@ -1048,6 +1043,11 @@ void GuiMenu::openSystemSettings_batocera()
 			window->pushGui(new GuiMsgBox(window, _("You may now remove the card.")));
 		});
 	}
+
+    s->addEntry(_("CREATE GAME DIRECTORIES"), false, [window] {
+		runSystemCommand("systemd-tmpfiles --create /usr/config/system-dirs.conf", "", nullptr);
+		window->pushGui(new GuiMsgBox(window, _("Game directory creation complete.")));
+	});
 
 	s->addGroup(_("HARDWARE / PERFORMANCE"));
 
