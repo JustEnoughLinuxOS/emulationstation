@@ -936,26 +936,31 @@ void GuiMenu::openSystemSettings_batocera()
         if (GetEnv("DEVICE_LED_CONTROL") == "true"){
 		s->addGroup(_("DEVICE LEDS"));
 		// Provides LED management
-		auto optionsLEDProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED COLOR"), false);
-		std::string selectedLEDProfile = SystemConf::getInstance()->get("led.color");
-		if (selectedLEDProfile.empty())
-			selectedLEDProfile = "default";
+		auto optionsColors = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED COLOR"), false);
 
-		optionsLEDProfile->add(_("DEFAULT (REBOOT)"),"default", selectedLEDProfile == "default");
-		optionsLEDProfile->add(_("OFF"),"off", selectedLEDProfile == "off");
-		optionsLEDProfile->add(_("RED"),"red", selectedLEDProfile == "red");
-		optionsLEDProfile->add(_("GREEN"),"green", selectedLEDProfile == "green");
-		optionsLEDProfile->add(_("BLUE"),"blue", selectedLEDProfile == "blue");
-		optionsLEDProfile->add(_("TEAL"),"teal", selectedLEDProfile == "teal");
-		optionsLEDProfile->add(_("PURPLE"),"purple", selectedLEDProfile == "purple");
-		s->addWithLabel(_("LED COLOR"), optionsLEDProfile);
+		std::vector<std::string> availableColors = ApiSystem::getInstance()->getAvailableColors();
+		std::string selectedColors = SystemConf::getInstance()->get("led.color");
+		if (selectedColors.empty())
+			selectedColors = "default";
 
-		s->addSaveFunc([this, optionsLEDProfile, selectedLEDProfile]
+		bool lfound = false;
+		for (auto it = availableColors.begin(); it != availableColors.end(); it++)
 		{
-			if (optionsLEDProfile->changed()) {
-				SystemConf::getInstance()->set("led.color", optionsLEDProfile->getSelected());
+			optionsColors->add((*it), (*it), selectedColors == (*it));
+			if (selectedColors == (*it))
+			        lfound = true;
+		}
+		if (!lfound)
+			optionsColors->add(selectedColors, selectedColors, true);
+
+		s->addWithLabel(_("LED COLOR"), optionsColors);
+
+		s->addSaveFunc([this, optionsColors, selectedColors]
+		{
+			if (optionsColors->changed()) {
+				SystemConf::getInstance()->set("led.color", optionsColors->getSelected());
+				runSystemCommand("/usr/bin/sh -lc \"/usr/bin/ledcontrol " + optionsColors->getSelected() + "\"" , "", nullptr);
 				SystemConf::getInstance()->saveSystemConf();
-				runSystemCommand("/usr/bin/ledcontrol " + optionsLEDProfile->getSelected(), "", nullptr);
 			}
 		});
 	}
@@ -1063,11 +1068,9 @@ void GuiMenu::openSystemSettings_batocera()
 	bool wfound = false;
 	for (auto it = availableThreads.begin(); it != availableThreads.end(); it++)
 	{
-		if ( *it != "default" ) {
-			optionsThreads->add((*it), (*it), selectedThreads == (*it));
-			if (selectedThreads == (*it))
-				wfound = true;
-		}
+		optionsThreads->add((*it), (*it), selectedThreads == (*it));
+		if (selectedThreads == (*it))
+			wfound = true;
 	}
 	if (!wfound)
 		optionsThreads->add(selectedThreads, selectedThreads, true);
@@ -1191,11 +1194,9 @@ void GuiMenu::openSystemSettings_batocera()
         bool cfound = false;
         for (auto it = availableGovernors.begin(); it != availableGovernors.end(); it++)
         {
-                if ( *it != "default" ) {
-                        optionsGovernors->add((*it), (*it), selectedGovernors == (*it));
-                        if (selectedGovernors == (*it))
-                                cfound = true;
-                }
+		optionsGovernors->add((*it), (*it), selectedGovernors == (*it));
+		if (selectedGovernors == (*it))
+			cfound = true;
         }
         if (!cfound)
                 optionsGovernors->add(selectedGovernors, selectedGovernors, true);
@@ -1317,11 +1318,9 @@ void GuiMenu::openSystemSettings_batocera()
         bool xfound = false;
         for (auto it = availableSleepModes.begin(); it != availableSleepModes.end(); it++)
         {
-                if ( *it != "default" ) {
-                        optionsSleep->add((*it), (*it), selectedSleep == (*it));
-                        if (selectedSleep == (*it))
-                                xfound = true;
-                }
+		optionsSleep->add((*it), (*it), selectedSleep == (*it));
+		if (selectedSleep == (*it))
+			xfound = true;
         }
 
         if (!xfound)
@@ -3740,11 +3739,9 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
         bool wfound = false;
         for (auto it = availableChannels.begin(); it != availableChannels.end(); it++)
         {
-                if ( *it != "default" ) {
-                        optionsChannels->add((*it), (*it), selectedChannel == (*it));
-                        if (selectedChannel == (*it))
-                                wfound = true;
-                }
+		optionsChannels->add((*it), (*it), selectedChannel == (*it));
+		if (selectedChannel == (*it))
+			wfound = true;
         }
 
         if (!wfound)
@@ -4458,11 +4455,9 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         bool cfound = false;
         for (auto it = availableGovernors.begin(); it != availableGovernors.end(); it++)
         {
-                if ( *it != "default" ) {
-                        optionsGovernors->add((*it), (*it), selectedGovernors == (*it));
-                        if (selectedGovernors == (*it))
-                                cfound = true;
-                }
+		optionsGovernors->add((*it), (*it), selectedGovernors == (*it));
+		if (selectedGovernors == (*it))
+			cfound = true;
         }
         if (!cfound)
                 optionsGovernors->add(selectedGovernors, selectedGovernors, true);
