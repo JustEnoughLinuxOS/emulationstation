@@ -946,11 +946,9 @@ void GuiMenu::openSystemSettings_batocera()
 		bool lfound = false;
 		for (auto it = availableColors.begin(); it != availableColors.end(); it++)
 		{
-			if ( *it != "default" ) {
-				optionsColors->add((*it), (*it), selectedColors == (*it));
-				if (selectedColors == (*it))
-				        lfound = true;
-				}
+			optionsColors->add((*it), (*it), selectedColors == (*it));
+			if (selectedColors == (*it))
+			        lfound = true;
 		}
 		if (!lfound)
 			optionsColors->add(selectedColors, selectedColors, true);
@@ -1070,11 +1068,9 @@ void GuiMenu::openSystemSettings_batocera()
 	bool wfound = false;
 	for (auto it = availableThreads.begin(); it != availableThreads.end(); it++)
 	{
-		if ( *it != "default" ) {
-			optionsThreads->add((*it), (*it), selectedThreads == (*it));
-			if (selectedThreads == (*it))
-				wfound = true;
-		}
+		optionsThreads->add((*it), (*it), selectedThreads == (*it));
+		if (selectedThreads == (*it))
+			wfound = true;
 	}
 	if (!wfound)
 		optionsThreads->add(selectedThreads, selectedThreads, true);
@@ -1198,11 +1194,9 @@ void GuiMenu::openSystemSettings_batocera()
         bool cfound = false;
         for (auto it = availableGovernors.begin(); it != availableGovernors.end(); it++)
         {
-                if ( *it != "default" ) {
-                        optionsGovernors->add((*it), (*it), selectedGovernors == (*it));
-                        if (selectedGovernors == (*it))
-                                cfound = true;
-                }
+		optionsGovernors->add((*it), (*it), selectedGovernors == (*it));
+		if (selectedGovernors == (*it))
+			cfound = true;
         }
         if (!cfound)
                 optionsGovernors->add(selectedGovernors, selectedGovernors, true);
@@ -1324,11 +1318,9 @@ void GuiMenu::openSystemSettings_batocera()
         bool xfound = false;
         for (auto it = availableSleepModes.begin(); it != availableSleepModes.end(); it++)
         {
-                if ( *it != "default" ) {
-                        optionsSleep->add((*it), (*it), selectedSleep == (*it));
-                        if (selectedSleep == (*it))
-                                xfound = true;
-                }
+		optionsSleep->add((*it), (*it), selectedSleep == (*it));
+		if (selectedSleep == (*it))
+			xfound = true;
         }
 
         if (!xfound)
@@ -3747,11 +3739,9 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
         bool wfound = false;
         for (auto it = availableChannels.begin(); it != availableChannels.end(); it++)
         {
-                if ( *it != "default" ) {
-                        optionsChannels->add((*it), (*it), selectedChannel == (*it));
-                        if (selectedChannel == (*it))
-                                wfound = true;
-                }
+		optionsChannels->add((*it), (*it), selectedChannel == (*it));
+		if (selectedChannel == (*it))
+			wfound = true;
         }
 
         if (!wfound)
@@ -4465,11 +4455,9 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
         bool cfound = false;
         for (auto it = availableGovernors.begin(); it != availableGovernors.end(); it++)
         {
-                if ( *it != "default" ) {
-                        optionsGovernors->add((*it), (*it), selectedGovernors == (*it));
-                        if (selectedGovernors == (*it))
-                                cfound = true;
-                }
+		optionsGovernors->add((*it), (*it), selectedGovernors == (*it));
+		if (selectedGovernors == (*it))
+			cfound = true;
         }
         if (!cfound)
                 optionsGovernors->add(selectedGovernors, selectedGovernors, true);
