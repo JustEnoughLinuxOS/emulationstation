@@ -936,26 +936,33 @@ void GuiMenu::openSystemSettings_batocera()
         if (GetEnv("DEVICE_LED_CONTROL") == "true"){
 		s->addGroup(_("DEVICE LEDS"));
 		// Provides LED management
-		auto optionsLEDProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED COLOR"), false);
-		std::string selectedLEDProfile = SystemConf::getInstance()->get("led.color");
-		if (selectedLEDProfile.empty())
-			selectedLEDProfile = "default";
+		auto optionsColors = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED COLOR"), false);
 
-		optionsLEDProfile->add(_("DEFAULT (REBOOT)"),"default", selectedLEDProfile == "default");
-		optionsLEDProfile->add(_("OFF"),"off", selectedLEDProfile == "off");
-		optionsLEDProfile->add(_("RED"),"red", selectedLEDProfile == "red");
-		optionsLEDProfile->add(_("GREEN"),"green", selectedLEDProfile == "green");
-		optionsLEDProfile->add(_("BLUE"),"blue", selectedLEDProfile == "blue");
-		optionsLEDProfile->add(_("TEAL"),"teal", selectedLEDProfile == "teal");
-		optionsLEDProfile->add(_("PURPLE"),"purple", selectedLEDProfile == "purple");
-		s->addWithLabel(_("LED COLOR"), optionsLEDProfile);
+		std::vector<std::string> availableColors = ApiSystem::getInstance()->getAvailableColors();
+		std::string selectedColors = SystemConf::getInstance()->get("led.color");
+		if (selectedColors.empty())
+			selectedColors = "default";
 
-		s->addSaveFunc([this, optionsLEDProfile, selectedLEDProfile]
+		bool lfound = false;
+		for (auto it = availableColors.begin(); it != availableColors.end(); it++)
 		{
-			if (optionsLEDProfile->changed()) {
-				SystemConf::getInstance()->set("led.color", optionsLEDProfile->getSelected());
+			if ( *it != "default" ) {
+				optionsColors->add((*it), (*it), selectedColors == (*it));
+				if (selectedColors == (*it))
+				        lfound = true;
+				}
+		}
+		if (!lfound)
+			optionsColors->add(selectedColors, selectedColors, true);
+
+		s->addWithLabel(_("LED COLOR"), optionsColors);
+
+		s->addSaveFunc([this, optionsColors, selectedColors]
+		{
+			if (optionsColors->changed()) {
+				SystemConf::getInstance()->set("led.color", optionsColors->getSelected());
+				runSystemCommand("/usr/bin/sh -lc \"/usr/bin/ledcontrol " + optionsColors->getSelected() + "\"" , "", nullptr);
 				SystemConf::getInstance()->saveSystemConf();
-				runSystemCommand("/usr/bin/ledcontrol " + optionsLEDProfile->getSelected(), "", nullptr);
 			}
 		});
 	}
