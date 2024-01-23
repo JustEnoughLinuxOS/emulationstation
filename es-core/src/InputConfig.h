@@ -120,6 +120,9 @@ public:
 	inline int getDeviceNbHats() const { return mDeviceNbHats; }; // batocera
 	inline int getDeviceNbAxes() const { return mDeviceNbAxes; }; // batocera
 	inline int getBatteryLevel() const { return mBatteryLevel; }; // batocera
+        inline const std::string& getDevicePath() { return mDevicePath; };
+
+        std::string getSortDevicePath();
 
 	//Returns true if Input is mapped to this name, false otherwise.
 	bool isMappedTo(const std::string& name, Input input, bool reversedAxis = false); // batocera
@@ -151,6 +154,7 @@ private:
 	const int mDeviceNbButtons; // number of buttons of the device // batocera
 	const int mDeviceNbHats;    // number of hats    of the device // batocera
 	const int mDeviceNbAxes;    // number of axes    of the device // batocera
+	std::string mDevicePath;
 
 	int mBatteryLevel;
 

@@ -251,6 +251,37 @@ std::string InputConfig::buttonLabel(const std::string& button)
 	return button;
 }
 
+std::string InputConfig::getSortDevicePath()
+{
+#ifdef WIN32
+        if (Utils::String::startsWith(Utils::String::toUpper(mDevicePath), "USB\\"))
+        {
+                auto lastSplit = mDevicePath.rfind("\\");
+                if (lastSplit != std::string::npos)
+                {
+                        auto lastAnd = mDevicePath.rfind("&");
+                        if (lastAnd != std::string::npos && lastAnd > lastSplit)
+                        {
+                                // Keep only last part which is probably some kind of MAC address
+                                // Ex : USB\VID_045E&PID_02FF&IG_00\01&00&0000B7234380ED7E -> USB\VID_045E&PID_02FF&IG_00\0000B7234380ED7E
+                                // 01 is some kind of a system device index, but can change upon reboot & we sometimes have 00&00&0000B7234380ED7E, and the order changes !
+                                // Sort only with 0000B7234380ED7E ignoring 01&00 part
+
+                                std::string ret = mDevicePath;
+                                ret = ret.substr(0, lastSplit + 1) + ret.substr(lastAnd + 1);
+                                return ret;
+                        }
+                }
+        }
+#endif
+
+#ifdef HAVE_UDEV
+        if (!mDeviceParentSysPath.empty()) return mDeviceParentSysPath;
+#endif
+
+        return mDevicePath;
+}
+
 std::string InputConfig::buttonImage(const std::string& button)
 {
 #ifdef INVERTEDINPUTCONFIG
