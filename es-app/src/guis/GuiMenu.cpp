@@ -1236,6 +1236,24 @@ void GuiMenu::openSystemSettings_batocera()
 		}
 	});
 
+        if (GetEnv("DEVICE_TURBO_MODE") == "true"){
+                // Add option to enable turbo mode overclocking
+                auto turbo_mode = std::make_shared<SwitchComponent>(mWindow);
+                bool internalmoduleEnabled = SystemConf::getInstance()->get("enable.turbo-mode") == "1";
+                turbo_mode->setState(internalmoduleEnabled);
+                s->addWithLabel(_("ENABLE CPU OVERCLOCK"), turbo_mode);
+                turbo_mode->setOnChangedCallback([turbo_mode] {
+                if (turbo_mode->getState() == false) {
+                        runSystemCommand("/usr/bin/turbomode disable", "", nullptr);
+                } else {
+                        runSystemCommand("/usr/bin/turbomode enable", "", nullptr);
+                }
+                bool turbomode = turbo_mode->getState();
+                        SystemConf::getInstance()->set("enable.turbo-mode", turbomode ? "1" : "0");
+                        SystemConf::getInstance()->saveSystemConf();
+                });
+        }
+
 	s->addGroup(_("HARDWARE / POWER SAVING"));
         // Automatically enable or disable enhanced power saving mode
         auto enh_powersave = std::make_shared<SwitchComponent>(mWindow);
