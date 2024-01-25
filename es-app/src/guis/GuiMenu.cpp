@@ -195,27 +195,27 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	}
 }
 
-void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
+void GuiMenu::openResetOptions(Window* mWindow, std::string configName)
 {
 
-	GuiSettings* dangerZone = new GuiSettings(mWindow, _("DANGER ZONE").c_str());
+	GuiSettings* resetOptions = new GuiSettings(mWindow, _("SYSTEM MANAGEMENT AND RESET").c_str());
 
-    dangerZone->addGroup(_("DATA MANAGEMENT"));
-    dangerZone->addEntry(_("BACKUP CONFIGURATIONS"), true, [mWindow] {
+    resetOptions->addGroup(_("DATA MANAGEMENT"));
+    resetOptions->addEntry(_("BACKUP CONFIGURATIONS"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL RESTART EMULATIONSTATION!\n\nAFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/JELOS_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n\nBACKUP CURRENT CONFIG AND RESTART?"), _("YES"),
 				[] {
 				runSystemCommand("/usr/bin/run \"/usr/bin/backuptool backup\"", "", nullptr);
 				}, _("NO"), nullptr));
      });
 
-    dangerZone->addEntry(_("RESTORE FROM BACKUP"), true, [mWindow] {
+    resetOptions->addEntry(_("RESTORE FROM BACKUP"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL REBOOT YOUR DEVICE!\n\nYOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n\nRESTORE FROM BACKUP AND RESTART?"), _("YES"),
 				[] {
 				runSystemCommand("/usr/bin/run \"/usr/bin/backuptool restore\"", "", nullptr);
 				}, _("NO"), nullptr));
      });
 
-    dangerZone->addEntry(_("DELETE EMPTY GAME DIRECTORIES"), true, [mWindow] {
+    resetOptions->addEntry(_("DELETE EMPTY GAME DIRECTORIES"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING THIS WILL REBOOT YOUR DEVICE!\n\nDELETE EMPTY GAME DIRECTORIES??"
 ), _("YES"),
                                 [] {
@@ -223,7 +223,7 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
                                 }, _("NO"), nullptr));
      });
 
-    dangerZone->addEntry(_("CLEAN GAMELISTS & REMOVE UNUSED MEDIA"), true, [mWindow] {
+    resetOptions->addEntry(_("CLEAN GAMELISTS & REMOVE UNUSED MEDIA"), true, [mWindow] {
 	mWindow->pushGui(new GuiMsgBox(mWindow, _("ARE YOU SURE?"), _("YES"), [&]
 	{
 		int idx = 0;
@@ -235,22 +235,22 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 	}, _("NO"), nullptr));
       });
 
-    dangerZone->addGroup(_("EMULATOR MANAGEMENT"));
-    dangerZone->addEntry(_("RESET RETROARCH CONFIG TO DEFAULT"), true, [mWindow] {
+    resetOptions->addGroup(_("EMULATOR MANAGEMENT"));
+    resetOptions->addEntry(_("RESET RETROARCH CONFIG TO DEFAULT"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n\nPER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n\nRESET RETROARCH CONFIG TO DEFAULT?"), _("YES"),
 				[] {
 				runSystemCommand("/usr/bin/run \"/usr/bin/factoryreset retroarch\"", "", nullptr);
 				}, _("NO"), nullptr));
      });
 
-    dangerZone->addEntry(_("RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"), true, [mWindow] {
+    resetOptions->addEntry(_("RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n\nCUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n\nRESET RETROARCH OVERLAYS TO DEFAULT?"), _("YES"),
                                 [] {
                                 runSystemCommand("/usr/bin/run \"/usr/bin/factoryreset overlays\"", "", nullptr);
                                 }, _("NO"), nullptr));
      });
 
-    dangerZone->addEntry(_("FULLY RESET RETROARCH"), true, [mWindow] {
+    resetOptions->addEntry(_("FULLY RESET RETROARCH"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n\nPER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n\nRESET RETROARCH?"), _("YES"),
                                 [] {
                                 runSystemCommand("/usr/bin/run \"/usr/bin/factoryreset retroarch-full && /usr/bin/factoryreset overlays\"", "", nullptr);
@@ -259,7 +259,7 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
 
 //Only show on devices that currently support Mednafen
 #if defined(AMD64) || defined(RK3326) || defined(RK3399)
-    dangerZone->addEntry(_("RESET MEDNAFEN CONFIG TO DEFAULT"), true, [mWindow] {
+    resetOptions->addEntry(_("RESET MEDNAFEN CONFIG TO DEFAULT"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n\nNO BACKUP WILL BE CREATED!\n\nRESET MEDNAFEN CONFIG TO DEFAULT?"), _("YES"),
 				[] {
 				runSystemCommand("/usr/bin/run \"/usr/bin/factoryreset mednafen\"", "", nullptr);
@@ -267,15 +267,15 @@ void GuiMenu::openDangerZone(Window* mWindow, std::string configName)
      });
 #endif
 
-    dangerZone->addGroup(_("SYSTEM MANAGEMENT"));
-    dangerZone->addEntry(_("FACTORY RESET"), true, [mWindow] {
+    resetOptions->addGroup(_("SYSTEM MANAGEMENT"));
+    resetOptions->addEntry(_("FACTORY RESET"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n\nIF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n\nEJECT YOUR GAME CARD BEFORE PROCEEDING!\n\nRESET SYSTEM AND RESTART?"), _("YES"),
 				[] {
 				runSystemCommand("/usr/bin/run \"/usr/bin/factoryreset ALL\"", "", nullptr);
 				}, _("NO"), nullptr));
      });
 
-mWindow->pushGui(dangerZone);
+mWindow->pushGui(resetOptions);
 }
 
 
@@ -1435,8 +1435,7 @@ void GuiMenu::openSystemSettings_batocera()
 #endif
 
 	if (isFullUI){
-		//Danger zone options
-		s->addEntry(_("DANGER ZONE"), true, [this] { openDangerZone(mWindow, "global"); });
+		s->addEntry(_("SYSTEM MANAGEMENT AND RESET"), true, [this] { openResetOptions(mWindow, "global"); });
 	}
 
 	auto pthis = this;
