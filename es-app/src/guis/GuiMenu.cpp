@@ -932,7 +932,6 @@ void GuiMenu::openSystemSettings_batocera()
 		});
 	}
 	
-#if defined(AMD64)
         if (GetEnv("DEVICE_LED_CONTROL") == "true"){
 		s->addGroup(_("DEVICE LEDS"));
 		// Provides LED management
@@ -986,7 +985,6 @@ void GuiMenu::openSystemSettings_batocera()
 	        });
 	}
 
-#endif
 	s->addGroup(_("HARDWARE / STORAGE"));
 	if (GetEnv("DEVICE_MMC_EJECT") != "false") {
 
