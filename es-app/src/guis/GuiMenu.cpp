@@ -3861,6 +3861,34 @@ void GuiMenu::openNetworkSettings_batocera(bool selectWifiEnable, bool selectAdh
                                 SystemConf::getInstance()->saveSystemConf();
                 });
 
+       auto optionsUSBGadget = std::make_shared<OptionListComponent<std::string> >(mWindow, _("USB GADGET FUNCTION"), false);
+                std::string selectedUSBGadget = SystemConf::getInstance()->get("usbgadget.function");
+                        if (selectedUSBGadget.empty())
+                                selectedUSBGadget = "disabled";
+
+                optionsUSBGadget->add(_("DISABLED"), "disabled", selectedUSBGadget == "disabled");
+                optionsUSBGadget->add(_("MTP"), "mtp", selectedUSBGadget == "mtp");
+                optionsUSBGadget->add(_("ECM"), "ecm", selectedUSBGadget == "ecm");
+
+                s->addWithLabel(_("USB GADGET FUNCTION"), optionsUSBGadget);
+
+                s->addSaveFunc([this, optionsUSBGadget, selectedUSBGadget]
+                {
+                        if (optionsUSBGadget->changed()) {
+                                SystemConf::getInstance()->set("usbgadget.function", optionsUSBGadget->getSelected());
+				SystemConf::getInstance()->saveSystemConf();
+                                runSystemCommand("/usr/bin/usbgadget stop", "", nullptr);
+                                        if (optionsUSBGadget->getSelected() == "mtp")
+                                                runSystemCommand("/usr/bin/usbgadget start mtp", "", nullptr);
+                                        else if (optionsUSBGadget->getSelected() == "ecm") {
+                                                runSystemCommand("/usr/bin/usbgadget start cdc", "", nullptr);
+                                                std::string usbip = std::string(getShOutput(R"(cat /storage/.cache/usbgadget/ip_address.conf)"));
+                                                mWindow->pushGui(new GuiMsgBox(mWindow, _("USB Networking enabled, the device IP is ") + usbip, _("OK"), nullptr));
+                                        }
+                        }
+                });
+
+
 
 	s->addGroup(_("CLOUD SERVICES"));
 
