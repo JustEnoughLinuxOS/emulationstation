@@ -853,7 +853,7 @@ void GuiMenu::openSystemSettings_batocera()
         s->addSaveFunc([this,device_switch] {
 
                 if (device_switch->changed()) {
-		std::string msg = _("The system will restart")+"\n";
+		std::string msg = _("The system will restart\n and user settings will be reset")+"\n";
 		msg += _("Do you want to continue?");
 
                         mWindow->pushGui(new GuiMsgBox(mWindow,msg, _("YES"),
