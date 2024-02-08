@@ -843,35 +843,6 @@ void GuiMenu::openSystemSettings_batocera()
                 runSystemCommand("setrootpass " + rootpass, "", nullptr);
         });
 
-	if (GetEnv("DEVICE_DTB_SWITCH") == "true"){
-	s->addGroup(_("DEVICE"));
-        // Switch device dtb between the R33S & R36S
-        auto device_switch = std::make_shared<SwitchComponent>(mWindow);
-        bool deviceswitchEnabled = SystemConf::getInstance()->get("system.device-dtb-r36s") == "1";
-        device_switch->setState(deviceswitchEnabled);
-        s->addWithLabel(_("DEVICE IS R36S / R35S?"), device_switch);
-        s->addSaveFunc([this,device_switch] {
-
-                if (device_switch->changed()) {
-		std::string msg = _("The system will restart\n and user settings will be reset")+"\n";
-		msg += _("Do you want to continue?");
-
-                        mWindow->pushGui(new GuiMsgBox(mWindow,msg, _("YES"),
-                                [this,device_switch] {
-
-                		bool dswitchenabled = device_switch->getState();
-                		SystemConf::getInstance()->set("system.device-dtb-r36s", dswitchenabled ? "1" : "0");
-				SystemConf::getInstance()->saveSystemConf();
-                		if (device_switch->getState() == false) {
-                		        runSystemCommand("/usr/bin/device-switch R33S", "", nullptr);
-                		} else {
-                		        runSystemCommand("/usr/bin/device-switch R36S", "", nullptr);
-                		}
-			}, "NO",nullptr));
-		}
-        });
-	}
-
 	s->addGroup(_("DISPLAY"));
 
 
@@ -1013,6 +984,35 @@ void GuiMenu::openSystemSettings_batocera()
 	                }
 	        });
 	}
+
+        if (GetEnv("DEVICE_DTB_SWITCH") == "true"){
+        s->addGroup(_("HARDWARE /DEVICE"));
+        // Switch device dtb between the R33S & R36S
+        auto device_switch = std::make_shared<SwitchComponent>(mWindow);
+        bool deviceswitchEnabled = SystemConf::getInstance()->get("system.device-dtb-r36s") == "1";
+        device_switch->setState(deviceswitchEnabled);
+        s->addWithLabel(_("DEVICE IS R36S / R35S?"), device_switch);
+        s->addSaveFunc([this,device_switch] {
+
+                if (device_switch->changed()) {
+                std::string msg = _("The system will restart\n and user settings will be reset")+"\n";
+                msg += _("Do you want to continue?");
+
+                        mWindow->pushGui(new GuiMsgBox(mWindow,msg, _("YES"),
+                                [this,device_switch] {
+
+                                bool dswitchenabled = device_switch->getState();
+                                SystemConf::getInstance()->set("system.device-dtb-r36s", dswitchenabled ? "1" : "0");
+                                SystemConf::getInstance()->saveSystemConf();
+                                if (device_switch->getState() == false) {
+                                        runSystemCommand("/usr/bin/device-switch R33S", "", nullptr);
+                                } else {
+                                        runSystemCommand("/usr/bin/device-switch R36S", "", nullptr);
+                                }
+                        }, "NO",nullptr));
+                }
+        });
+        }
 
 	s->addGroup(_("HARDWARE / STORAGE"));
 	if (GetEnv("DEVICE_MMC_EJECT") != "false") {
