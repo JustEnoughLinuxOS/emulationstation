@@ -1286,6 +1286,17 @@ void GuiMenu::openSystemSettings_batocera()
 	                SystemConf::getInstance()->saveSystemConf();
 	        });
 
+		// Automatically enable or disable WIFI power saving mode
+		auto wifi_powersave = std::make_shared<SwitchComponent>(mWindow);
+		bool wifipowersaveEnabled = SystemConf::getInstance()->get("system.power.wifi") == "1";
+		wifi_powersave->setState(wifipowersaveEnabled);
+		s->addWithLabel(_("WIFI POWER SAVING"), wifi_powersave);
+		wifi_powersave->setOnChangedCallback([wifi_powersave] {
+			bool wifipowersaveEnabled = wifi_powersave->getState();
+			SystemConf::getInstance()->set("system.power.wifi", wifipowersaveEnabled ? "1" : "0");
+			SystemConf::getInstance()->saveSystemConf();
+			runSystemCommand("/usr/bin/wifictl setpowersave", "", nullptr);
+		});
 
 		auto warn = std::make_shared<TextComponent>(mWindow, "Below options can affect stability.", ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
 		s->addWithLabel(_("WARNING"), warn);
@@ -1353,20 +1364,6 @@ void GuiMenu::openSystemSettings_batocera()
                 }
         });
 #endif
-
-	s->addGroup(_("HARDWARE / WIFI"));
-
-        // Automatically enable or disable WIFI power saving mode
-        auto wifi_powersave = std::make_shared<SwitchComponent>(mWindow);
-        bool wifipowersaveEnabled = SystemConf::getInstance()->get("system.power.wifi") == "1";
-        wifi_powersave->setState(wifipowersaveEnabled);
-        s->addWithLabel(_("ENABLE WIFI POWER SAVING"), wifi_powersave);
-        wifi_powersave->setOnChangedCallback([wifi_powersave] {
-                bool wifipowersaveEnabled = wifi_powersave->getState();
-                SystemConf::getInstance()->set("system.power.wifi", wifipowersaveEnabled ? "1" : "0");
-		SystemConf::getInstance()->saveSystemConf();
-                runSystemCommand("/usr/bin/wifictl setpowersave", "", nullptr);
-        });
 
 #ifdef RK3399
 	// Add option to disable RG552 wifi gpio
