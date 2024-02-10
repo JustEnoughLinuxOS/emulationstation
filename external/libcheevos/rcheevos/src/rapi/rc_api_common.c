@@ -4,15 +4,15 @@
 
 #include "../rcheevos/rc_compat.h"
 
-#include "../rhash/md5.h"
-
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define RETROACHIEVEMENTS_HOST "https://retroachievements.org"
-#define RETROACHIEVEMENTS_IMAGE_HOST "http://i.retroachievements.org"
+#define RETROACHIEVEMENTS_IMAGE_HOST "https://media.retroachievements.org"
+#define RETROACHIEVEMENTS_HOST_NONSSL "http://retroachievements.org"
+#define RETROACHIEVEMENTS_IMAGE_HOST_NONSSL "http://media.retroachievements.org"
 static char* g_host = NULL;
 static char* g_imagehost = NULL;
 
@@ -299,6 +299,8 @@ int rc_json_get_required_object(rc_json_field_t* fields, size_t field_count, rc_
 #ifndef NDEBUG
   if (strcmp(field->name, field_name) != 0)
     return 0;
+#else
+  (void)field_name;
 #endif
 
   if (!json)
@@ -359,6 +361,8 @@ int rc_json_get_required_array(unsigned* num_entries, rc_json_field_t* iterator,
 #ifndef NDEBUG
   if (strcmp(field->name, field_name) != 0)
     return 0;
+#else
+  (void)field_name;
 #endif
 
   if (!field->value_start || *field->value_start != '[') {
@@ -453,6 +457,8 @@ int rc_json_get_string(const char** out, rc_api_buffer_t* buffer, const rc_json_
 #ifndef NDEBUG
   if (strcmp(field->name, field_name) != 0)
     return 0;
+#else
+  (void)field_name;
 #endif
 
   if (!src) {
@@ -520,6 +526,13 @@ int rc_json_get_string(const char** out, rc_api_buffer_t* buffer, const rc_json_
           continue;
         }
 
+        if (*src == 't') {
+          /* tab */
+          ++src;
+          *dst++ = '\t';
+          continue;
+        }
+
         /* just an escaped character, fallthrough to normal copy */
       }
 
@@ -557,6 +570,8 @@ int rc_json_get_num(int* out, const rc_json_field_t* field, const char* field_na
 #ifndef NDEBUG
   if (strcmp(field->name, field_name) != 0)
     return 0;
+#else
+  (void)field_name;
 #endif
 
   if (!src) {
@@ -608,6 +623,8 @@ int rc_json_get_unum(unsigned* out, const rc_json_field_t* field, const char* fi
 #ifndef NDEBUG
   if (strcmp(field->name, field_name) != 0)
     return 0;
+#else
+  (void)field_name;
 #endif
 
   if (!src) {
@@ -631,7 +648,7 @@ int rc_json_get_unum(unsigned* out, const rc_json_field_t* field, const char* fi
   return 1;
 }
 
-void rc_json_get_optional_unum(unsigned* out, const rc_json_field_t* field, const char* field_name, int default_value) {
+void rc_json_get_optional_unum(unsigned* out, const rc_json_field_t* field, const char* field_name, unsigned default_value) {
   if (!rc_json_get_unum(out, field, field_name))
     *out = default_value;
 }
@@ -649,11 +666,13 @@ int rc_json_get_datetime(time_t* out, const rc_json_field_t* field, const char* 
 #ifndef NDEBUG
   if (strcmp(field->name, field_name) != 0)
     return 0;
+#else
+  (void)field_name;
 #endif
 
   if (*field->value_start == '\"') {
     memset(&tm, 0, sizeof(tm));
-    if (sscanf(field->value_start + 1, "%d-%d-%d %d:%d:%d",
+    if (sscanf_s(field->value_start + 1, "%d-%d-%d %d:%d:%d",
         &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec) == 6) {
       tm.tm_mon--; /* 0-based */
       tm.tm_year -= 1900; /* 1900 based */
@@ -664,9 +683,11 @@ int rc_json_get_datetime(time_t* out, const rc_json_field_t* field, const char* 
        * timezone conversion twice and manually removing the difference */
       {
          time_t local_timet = mktime(&tm);
-         struct tm* gmt_tm = gmtime(&local_timet);
-         time_t skewed_timet = mktime(gmt_tm); /* applies local time adjustment second time */
-         time_t tz_offset = skewed_timet - local_timet;
+         time_t skewed_timet, tz_offset;
+         struct tm gmt_tm;
+         gmtime_s(&gmt_tm, &local_timet);
+         skewed_timet = mktime(&gmt_tm); /* applies local time adjustment second time */
+         tz_offset = skewed_timet - local_timet;
          *out = local_timet - tz_offset;
       }
 
@@ -691,6 +712,8 @@ int rc_json_get_bool(int* out, const rc_json_field_t* field, const char* field_n
 #ifndef NDEBUG
   if (strcmp(field->name, field_name) != 0)
     return 0;
+#else
+  (void)field_name;
 #endif
 
   if (src) {
@@ -726,31 +749,32 @@ int rc_json_get_required_bool(int* out, rc_api_response_t* response, const rc_js
 /* --- rc_buf --- */
 
 void rc_buf_init(rc_api_buffer_t* buffer) {
-  buffer->write = &buffer->data[0];
-  buffer->end = &buffer->data[sizeof(buffer->data)];
-  buffer->next = NULL;
+  buffer->chunk.write = buffer->chunk.start = &buffer->data[0];
+  buffer->chunk.end = &buffer->data[sizeof(buffer->data)];
+  buffer->chunk.next = NULL;
 }
 
 void rc_buf_destroy(rc_api_buffer_t* buffer) {
+  rc_api_buffer_chunk_t *chunk;
 #ifdef DEBUG_BUFFERS
   int count = 0;
   int wasted = 0;
   int total = 0;
 #endif
 
-  /* first buffer is not allocated */
-  buffer = buffer->next;
+  /* first chunk is not allocated. skip it. */
+  chunk = buffer->chunk.next;
 
   /* deallocate any additional buffers */
-  while (buffer) {
-    rc_api_buffer_t* next = buffer->next;
+  while (chunk) {
+    rc_api_buffer_chunk_t* next = chunk->next;
 #ifdef DEBUG_BUFFERS
-    total += (int)(buffer->end - buffer->data);
-    wasted += (int)(buffer->end - buffer->write);
+    total += (int)(chunk->end - chunk->data);
+    wasted += (int)(chunk->end - chunk->write);
     ++count;
 #endif
-    free(buffer);
-    buffer = next;
+    free(chunk);
+    chunk = next;
   }
 
 #ifdef DEBUG_BUFFERS
@@ -760,47 +784,50 @@ void rc_buf_destroy(rc_api_buffer_t* buffer) {
 }
 
 char* rc_buf_reserve(rc_api_buffer_t* buffer, size_t amount) {
+  rc_api_buffer_chunk_t* chunk = &buffer->chunk;
   size_t remaining;
-  while (buffer) {
-    remaining = buffer->end - buffer->write;
+  while (chunk) {
+    remaining = chunk->end - chunk->write;
     if (remaining >= amount)
-      return buffer->write;
+      return chunk->write;
 
-    if (!buffer->next) {
-      /* allocate a chunk of memory that is a multiple of 256-bytes. casting it to an rc_api_buffer_t will
-       * effectively unbound the data field, so use write and end pointers to track how data is being used.
+    if (!chunk->next) {
+      /* allocate a chunk of memory that is a multiple of 256-bytes. the first 32 bytes will be associated
+       * to the chunk header, and the remaining will be used for data.
        */
-      const size_t buffer_prefix_size = sizeof(rc_api_buffer_t) - sizeof(buffer->data);
-      const size_t alloc_size = (amount + buffer_prefix_size + 0xFF) & ~0xFF;
-      buffer->next = (rc_api_buffer_t*)malloc(alloc_size);
-      if (!buffer->next)
+      const size_t chunk_header_size = sizeof(rc_api_buffer_chunk_t);
+      const size_t alloc_size = (chunk_header_size + amount + 0xFF) & ~0xFF;
+      chunk->next = (rc_api_buffer_chunk_t*)malloc(alloc_size);
+      if (!chunk->next)
         break;
 
-      buffer->next->write = buffer->next->data;
-      buffer->next->end = buffer->next->write + (alloc_size - buffer_prefix_size);
-      buffer->next->next = NULL;
+      chunk->next->start = (char*)chunk->next + chunk_header_size;
+      chunk->next->write = chunk->next->start;
+      chunk->next->end = (char*)chunk->next + alloc_size;
+      chunk->next->next = NULL;
     }
 
-    buffer = buffer->next;
+    chunk = chunk->next;
   }
 
   return NULL;
 }
 
 void rc_buf_consume(rc_api_buffer_t* buffer, const char* start, char* end) {
+  rc_api_buffer_chunk_t* chunk = &buffer->chunk;
   do {
-    if (buffer->write == start) {
-      size_t offset = (end - buffer->data);
+    if (chunk->write == start) {
+      size_t offset = (end - chunk->start);
       offset = (offset + 7) & ~7;
-      buffer->write = &buffer->data[offset];
+      chunk->write = &chunk->start[offset];
 
-      if (buffer->write > buffer->end)
-        buffer->write = buffer->end;
+      if (chunk->write > chunk->end)
+        chunk->write = chunk->end;
       break;
     }
 
-    buffer = buffer->next;
-  } while (buffer);
+    chunk = chunk->next;
+  } while (chunk);
 }
 
 void* rc_buf_alloc(rc_api_buffer_t* buffer, size_t amount) {
@@ -813,13 +840,7 @@ void rc_api_destroy_request(rc_api_request_t* request) {
   rc_buf_destroy(&request->buffer);
 }
 
-void rc_api_generate_checksum(char checksum[33], const char* data) {
-  md5_state_t md5;
-  md5_byte_t digest[16];
-
-  md5_init(&md5);
-  md5_append(&md5, (unsigned char*)data, (int)strlen(data));
-  md5_finish(&md5, digest);
+void rc_api_format_md5(char checksum[33], const unsigned char digest[16]) {
   snprintf(checksum, 33, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
       digest[0], digest[1], digest[2], digest[3], digest[4], digest[5], digest[6], digest[7],
       digest[8], digest[9], digest[10], digest[11], digest[12], digest[13], digest[14], digest[15]
@@ -829,13 +850,13 @@ void rc_api_generate_checksum(char checksum[33], const char* data) {
 /* --- rc_url_builder --- */
 
 void rc_url_builder_init(rc_api_url_builder_t* builder, rc_api_buffer_t* buffer, size_t estimated_size) {
-  rc_api_buffer_t* used_buffer;
+  rc_api_buffer_chunk_t* used_buffer;
 
   memset(builder, 0, sizeof(*builder));
   builder->buffer = buffer;
   builder->write = builder->start = rc_buf_reserve(buffer, estimated_size);
 
-  used_buffer = buffer;
+  used_buffer = &buffer->chunk;
   while (used_buffer && used_buffer->write != builder->write)
     used_buffer = used_buffer->next;
 
@@ -858,7 +879,7 @@ static int rc_url_builder_reserve(rc_api_url_builder_t* builder, size_t amount) 
     if (remaining < amount) {
       const size_t used = builder->write - builder->start;
       const size_t current_size = builder->end - builder->start;
-      const size_t buffer_prefix_size = sizeof(rc_api_buffer_t) - sizeof(builder->buffer->data);
+      const size_t buffer_prefix_size = sizeof(rc_api_buffer_chunk_t);
       char* new_start;
       size_t new_size = (current_size < 256) ? 256 : current_size * 2;
       do {
@@ -1055,6 +1076,16 @@ static void rc_api_update_host(char** host, const char* hostname) {
 
 void rc_api_set_host(const char* hostname) {
   rc_api_update_host(&g_host, hostname);
+
+  if (!hostname) {
+    /* also clear out the image hostname */
+    rc_api_set_image_host(NULL);
+  }
+  else if (strcmp(hostname, RETROACHIEVEMENTS_HOST_NONSSL) == 0) {
+    /* if just pointing at the non-HTTPS host, explicitly use the default image host
+     * so it doesn't try to use the web host directly */
+    rc_api_set_image_host(RETROACHIEVEMENTS_IMAGE_HOST_NONSSL);
+  }
 }
 
 void rc_api_set_image_host(const char* hostname) {

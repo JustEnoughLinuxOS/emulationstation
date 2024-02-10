@@ -122,6 +122,17 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		addEntry(_("GAME SETTINGS").c_str(), true, [this] { openGamesSettings_batocera(); }, "iconGames");
 		addEntry(_("GAME COLLECTION SETTINGS").c_str(), true, [this] { openCollectionSystemSettings(); }, "iconAdvanced");
 
+		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::RETROACHIVEMENTS) &&
+		    SystemConf::getInstance()->getBool("global.retroachievements") &&
+		    Settings::getInstance()->getBool("RetroachievementsMenuitem") &&
+		    SystemConf::getInstance()->get("global.retroachievements.username") != "") {
+			addEntry(_("RETROACHIEVEMENTS").c_str(), true, [this] {
+			if (!checkNetwork()) {
+				return;
+			}
+			GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
+		}
+
 		addEntry(_("SYSTEM SETTINGS").c_str(), true, [this] { openSystemSettings_batocera(); }, "iconSystem");
 		addEntry(_("UI SETTINGS").c_str(), true, [this] { openUISettings(); }, "iconUI");
 		addEntry(controllers_settings_label.c_str(), true, [this] { openControllersSettings_batocera(); }, "iconControllers");
@@ -268,6 +279,13 @@ void GuiMenu::openResetOptions(Window* mWindow, std::string configName)
 #endif
 
     resetOptions->addGroup(_("SYSTEM MANAGEMENT"));
+
+    resetOptions->addEntry(_("AUDIO RESET"), true, [mWindow] {
+    mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n\nRESET AUDIO AND RESTART?"), _("YES"),
+                                [] {
+                                runSystemCommand("/usr/bin/run \"/usr/bin/factoryreset audio\"", "", nullptr);
+                                }, _("NO"), nullptr));
+
     resetOptions->addEntry(_("FACTORY RESET"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n\nIF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n\nEJECT YOUR GAME CARD BEFORE PROCEEDING!\n\nRESET SYSTEM AND RESTART?"), _("YES"),
 				[] {
@@ -1608,6 +1626,13 @@ void GuiMenu::openRetroachievementsSettings()
 	retroachievements_hardcore_enabled->setState(SystemConf::getInstance()->getBool("global.retroachievements.hardcore"));
 	retroachievements->addWithLabel(_("HARDCORE MODE"), retroachievements_hardcore_enabled);
 	retroachievements->addSaveFunc([retroachievements_hardcore_enabled] { SystemConf::getInstance()->setBool("global.retroachievements.hardcore", retroachievements_hardcore_enabled->getState()); });
+
+	// retroachievements main menu option
+	auto retroachievements_menuitem = std::make_shared<SwitchComponent>(mWindow);
+	retroachievements_menuitem->setState(Settings::getInstance()->getBool("RetroachievementsMenuitem"));
+	retroachievements->addWithLabel(_("SHOW RETROACHIEVEMENTS ENTRY IN MAIN MENU"), retroachievements_menuitem);
+	retroachievements->addSaveFunc([retroachievements_menuitem] { Settings::getInstance()->setBool("RetroachievementsMenuitem", retroachievements_menuitem->getState()); });
+
 
 	//// retroachievements_leaderboards
 	//auto retroachievements_leaderboards_enabled = std::make_shared<SwitchComponent>(mWindow);
