@@ -46,8 +46,8 @@
 extern "C" {
 #endif
 
-#include "coretypes.h"
-#include <streams/file_stream.h>
+#include <libchdr/coretypes.h>
+#include <libchdr/chdconfig.h>
 
 /***************************************************************************
 
@@ -170,6 +170,7 @@ extern "C" {
 
 ***************************************************************************/
 
+
 /***************************************************************************
     CONSTANTS
 ***************************************************************************/
@@ -193,11 +194,20 @@ extern "C" {
 #define CHDFLAGS_IS_WRITEABLE		0x00000002
 #define CHDFLAGS_UNDEFINED			0xfffffffc
 
+#define CHD_MAKE_TAG(a,b,c,d)       (((a) << 24) | ((b) << 16) | ((c) << 8) | (d))
+
 /* compression types */
 #define CHDCOMPRESSION_NONE			0
 #define CHDCOMPRESSION_ZLIB			1
 #define CHDCOMPRESSION_ZLIB_PLUS	2
 #define CHDCOMPRESSION_AV			3
+
+#define CHD_CODEC_NONE 0
+#define CHD_CODEC_ZLIB				CHD_MAKE_TAG('z','l','i','b')
+/* general codecs with CD frontend */
+#define CHD_CODEC_CD_ZLIB			CHD_MAKE_TAG('c','d','z','l')
+#define CHD_CODEC_CD_LZMA			CHD_MAKE_TAG('c','d','l','z')
+#define CHD_CODEC_CD_FLAC			CHD_MAKE_TAG('c','d','f','l')
 
 /* A/V codec configuration parameters */
 #define AV_CODEC_COMPRESS_CONFIG	1
@@ -211,33 +221,34 @@ extern "C" {
 #define CHD_MDFLAGS_CHECKSUM		0x01		/* indicates data is checksummed */
 
 /* standard hard disk metadata */
-#define HARD_DISK_METADATA_TAG		0x47444444	/* 'GDDD' */
-#define HARD_DISK_METADATA_FORMAT	"CYLS:%u,HEADS:%u,SECS:%u,BPS:%u"
+#define HARD_DISK_METADATA_TAG		CHD_MAKE_TAG('G','D','D','D')
+#define HARD_DISK_METADATA_FORMAT	"CYLS:%d,HEADS:%d,SECS:%d,BPS:%d"
 
 /* hard disk identify information */
-#define HARD_DISK_IDENT_METADATA_TAG 0x49444e54 /* 'IDNT' */
+#define HARD_DISK_IDENT_METADATA_TAG CHD_MAKE_TAG('I','D','N','T')
 
 /* hard disk key information */
-#define HARD_DISK_KEY_METADATA_TAG	0x4b455920  /* 'KEY '  */
+#define HARD_DISK_KEY_METADATA_TAG	CHD_MAKE_TAG('K','E','Y',' ')
 
 /* pcmcia CIS information */
-#define PCMCIA_CIS_METADATA_TAG		0x43495320  /* 'CIS '  */
+#define PCMCIA_CIS_METADATA_TAG		CHD_MAKE_TAG('C','I','S',' ')
 
 /* standard CD-ROM metadata */
-#define CDROM_OLD_METADATA_TAG		0x43484344	/* 'CHCD' */
-#define CDROM_TRACK_METADATA_TAG	0x43485452	/* 'CHTR' */
-#define CDROM_TRACK_METADATA_FORMAT	"TRACK:%u TYPE:%s SUBTYPE:%s FRAMES:%u"
-#define CDROM_TRACK_METADATA2_TAG	0x43485432	/* 'CHT2' */
-#define CDROM_TRACK_METADATA2_FORMAT	"TRACK:%u TYPE:%s SUBTYPE:%s FRAMES:%u PREGAP:%u PGTYPE:%s PGSUB:%s POSTGAP:%u"
-#define GDROM_TRACK_METADATA_TAG	0x43484744	/* 'CHTD' */
-#define GDROM_TRACK_METADATA_FORMAT	"TRACK:%u TYPE:%s SUBTYPE:%s FRAMES:%u PAD:%u PREGAP:%u PGTYPE:%s PGSUB:%s POSTGAP:%u"
+#define CDROM_OLD_METADATA_TAG		CHD_MAKE_TAG('C','H','C','D')
+#define CDROM_TRACK_METADATA_TAG	CHD_MAKE_TAG('C','H','T','R')
+#define CDROM_TRACK_METADATA_FORMAT	"TRACK:%d TYPE:%s SUBTYPE:%s FRAMES:%d"
+#define CDROM_TRACK_METADATA2_TAG	CHD_MAKE_TAG('C','H','T','2')
+#define CDROM_TRACK_METADATA2_FORMAT	"TRACK:%d TYPE:%s SUBTYPE:%s FRAMES:%d PREGAP:%d PGTYPE:%s PGSUB:%s POSTGAP:%d"
+#define GDROM_OLD_METADATA_TAG		CHD_MAKE_TAG('C','H','G','T')
+#define GDROM_TRACK_METADATA_TAG	CHD_MAKE_TAG('C', 'H', 'G', 'D')
+#define GDROM_TRACK_METADATA_FORMAT	"TRACK:%d TYPE:%s SUBTYPE:%s FRAMES:%d PAD:%d PREGAP:%d PGTYPE:%s PGSUB:%s POSTGAP:%d"
 
 /* standard A/V metadata */
-#define AV_METADATA_TAG				0x41564156	/* 'AVAV' */
+#define AV_METADATA_TAG				CHD_MAKE_TAG('A','V','A','V')
 #define AV_METADATA_FORMAT			"FPS:%d.%06d WIDTH:%d HEIGHT:%d INTERLACED:%d CHANNELS:%d SAMPLERATE:%d"
 
 /* A/V laserdisc frame metadata */
-#define AV_LD_METADATA_TAG			0x41564C44	/* 'AVLD' */
+#define AV_LD_METADATA_TAG			CHD_MAKE_TAG('A','V','L','D')
 
 /* CHD open values */
 #define CHD_OPEN_READ				1
@@ -277,12 +288,15 @@ enum _chd_error
 };
 typedef enum _chd_error chd_error;
 
+
+
 /***************************************************************************
     TYPE DEFINITIONS
 ***************************************************************************/
 
 /* opaque types */
 typedef struct _chd_file chd_file;
+
 
 /* extract header structure (NOT the on-disk header structure) */
 typedef struct _chd_header chd_header;
@@ -316,6 +330,7 @@ struct _chd_header
 	UINT32		obsolete_hunksize;			/* obsolete field -- do not use! */
 };
 
+
 /* structure for returning information about a verification pass */
 typedef struct _chd_verify_result chd_verify_result;
 struct _chd_verify_result
@@ -326,9 +341,25 @@ struct _chd_verify_result
 	UINT8		metasha1[CHD_SHA1_BYTES];	/* SHA1 checksum of metadata */
 };
 
+
+
 /***************************************************************************
     FUNCTION PROTOTYPES
 ***************************************************************************/
+
+#ifdef _MSC_VER
+#ifdef CHD_DLL
+#ifdef CHD_DLL_EXPORTS
+#define CHD_EXPORT __declspec(dllexport)
+#else
+#define CHD_EXPORT __declspec(dllimport)
+#endif
+#else
+#define CHD_EXPORT
+#endif
+#else
+#define CHD_EXPORT __attribute__ ((visibility("default")))
+#endif
 
 /* ----- CHD file management ----- */
 
@@ -339,46 +370,55 @@ struct _chd_verify_result
 /* chd_error chd_create_file(core_file *file, UINT64 logicalbytes, UINT32 hunkbytes, UINT32 compression, chd_file *parent); */
 
 /* open an existing CHD file */
-chd_error chd_open_file(RFILE *file, int mode, chd_file *parent, chd_file **chd);
-
-chd_error chd_open(const char *filename, int mode, chd_file *parent, chd_file **chd);
+CHD_EXPORT chd_error chd_open_file(core_file *file, int mode, chd_file *parent, chd_file **chd);
+CHD_EXPORT chd_error chd_open(const char *filename, int mode, chd_file *parent, chd_file **chd);
 
 /* precache underlying file */
-chd_error chd_precache(chd_file *chd);
+CHD_EXPORT chd_error chd_precache(chd_file *chd);
 
 /* close a CHD file */
-void chd_close(chd_file *chd);
+CHD_EXPORT void chd_close(chd_file *chd);
 
 /* return the associated core_file */
-RFILE *chd_core_file(chd_file *chd);
+CHD_EXPORT core_file *chd_core_file(chd_file *chd);
 
 /* return an error string for the given CHD error */
-const char *chd_error_string(chd_error err);
+CHD_EXPORT const char *chd_error_string(chd_error err);
+
+
 
 /* ----- CHD header management ----- */
 
 /* return a pointer to the extracted CHD header data */
-const chd_header *chd_get_header(chd_file *chd);
+CHD_EXPORT const chd_header *chd_get_header(chd_file *chd);
+
+/* read CHD header data from file into the pointed struct */
+CHD_EXPORT chd_error chd_read_header(const char *filename, chd_header *header);
+
+
 
 /* ----- core data read/write ----- */
 
 /* read one hunk from the CHD file */
-chd_error chd_read(chd_file *chd, UINT32 hunknum, void *buffer);
+CHD_EXPORT chd_error chd_read(chd_file *chd, UINT32 hunknum, void *buffer);
+
+
 
 /* ----- metadata management ----- */
 
 /* get indexed metadata of a particular sort */
-chd_error chd_get_metadata(chd_file *chd, UINT32 searchtag, UINT32 searchindex, void *output, UINT32 outputlen, UINT32 *resultlen, UINT32 *resulttag, UINT8 *resultflags);
+CHD_EXPORT chd_error chd_get_metadata(chd_file *chd, UINT32 searchtag, UINT32 searchindex, void *output, UINT32 outputlen, UINT32 *resultlen, UINT32 *resulttag, UINT8 *resultflags);
+
+
+
 
 /* ----- codec interfaces ----- */
 
 /* set internal codec parameters */
-chd_error chd_codec_config(chd_file *chd, int param, void *config);
+CHD_EXPORT chd_error chd_codec_config(chd_file *chd, int param, void *config);
 
 /* return a string description of a codec */
-const char *chd_get_codec_name(UINT32 codec);
-
-extern const uint8_t s_cd_sync_header[12];
+CHD_EXPORT const char *chd_get_codec_name(UINT32 codec);
 
 #ifdef __cplusplus
 }
