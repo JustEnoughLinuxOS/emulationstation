@@ -14,6 +14,7 @@
 #include <libcheevos/cheevos.h>
 
 #include "LocaleES.h"
+#include "EmulationStation.h"
 
 using namespace PlatformIds;
 
@@ -123,6 +124,20 @@ const std::set<unsigned short> consolesWithmd5hashes
 	RC_CONSOLE_SUPERVISION
 };
 
+// Use empty UserAgent with doRequest.php calls
+static HttpReqOptions getHttpOptions()
+{
+	HttpReqOptions options;
+
+#ifdef CHEEVOS_DEV_LOGIN
+	std::string ret = Utils::String::extractString(CHEEVOS_DEV_LOGIN, "z=", "&");
+	ret =  ret + "/" + Utils::String::replace(RESOURCE_VERSION_STRING, ",", ".");		 
+	options.userAgent = ret;
+#endif	
+
+	return options;
+}
+
 std::string RetroAchievements::getApiUrl(const std::string method, const std::string parameters)
 {
 #ifdef CHEEVOS_DEV_LOGIN
@@ -203,7 +218,8 @@ GameInfoAndUserProgress RetroAchievements::getGameInfoAndUserProgress(int gameId
 	return ret;
 #endif
 
-	HttpReq httpreq(getApiUrl("API_GetGameInfoAndUserProgress", "u=" + HttpReq::urlEncode(usrName) + "&g=" + std::to_string(gameId)));
+	auto options = getHttpOptions();
+	HttpReq httpreq(getApiUrl("API_GetGameInfoAndUserProgress", "u=" + HttpReq::urlEncode(usrName) + "&g=" + std::to_string(gameId)), &options);
 	httpreq.wait();
 
 	rapidjson::Document doc;
@@ -273,7 +289,8 @@ UserSummary RetroAchievements::getUserSummary(const std::string userName, int ga
 
 	std::string count = std::to_string(gameCount);
 
-	HttpReq httpreq(getApiUrl("API_GetUserSummary", "u="+ HttpReq::urlEncode(usrName) +"&g="+ count +"&a="+ count));
+	auto options = getHttpOptions();
+	HttpReq httpreq(getApiUrl("API_GetUserSummary", "u="+ HttpReq::urlEncode(usrName) +"&g="+ count +"&a="+ count), &options);
 	httpreq.wait();
 
 	rapidjson::Document doc;
@@ -419,59 +436,73 @@ std::map<std::string, std::string> RetroAchievements::getCheevosHashes()
 
 	try
 	{
-		HttpReq hashLibrary("https://retroachievements.org/dorequest.php?r=hashlibrary");
-		HttpReq officialGamesList("https://retroachievements.org/dorequest.php?r=officialgameslist");
-
-		// Official games
-		officialGamesList.wait();
-
-		rapidjson::Document ogdoc;
-		ogdoc.Parse(officialGamesList.getContent().c_str());
-		if (ogdoc.HasParseError())
-			return ret;
-
-		if (!ogdoc.HasMember("Response"))
-			return ret;
-
 		std::map<int, std::string> officialGames;
 
-		const rapidjson::Value& response = ogdoc["Response"];
-		for (auto it = response.MemberBegin(); it != response.MemberEnd(); ++it)
-		{
-			int gameId = Utils::String::toInteger(it->name.GetString());
+		auto options = getHttpOptions();
 
-			if (it->value.GetType() == rapidjson::Type::kStringType)
-				officialGames[gameId] = it->value.GetString();
-			else if (it->value.GetType() == rapidjson::Type::kNumberType)
-				officialGames[gameId] = std::to_string(it->value.GetInt());
+		HttpReq hashLibrary("https://retroachievements.org/dorequest.php?r=hashlibrary", &options);
+		HttpReq officialGamesList("https://retroachievements.org/dorequest.php?r=officialgameslist", &options);
+
+		// Official games
+		if (officialGamesList.wait())
+		{
+			rapidjson::Document ogdoc;
+			ogdoc.Parse(officialGamesList.getContent().c_str());
+			if (ogdoc.HasParseError())
+				return ret;
+
+			if (!ogdoc.HasMember("Response"))
+				return ret;
+
+			std::map<int, std::string> officialGames;
+
+			const rapidjson::Value& response = ogdoc["Response"];
+			for (auto it = response.MemberBegin(); it != response.MemberEnd(); ++it)
+			{
+				int gameId = Utils::String::toInteger(it->name.GetString());
+
+				if (it->value.GetType() == rapidjson::Type::kStringType)
+					officialGames[gameId] = it->value.GetString();
+				else if (it->value.GetType() == rapidjson::Type::kNumberType)
+					officialGames[gameId] = std::to_string(it->value.GetInt());
+			}
 		}
+		else if (officialGamesList.status() != HttpReq::REQ_SUCCESS)
+			throw std::domain_error("Error while accessing retroachievements official games list :\n" + officialGamesList.getErrorMsg());
 
 		// Hash library
-		hashLibrary.wait();
-
-		rapidjson::Document doc;
-		doc.Parse(hashLibrary.getContent().c_str());
-		if (doc.HasParseError())
-			return ret;
-
-		if (!doc.HasMember("MD5List"))
-			return ret;
-
-		const rapidjson::Value& mdlist = doc["MD5List"];
-		for (auto it = mdlist.MemberBegin(); it != mdlist.MemberEnd(); ++it)
+		if (hashLibrary.wait())
 		{
-			std::string name = Utils::String::toUpper(it->name.GetString());
+			rapidjson::Document doc;
+			doc.Parse(hashLibrary.getContent().c_str());
+			if (doc.HasParseError())
+				return ret;
 
-			if (!it->value.IsInt())
-				continue;
+			if (!doc.HasMember("MD5List"))
+				return ret;
 
-			int gameId = it->value.GetInt();
+			const rapidjson::Value& mdlist = doc["MD5List"];
+			for (auto it = mdlist.MemberBegin(); it != mdlist.MemberEnd(); ++it)
+			{
+				std::string name = Utils::String::toUpper(it->name.GetString());
 
-			if (officialGames.find(gameId) == officialGames.cend())
-				continue;
+				if (!it->value.IsInt())
+					continue;
 
-			ret[name] = std::to_string(gameId);
+				int gameId = it->value.GetInt();
+
+				if (officialGames.find(gameId) == officialGames.cend())
+					continue;
+
+				ret[name] = std::to_string(gameId);
+			}
 		}
+		else if (hashLibrary.status() != HttpReq::REQ_SUCCESS)
+			throw std::domain_error("Error while accessing retroachievements hashlibrary :\n" + hashLibrary.getErrorMsg());
+	}
+	catch (const std::exception& e)
+	{
+		throw e;
 	}
 	catch (...)
 	{
@@ -569,7 +600,9 @@ bool RetroAchievements::testAccount(const std::string& username, const std::stri
 
 	try
 	{
-		HttpReq request("https://retroachievements.org/dorequest.php?r=login&u=" + HttpReq::urlEncode(username) + "&p=" + HttpReq::urlEncode(password));
+		auto options = getHttpOptions();
+
+		HttpReq request("https://retroachievements.org/dorequest.php?r=login&u=" + HttpReq::urlEncode(username) + "&p=" + HttpReq::urlEncode(password), &options);
 		if (!request.wait())
 		{
 			error = request.getErrorMsg();
