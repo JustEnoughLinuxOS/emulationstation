@@ -175,6 +175,15 @@ const std::string FileData::getThumbnailPath()
 			}
 		}
 
+
+		// If there is no thumbnail at this point, check to see if the game is a png (PICO-8).
+		if (thumbnail.empty())
+		{
+			auto hasImage = Utils::FileSystem::getParent(mPath) + "/" + getDisplayName();
+			if (Utils::FileSystem::exists(hasImage + ".png"))
+				thumbnail = hasImage + ".png";
+		}
+
 		if (thumbnail.empty() && getType() == GAME && getSourceFileData()->getSystem()->hasPlatformId(PlatformIds::IMAGEVIEWER))
 		{
 			if (getType() == FOLDER && ((FolderData*)this)->mChildren.size())
@@ -195,6 +204,7 @@ const std::string FileData::getThumbnailPath()
 
 	return thumbnail;
 }
+
 
 const bool FileData::getFavorite()
 {
