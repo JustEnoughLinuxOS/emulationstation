@@ -6,6 +6,7 @@
 #else
 #include <unistd.h>
 #endif
+#include <sys/wait.h>
 #include <fcntl.h>
 #include "Window.h"
 #include "utils/FileSystemUtil.h"
@@ -25,96 +26,43 @@
 
 int runShutdownCommand()
 {
-#ifdef WIN32 // windows
-	return system("shutdown -s -t 0");
-#else // osx / linux	
 	return system("/usr/sbin/shutdown -h now");
-#endif
 }
 
 int runRestartCommand()
 {
-#ifdef WIN32 // windows	
-	return system("shutdown -r -t 0");
-#else // osx / linux	
 	return system("/usr/sbin/shutdown -r now");
-#endif
 }
 
 int runSystemCommand(const std::string& cmd_utf8, const std::string& name, Window* window)
 {
 
-#ifdef WIN32
-	// on Windows we use _wsystem to support non-ASCII paths
-	// which requires converting from utf8 to a wstring
-	//typedef std::codecvt_utf8<wchar_t> convert_type;
-	//std::wstring_convert<convert_type, wchar_t> converter;
-	//std::wstring wchar_str = converter.from_bytes(cmd_utf8);
-	std::string command = cmd_utf8;
+	std::string stderrFilename = " 2>/var/log/es_launch_stderr.log";
+	std::string stdoutFilename = " >/var/log/es_launch_stdout.log";	
 
-#define BUFFER_SIZE 8192
-
-	TCHAR szEnvPath[BUFFER_SIZE];
-	DWORD dwLen = ExpandEnvironmentStringsA(command.c_str(), szEnvPath, BUFFER_SIZE);
-	if (dwLen > 0 && dwLen < BUFFER_SIZE)
-		command = std::string(szEnvPath);
-
-	std::string exe;
-	std::string args;
-
-	Utils::FileSystem::splitCommand(command, &exe, &args);
-	exe = Utils::FileSystem::getPreferredPath(exe);
-
-	std::wstring wexe = Utils::String::convertToWideString(exe);
-	std::wstring wargs = Utils::String::convertToWideString(args);
-	std::wstring wpath;
-
-	std::wstring wcommand = Utils::String::convertToWideString(command);
-	SHELLEXECUTEINFOW lpExecInfo;
-	lpExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
-	lpExecInfo.lpFile = wexe.c_str();
-	lpExecInfo.fMask = SEE_MASK_DOENVSUBST | SEE_MASK_NOCLOSEPROCESS;
-	lpExecInfo.hwnd = NULL;
-	lpExecInfo.lpVerb = L"open"; // to open  program
-	lpExecInfo.lpDirectory = NULL;
-	lpExecInfo.nShow = SW_SHOW;  // show command prompt with normal window size 
-	lpExecInfo.hInstApp = (HINSTANCE)SE_ERR_DDEFAIL;   //WINSHELLAPI BOOL WINAPI result;
-	lpExecInfo.lpParameters = wargs.c_str(); //  file name as an argument	
-
-	// Don't set directory for relative paths
-	if (!Utils::String::startsWith(exe, ".") && !Utils::String::startsWith(exe, "/") && !Utils::String::startsWith(exe, "\\"))
+	// Parent fork
+	pid_t ret = fork();
+	if (ret == 0)
 	{
-		wpath = Utils::String::convertToWideString(Utils::FileSystem::getAbsolutePath(Utils::FileSystem::getParent(exe)));
-		lpExecInfo.lpDirectory = wpath.c_str();
-	}
-
-	ShellExecuteExW(&lpExecInfo);
-
-	if (lpExecInfo.hProcess != NULL)
-	{
-		if (window == NULL)
-			WaitForSingleObject(lpExecInfo.hProcess, INFINITE);
-		else
+		ret = fork();
+		if (ret == 0)
 		{
-			while (WaitForSingleObject(lpExecInfo.hProcess, 50) == 0x00000102L)
-			{
-				bool polled = false;
-
-				SDL_Event event;
-				while (SDL_PollEvent(&event))
-					polled = true;
-
-			}
+			execl("/usr/bin/sh", "sh", "-c", (cmd_utf8 + stderrFilename + stdoutFilename).c_str(), (char *) NULL);
+			_exit(1); // execl failed
 		}
-
-		CloseHandle(lpExecInfo.hProcess);
-		return 0;
+		int status;
+		waitpid(ret, &status, 0); // Wait for fork exit..
+		_exit(0);
 	}
-
-	return 1;
-#else
-	return system((cmd_utf8 + " 2> /var/log/es_launch_stderr.log > /var/log/es_launch_stdout.log").c_str()); // 351ELEC
-#endif
+	else
+	{
+		if (ret > 0)
+		{
+			int status;
+			waitpid(ret, &status, 0); // keep calm and kill zombies
+		}
+	}
+	return 0;
 }
 
 QuitMode quitMode = QuitMode::QUIT;
