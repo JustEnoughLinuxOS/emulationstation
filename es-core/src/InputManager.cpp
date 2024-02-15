@@ -65,17 +65,6 @@ void InputManager::init()
 
 	mKeyboardInputConfig = new InputConfig(DEVICE_KEYBOARD, -1, "Keyboard", KEYBOARD_GUID_STRING, 0, 0, 0); // batocera
 	loadInputConfig(mKeyboardInputConfig);
-
-	SDL_USER_CECBUTTONDOWN = SDL_RegisterEvents(2);
-	SDL_USER_CECBUTTONUP   = SDL_USER_CECBUTTONDOWN + 1;
-	CECInput::init();
-	mCECInputConfig = new InputConfig(DEVICE_CEC, -1, "CEC", CEC_GUID_STRING, 0, 0, 0); // batocera
-	loadInputConfig(mCECInputConfig);
-
-	// Mouse input, hardcoded not configurable with es_input.cfg
-	//mMouseButtonsInputConfig = new InputConfig(DEVICE_MOUSE, -1, "Mouse", CEC_GUID_STRING, 0, 0, 0);
-	//mMouseButtonsInputConfig->mapInput(BUTTON_OK, Input(DEVICE_MOUSE, TYPE_BUTTON, 1, 1, true));
-	//mMouseButtonsInputConfig->mapInput(BUTTON_BACK, Input(DEVICE_MOUSE, TYPE_BUTTON, 3, 1, true));
 }
 
 void InputManager::deinit()
@@ -120,12 +109,6 @@ InputConfig* InputManager::getInputConfigByDevice(int device)
 	if(device == DEVICE_KEYBOARD)
 		return mKeyboardInputConfig;
 
-	if(device == DEVICE_CEC)
-		return mCECInputConfig;
-
-	//if(device == DEVICE_MOUSE)
-	//	return mMouseButtonsInputConfig;
-	
 	return mInputConfigs[device];
 }
 
@@ -282,11 +265,6 @@ bool InputManager::parseEvent(const SDL_Event& ev, Window* window)
 		window->input(getInputConfigByDevice(ev.jbutton.which), Input(ev.jbutton.which, TYPE_BUTTON, ev.jbutton.button, ev.jbutton.state == SDL_PRESSED, false));
 		return true;
 	
-	//case SDL_MOUSEBUTTONDOWN:        
-	//case SDL_MOUSEBUTTONUP:
-	//	window->input(getInputConfigByDevice(DEVICE_MOUSE), Input(DEVICE_MOUSE, TYPE_BUTTON, ev.button.button, ev.type == SDL_MOUSEBUTTONDOWN, false));
-	//	return true;
-
 	case SDL_JOYHATMOTION:
 		window->input(getInputConfigByDevice(ev.jhat.which), Input(ev.jhat.which, TYPE_HAT, ev.jhat.hat, ev.jhat.value, false));
 		return true;
@@ -333,12 +311,6 @@ bool InputManager::parseEvent(const SDL_Event& ev, Window* window)
 			rebuildAllJoysticks();
 		}
 		return false;
-	}
-
-	if((ev.type == (unsigned int)SDL_USER_CECBUTTONDOWN) || (ev.type == (unsigned int)SDL_USER_CECBUTTONUP))
-	{
-		window->input(getInputConfigByDevice(DEVICE_CEC), Input(DEVICE_CEC, TYPE_CEC_BUTTON, ev.user.code, ev.type == (unsigned int)SDL_USER_CECBUTTONDOWN, false));
-		return true;
 	}
 
 	return false;

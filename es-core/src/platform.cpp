@@ -6,7 +6,6 @@
 #else
 #include <unistd.h>
 #endif
-#include <sys/wait.h>
 #include <fcntl.h>
 #include "Window.h"
 #include "utils/FileSystemUtil.h"
@@ -44,8 +43,6 @@ int runRestartCommand()
 
 int runSystemCommand(const std::string& cmd_utf8, const std::string& name, Window* window)
 {
-
-	bool waitForExit = true;
 
 #ifdef WIN32
 	// on Windows we use _wsystem to support non-ASCII paths
@@ -116,30 +113,7 @@ int runSystemCommand(const std::string& cmd_utf8, const std::string& name, Windo
 
 	return 1;
 #else
-	if (waitForExit)
-		return system((cmd_utf8).c_str());
-	// fork the current process
-	pid_t ret = fork();
-	if (ret == 0)
-	{
-		ret = fork();
-		if (ret == 0)
-		{
-			execl("/usr/bin/sh", "sh", "-c", (cmd_utf8).c_str(), (char *) NULL);
-			_exit(1); // execl failed
-		}
-		_exit(0); // exit the child process
-	}
-	else
-	{
-		if (ret > 0)
-		{
-			int status;
-			waitpid(ret, &status, 0); // keep calm and kill zombies
-		}
-	}
-	return 0;
-
+	return system((cmd_utf8 + " 2> /var/log/es_launch_stderr.log > /var/log/es_launch_stdout.log").c_str()); // 351ELEC
 #endif
 }
 
