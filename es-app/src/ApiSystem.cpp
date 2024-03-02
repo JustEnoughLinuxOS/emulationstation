@@ -625,6 +625,11 @@ std::vector<std::string> ApiSystem::getAvailableChannels()
         return executeEnumerationScript("/usr/bin/sh -lc \"/usr/bin/wifictl channels\"");
 }
 
+std::vector<std::string> ApiSystem::getTdpRange()
+{
+	return executeEnumerationScript("/usr/bin/sh -lc \". /etc/profile.d/099-freqfunctions; get_tdp_range\"");
+}
+
 std::vector<std::string> ApiSystem::getAvailableThreads()
 {
         return executeEnumerationScript("/usr/bin/sh -lc \". /etc/profile.d/099-freqfunctions; get_threads\"");
