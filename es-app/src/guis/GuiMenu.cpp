@@ -1161,6 +1161,7 @@ void GuiMenu::openSystemSettings_batocera()
 // Prep for additional device support.
 #if defined(AMD64)
         std::vector<std::string> cpuVendor = ApiSystem::getInstance()->getCPUVendor();
+	std::vector<std::string> tdpRange = ApiSystem::getInstance()->getTdpRange();
 	auto it = cpuVendor.begin();
 
         if (*it == "AuthenticAMD") {
@@ -1171,23 +1172,17 @@ void GuiMenu::openSystemSettings_batocera()
 		if (selectedOCProfile.empty() || selectedOCProfile == deviceTDP)
 			selectedOCProfile = "default";
 
-		if (deviceTDP) {
-			optionsOCProfile->add(_("DEVICE DEFAULT (") + deviceTDP + ")", "default", selectedOCProfile == "default");
-		} else {
-			optionsOCProfile->add(_("DEFAULT"), "default", selectedOCProfile == "default");
+		bool xfound = false;
+		for (auto it = tdpRange.begin(); it != tdpRange.end(); it++)
+		{
+			optionsOCProfile->add((*it), (*it), selectedOCProfile == (*it));
+			if (selectedOCProfile == (*it))
+				xfound = true;
 		}
 
-	        optionsOCProfile->add(_("2.5W"),"2.5w", selectedOCProfile == "2.5w");
-	        optionsOCProfile->add(_("4.5W"),"4.5w", selectedOCProfile == "4.5w");
-	        optionsOCProfile->add(_("6W"),"6w", selectedOCProfile == "6w");
-	        optionsOCProfile->add(_("9W"),"9w", selectedOCProfile == "9w");
-	        optionsOCProfile->add(_("12W"),"12w", selectedOCProfile == "12w");
-	        optionsOCProfile->add(_("15W"),"15w", selectedOCProfile == "15w");
-	        optionsOCProfile->add(_("18W"),"18w", selectedOCProfile == "18w");
-	        optionsOCProfile->add(_("22W"),"22w", selectedOCProfile == "22w");
-	        optionsOCProfile->add(_("24W"),"24w", selectedOCProfile == "24w");
-	        optionsOCProfile->add(_("28W"),"28w", selectedOCProfile == "28w");
-	        optionsOCProfile->add(_("30W"),"30w", selectedOCProfile == "30w");
+		if (!xfound)
+			optionsOCProfile->add(selectedOCProfile, selectedOCProfile, true);
+
 	 	s->addWithLabel(_("CPU TDP Max"), optionsOCProfile);
 
 		s->addSaveFunc([this, optionsOCProfile, selectedOCProfile]
@@ -4476,6 +4471,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 // Prep for additional device support.
 #if defined(AMD64)
         std::vector<std::string> cpuVendor = ApiSystem::getInstance()->getCPUVendor();
+	std::vector<std::string> tdpRange = ApiSystem::getInstance()->getTdpRange();
         auto it = cpuVendor.begin();
 
         if (*it == "AuthenticAMD") {
@@ -4485,18 +4481,17 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 	        if (selectedOCProfile.empty())
 	                selectedOCProfile = "default";
 
-		optionsOCProfile->add(_("DEFAULT"), "default", selectedOCProfile == "default");
-	        optionsOCProfile->add(_("2.5W"),"2.5w", selectedOCProfile == "2.5w");
-	        optionsOCProfile->add(_("4.5W"),"4.5w", selectedOCProfile == "4.5w");
-		optionsOCProfile->add(_("6W"),"6w", selectedOCProfile == "6w");
-	        optionsOCProfile->add(_("9W"),"9w", selectedOCProfile == "9w");
-	        optionsOCProfile->add(_("12W"),"12w", selectedOCProfile == "12w");
-	        optionsOCProfile->add(_("15W"),"15w", selectedOCProfile == "15w");
-	        optionsOCProfile->add(_("18W"),"18w", selectedOCProfile == "18w");
-	        optionsOCProfile->add(_("22W"),"22w", selectedOCProfile == "22w");
-	        optionsOCProfile->add(_("24W"),"24w", selectedOCProfile == "24w");
-	        optionsOCProfile->add(_("28W"),"28w", selectedOCProfile == "28w");
-	        optionsOCProfile->add(_("30W"),"30w", selectedOCProfile == "30w");
+		bool xfound = false;
+		for (auto it = tdpRange.begin(); it != tdpRange.end(); it++)
+		{
+			optionsOCProfile->add((*it), (*it), selectedOCProfile == (*it));
+			if (selectedOCProfile == (*it))
+				xfound = true;
+		}
+
+
+		if (!xfound)
+			optionsOCProfile->add(selectedOCProfile, selectedOCProfile, true);
 
 	        systemConfiguration->addWithLabel(_("CPU TDP Max"), optionsOCProfile);
 
