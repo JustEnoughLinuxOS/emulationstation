@@ -493,12 +493,8 @@ int main(int argc, char* argv[])
 
 	SystemConf* systemConf = SystemConf::getInstance();
 
-	if (BrightnessControl::getInstance()->isAvailable())
-	{
-		int brightness = BrightnessControl::getInstance()->getBrightness();
-		auto sysbright = SystemConf::getInstance()->get("system.brightness");
-		BrightnessControl::getInstance()->setBrightness(stoi(sysbright));
-	}
+	// Set device brightness
+	BrightnessControl::getInstance()->init();
 
 	// Initialize input
 	InputConfig::AssignActionButtons();
