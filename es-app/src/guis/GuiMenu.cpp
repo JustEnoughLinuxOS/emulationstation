@@ -2074,8 +2074,8 @@ void GuiMenu::openColorizationConfiguration(Window* mWindow, std::string configN
 			pixelshift1_colorizations_choices->add(pixelshift1_colors_modes[i], pixelshift1_colors_modes[i], pixelshift1_currentColorization == std::string(pixelshift1_colors_modes[i]));
 
 		colorCorrection_enabled->addRange({ { _("DEFAULT"), "" }, {_("GBC Only"), "GBC only"}, {_("Always"), "always"}, {_("Disabled"), ""} }, SystemConf::getInstance()->get(configName + ".renderer.colorcorrection"));
-		colorCorrection_mode_choices->addRange({ { _("DEFAULT"), "" }, {_("Accurate"), "accurate"}, {_("Fast"), "fast"} }, SystemConf::getInstance()->get(configName + ".renderer.colorcorrection_mode"));
-		colorCorrection_frontlight_choices->addRange({ { _("DEFAULT"), "" }, {_("Central"), "central"}, {_("Above Screen"), "above screen"}, {_("Below screen"), "below screen"} }, SystemConf::getInstance()->get(configName + ".renderer.colorcorrection_frontlightposition"));
+		colorCorrection_mode_choices->addRange({ { _("DEFAULT"), "accurate" }, {_("Accurate"), "accurate"}, {_("Fast"), "fast"} }, SystemConf::getInstance()->get(configName + ".renderer.colorcorrection_mode"));
+		colorCorrection_frontlight_choices->addRange({ { _("DEFAULT"), "central" }, {_("Central"), "central"}, {_("Above Screen"), "above screen"}, {_("Below screen"), "below screen"} }, SystemConf::getInstance()->get(configName + ".renderer.colorcorrection_frontlightposition"));
 
 
 		guiColorization->addWithLabel(_("GB COLORIZATION"), colorizations_choices);
