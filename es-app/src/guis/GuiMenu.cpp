@@ -269,7 +269,7 @@ void GuiMenu::openResetOptions(Window* mWindow, std::string configName)
      });
 
 //Only show on devices that currently support Mednafen
-#if defined(AMD64) || defined(RK3326) || defined(RK3399)
+#if defined(AMD64) || defined(RK3326) || defined(RK3399) || defined(RK3588)  || defined(RK3588_ACE)
     resetOptions->addEntry(_("RESET MEDNAFEN CONFIG TO DEFAULT"), true, [mWindow] {
     mWindow->pushGui(new GuiMsgBox(mWindow, _("WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n\nNO BACKUP WILL BE CREATED!\n\nRESET MEDNAFEN CONFIG TO DEFAULT?"), _("YES"),
 				[] {
