@@ -1601,6 +1601,505 @@ void GuiMenu::openLatencyReductionConfiguration(Window* mWindow, std::string con
 	mWindow->pushGui(guiViewport);
 }
 */
+void GuiMenu::openColorizationConfiguration(Window* mWindow, std::string configName)
+{
+	GuiSettings* guiColorization = new GuiSettings(mWindow, _("COLORIZATION").c_str());
+
+		// gameboy colorize
+		auto colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GB COLORIZATION"), false);
+		auto twb1_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 1 PALETTE"), false);
+		auto twb2_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 2 PALETTE"), false);
+		auto twb3_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 3 PALETTE"), false);
+		auto pixelshift1_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("PIXELSHIFT - PACK 1 PALETTE"), false);
+/*		auto colorCorrection_enabled = std::make_shared<OptionListComponent<std::string>>(mWindow, _("COLOR CORRECTION"));
+		auto colorCorrection_mode_choices = std::make_shared<OptionListComponent<std::string>>(mWindow, _("COLOR CORRECTION MODE"));
+		auto colorCorrection_frontlight_choices = std::make_shared<OptionListComponent<std::string>>(mWindow, _("COLOR CORRECTION - FRONTLIGHT POSITION"));
+*/		
+
+		std::string currentColorization = SystemConf::getInstance()->get(configName + ".renderer.colorization");
+		std::string twb1_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb1_colorization");
+		std::string twb2_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb2_colorization");
+		std::string twb3_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb3_colorization");
+		std::string pixelshift1_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.pixelshift1_colorization");
+
+
+
+		if (currentColorization.empty())
+			currentColorization = std::string("default");
+		if (twb1_currentColorization.empty())
+			twb1_currentColorization = std::string("TWB64 001 - Aqours Blue");
+		if (twb2_currentColorization.empty())
+			twb2_currentColorization = std::string("TWB64 101 - 765PRO Pink");
+		if (twb3_currentColorization.empty())
+			twb3_currentColorization = std::string("TWB64 201 - DMG-GOLD");
+		if (pixelshift1_currentColorization.empty())
+			pixelshift1_currentColorization = std::string("PixelShift 01 - Arctic Green");
+
+		colorizations_choices->add(_("DEFAULT"), "default", currentColorization == "default");
+		colorizations_choices->add(_("NONE"), "none", currentColorization == "none");
+		colorizations_choices->add(_("GBC"), "GBC", currentColorization == "GBC");
+		colorizations_choices->add(_("SGB"), "SGB", currentColorization == "SGB");
+		colorizations_choices->add(_("Best Guess"), "Best Guess", currentColorization == "Best Guess");
+
+		const char* all_gambate_gc_colors_modes[] = { "GB - DMG",
+								 "GB - Light",
+								 "GB - Pocket",
+								 "GBC - Blue",
+								 "GBC - Brown",
+								 "GBC - Dark Blue",
+								 "GBC - Dark Brown",
+								 "GBC - Dark Green",
+								 "GBC - Grayscale",
+								 "GBC - Green",
+								 "GBC - Inverted",
+								 "GBC - Orange",
+								 "GBC - Pastel Mix",
+								 "GBC - Red",
+								 "GBC - Yellow",
+								 "SGB - 1A",
+								 "SGB - 1B",
+								 "SGB - 1C",
+								 "SGB - 1D",
+								 "SGB - 1E",
+								 "SGB - 1F",
+								 "SGB - 1G",
+								 "SGB - 1H",
+								 "SGB - 2A",
+								 "SGB - 2B",
+								 "SGB - 2C",
+								 "SGB - 2D",
+								 "SGB - 2E",
+								 "SGB - 2F",
+								 "SGB - 2G",
+								 "SGB - 2H",
+								 "SGB - 3A",
+								 "SGB - 3B",
+								 "SGB - 3C",
+								 "SGB - 3D",
+								 "SGB - 3E",
+								 "SGB - 3F",
+								 "SGB - 3G",
+								 "SGB - 3H",
+								 "SGB - 4A",
+								 "SGB - 4B",
+								 "SGB - 4C",
+								 "SGB - 4D",
+								 "SGB - 4E",
+								 "SGB - 4F",
+								 "SGB - 4G",
+								 "SGB - 4H",
+								 "Special 1",
+								 "Special 2",
+								 "Special 3",
+								 "Special 4 (TI-83 Legacy)",
+								 "TWB64 - Pack 1",
+								 "TWB64 - Pack 2",
+								 "TWB64 - Pack 3",
+								 "PixelShift - Pack 1"};
+
+		const char* twb1_colors_modes[] = {
+								 "TWB64 001 - Aqours Blue",
+								 "TWB64 002 - Anime Expo Ver.",
+								 "TWB64 003 - SpongeBob Yellow",
+								 "TWB64 004 - Patrick Star Pink",
+								 "TWB64 005 - Neon Red",
+								 "TWB64 006 - Neon Blue",
+								 "TWB64 007 - Neon Yellow",
+								 "TWB64 008 - Neon Green",
+								 "TWB64 009 - Neon Pink",
+								 "TWB64 010 - Mario Red",
+								 "TWB64 011 - Nick Orange",
+								 "TWB64 012 - Virtual Vision",
+								 "TWB64 013 - Golden Wild",
+								 "TWB64 014 - Builder Yellow",
+								 "TWB64 015 - Classic Blurple",
+								 "TWB64 016 - 765 Production Ver.",
+								 "TWB64 017 - Superball Ivory",
+								 "TWB64 018 - Crunchyroll Orange",
+								 "TWB64 019 - Muse Pink",
+								 "TWB64 020 - Nijigasaki Yellow",
+								 "TWB64 021 - Gamate Ver.",
+								 "TWB64 022 - Greenscale Ver.",
+								 "TWB64 023 - Odyssey Gold",
+								 "TWB64 024 - Super Saiyan God",
+								 "TWB64 025 - Super Saiyan Blue",
+								 "TWB64 026 - Bizarre Pink",
+								 "TWB64 027 - Nintendo Switch Lite Ver.",
+								 "TWB64 028 - Game.com Ver.",
+								 "TWB64 029 - Sanrio Pink",
+								 "TWB64 030 - BANDAI NAMCO Ver.",
+								 "TWB64 031 - Cosmo Green",
+								 "TWB64 032 - Wanda Pink",
+								 "TWB64 033 - Link's Awakening DX Ver.",
+								 "TWB64 034 - Travel Wood",
+								 "TWB64 035 - Pokemon Ver.",
+								 "TWB64 036 - Game Grump Orange",
+								 "TWB64 037 - Scooby-Doo Mystery Ver.",
+								 "TWB64 038 - Pokemon mini Ver.",
+								 "TWB64 039 - Supervision Ver.",
+								 "TWB64 040 - DMG Ver.",
+								 "TWB64 041 - Pocket Ver.",
+								 "TWB64 042 - Light Ver.",
+								 "TWB64 043 - Miraitowa Blue",
+								 "TWB64 044 - Someity Pink",
+								 "TWB64 045 - Pikachu Yellow",
+								 "TWB64 046 - Eevee Brown",
+								 "TWB64 047 - Microvision Ver.",
+								 "TWB64 048 - TI-83 Ver.",
+								 "TWB64 049 - Aegis Cherry",
+								 "TWB64 050 - Labo Fawn",
+								 "TWB64 051 - MILLION LIVE GOLD!",
+								 "TWB64 052 - Tokyo Midtown Ver.",
+								 "TWB64 053 - VMU Ver.",
+								 "TWB64 054 - Game Master Ver.",
+								 "TWB64 055 - Android Green",
+								 "TWB64 056 - Walmart Discount Blue",
+								 "TWB64 057 - Google Red",
+								 "TWB64 058 - Google Blue",
+								 "TWB64 059 - Google Yellow",
+								 "TWB64 060 - Google Green",
+								 "TWB64 061 - WonderSwan Ver.",
+								 "TWB64 062 - Neo Geo Pocket Ver.",
+								 "TWB64 063 - Dew Green",
+								 "TWB64 064 - Coca-Cola Red",
+								 "TWB64 065 - GameKing Ver.",
+								 "TWB64 066 - Do The Dew Ver.",
+								 "TWB64 067 - Digivice Ver.",
+								 "TWB64 068 - Bikini Bottom Ver.",
+								 "TWB64 069 - Blossom Pink",
+								 "TWB64 070 - Bubbles Blue",
+								 "TWB64 071 - Buttercup Green",
+								 "TWB64 072 - NASCAR Ver.",
+								 "TWB64 073 - Lemon-Lime Green",
+								 "TWB64 074 - Mega Man V Ver.",
+								 "TWB64 075 - Tamagotchi Ver.",
+								 "TWB64 076 - Phantom Red",
+								 "TWB64 077 - Halloween Ver.",
+								 "TWB64 078 - Christmas Ver.",
+								 "TWB64 079 - Cardcaptor Pink",
+								 "TWB64 080 - Pretty Guardian Gold",
+								 "TWB64 081 - Camouflage Ver.",
+								 "TWB64 082 - Legendary Super Saiyan",
+								 "TWB64 083 - Super Saiyan Rose",
+								 "TWB64 084 - Super Saiyan",
+								 "TWB64 085 - Perfected Ultra Instinct",
+								 "TWB64 086 - Saint Snow Red",
+								 "TWB64 087 - Yellow Banana",
+								 "TWB64 088 - Green Banana",
+								 "TWB64 089 - Super Saiyan 3",
+								 "TWB64 090 - Super Saiyan Blue Evolved",
+								 "TWB64 091 - Pocket Tales Ver.",
+								 "TWB64 092 - Investigation Yellow",
+								 "TWB64 093 - S.E.E.S. Blue",
+								 "TWB64 094 - Game Awards Cyan",
+								 "TWB64 095 - Hokage Orange",
+								 "TWB64 096 - Straw Hat Red",
+								 "TWB64 097 - Sword Art Cyan",
+								 "TWB64 098 - Deku Alpha Emerald",
+								 "TWB64 099 - Blue Stripes Ver.",
+								 "TWB64 100 - Stone Orange"};
+
+		const char* twb2_colors_modes[] = {
+								 "TWB64 101 - 765PRO Pink",              
+								 "TWB64 102 - CINDERELLA Blue",          
+								 "TWB64 103 - MILLION Yellow!",          
+								 "TWB64 104 - SideM Green",              
+								 "TWB64 105 - SHINY Sky Blue",           
+								 "TWB64 106 - Angry Volcano Ver.",       
+								 "TWB64 107 - Yo-kai Pink",              
+								 "TWB64 108 - Yo-kai Green",             
+								 "TWB64 109 - Yo-kai Blue",              
+								 "TWB64 110 - Yo-kai Purple",            
+								 "TWB64 111 - Aquatic Iro",              
+								 "TWB64 112 - Tea Midori",               
+								 "TWB64 113 - Sakura Pink",              
+								 "TWB64 114 - Wisteria Murasaki",        
+								 "TWB64 115 - Oni Aka",                  
+								 "TWB64 116 - Golden Kiiro",             
+								 "TWB64 117 - Silver Shiro",             
+								 "TWB64 118 - Fruity Orange",            
+								 "TWB64 119 - AKB48 Pink",               
+								 "TWB64 120 - Miku Blue",                
+								 "TWB64 121 - Fairy Tail Red",           
+								 "TWB64 122 - Survey Corps Brown",       
+								 "TWB64 123 - Island Green",             
+								 "TWB64 124 - Mania Plus Green",         
+								 "TWB64 125 - Ninja Turtle Green",       
+								 "TWB64 126 - Slime Blue",               
+								 "TWB64 127 - Lime Midori",              
+								 "TWB64 128 - Ghostly Aoi",              
+								 "TWB64 129 - Retro Bogeda",             
+								 "TWB64 130 - Royal Blue",               
+								 "TWB64 131 - Neon Purple",              
+								 "TWB64 132 - Neon Orange",              
+								 "TWB64 133 - Moonlight Vision",         
+								 "TWB64 134 - Tokyo Red",                
+								 "TWB64 135 - Paris Gold",               
+								 "TWB64 136 - Beijing Blue",             
+								 "TWB64 137 - Pac-Man Yellow",           
+								 "TWB64 138 - Irish Green",              
+								 "TWB64 139 - Kakarot Orange",           
+								 "TWB64 140 - Dragon Ball Orange",       
+								 "TWB64 141 - Christmas Gold",           
+								 "TWB64 142 - Pepsi Vision",             
+								 "TWB64 143 - Bubblun Green",            
+								 "TWB64 144 - Bobblun Blue",             
+								 "TWB64 145 - Baja Blast Storm",         
+								 "TWB64 146 - Olympic Gold",             
+								 "TWB64 147 - Value Orange",             
+								 "TWB64 148 - Liella Purple!",           
+								 "TWB64 149 - Olympic Silver",           
+								 "TWB64 150 - Olympic Bronze",           
+								 "TWB64 151 - ANA Sky Blue",             
+								 "TWB64 152 - Nijigasaki Orange",        
+								 "TWB64 153 - holoblue",                 
+								 "TWB64 154 - Wrestling Red",            
+								 "TWB64 155 - Yoshi Egg Green",          
+								 "TWB64 156 - Pokedex Red",              
+								 "TWB64 157 - Disney Dream Blue",        
+								 "TWB64 158 - Xbox Green",               
+								 "TWB64 159 - Sonic Mega Blue",          
+								 "TWB64 160 - Sprite Green",             
+								 "TWB64 161 - Scarlett Green",           
+								 "TWB64 162 - Glitchy Blue",             
+								 "TWB64 163 - Classic LCD",              
+								 "TWB64 164 - 3DS Virtual Console Ver.", 
+								 "TWB64 165 - PocketStation Ver.",       
+								 "TWB64 166 - Timeless Gold and Red",    
+								 "TWB64 167 - Smurfy Blue",              
+								 "TWB64 168 - Swampy Ogre Green",        
+								 "TWB64 169 - Sailor Spinach Green",     
+								 "TWB64 170 - Shenron Green",            
+								 "TWB64 171 - Berserk Blood",            
+								 "TWB64 172 - Super Star Pink",          
+								 "TWB64 173 - Gamebuino Classic Ver.",   
+								 "TWB64 174 - Barbie Pink",              
+								 "TWB64 175 - Star Command Green",       
+								 "TWB64 176 - Nokia 3310 Ver.",          
+								 "TWB64 177 - Clover Green",             
+								 "TWB64 178 - Crash Orange",             
+								 "TWB64 179 - Famicom Disk Yellow",      
+								 "TWB64 180 - Team Rocket Red",          
+								 "TWB64 181 - SEIKO Timer Yellow",       
+								 "TWB64 182 - PINK109",                  
+								 "TWB64 183 - Doraemon Tricolor",        
+								 "TWB64 184 - Fury Blue",                
+								 "TWB64 185 - Rockstar Orange",          
+								 "TWB64 186 - Puyo Puyo Green",          
+								 "TWB64 187 - Susan G. Pink",            
+								 "TWB64 188 - Pizza Hut Red",            
+								 "TWB64 189 - Plumbob Green",            
+								 "TWB64 190 - Grand Ivory",              
+								 "TWB64 191 - Demon's Gold",             
+								 "TWB64 192 - SEGA Tokyo Blue",          
+								 "TWB64 193 - Champion's Tunic",         
+								 "TWB64 194 - DK Barrel Brown",          
+								 "TWB64 195 - EVA-01",                   
+								 "TWB64 196 - Equestrian Purple",        
+								 "TWB64 197 - Autobot Red",              
+								 "TWB64 198 - niconico sea green",       
+								 "TWB64 199 - Duracell Copper",          
+								 "TWB64 200 - TOKYO SKYTREE CLOUDY BLUE"};
+
+		const char* twb3_colors_modes[] = {
+								 "TWB64 201 - DMG-GOLD",               
+								 "TWB64 202 - LCD Clock Green",        
+								 "TWB64 203 - Famicom Frenzy",         
+								 "TWB64 204 - DK Arcade Blue",         
+								 "TWB64 205 - Advanced Indigo",        
+								 "TWB64 206 - Ultra Black",            
+								 "TWB64 207 - Chaos Emerald Green",    
+								 "TWB64 208 - Blue Bomber Azure",      
+								 "TWB64 209 - Garry's Blue",           
+								 "TWB64 210 - Steam Gray",             
+								 "TWB64 211 - Dream Land GB Ver.",     
+								 "TWB64 212 - Pokemon Pinball Ver.",   
+								 "TWB64 213 - Poketch Ver.",           
+								 "TWB64 214 - COLLECTION of SaGa Ver.",
+								 "TWB64 215 - Rocky-Valley Holiday",   
+								 "TWB64 216 - Giga Kiwi DMG",          
+								 "TWB64 217 - DMG Pea Green",          
+								 "TWB64 218 - Timing Hero Ver.",       
+								 "TWB64 219 - Invincible Blue",        
+								 "TWB64 220 - Grinchy Green",          
+								 "TWB64 221 - Winter Icy Blue",        
+								 "TWB64 222 - School Idol Mix",        
+								 "TWB64 223 - Green Awakening",        
+								 "TWB64 224 - Goomba Brown",           
+								 "TWB64 225 - Devil Red",              
+								 "TWB64 226 - Simpson Yellow",         
+								 "TWB64 227 - Spooky Purple",          
+								 "TWB64 228 - Treasure Gold",          
+								 "TWB64 229 - Cherry Blossom Pink",    
+								 "TWB64 230 - Golden Trophy",          
+								 "TWB64 231 - Winter Icy Blue",        
+								 "TWB64 232 - Leprechaun Green",       
+								 "TWB64 233 - SAITAMA SUPER BLUE",     
+								 "TWB64 234 - SAITAMA SUPER GREEN",    
+								 "TWB64 235 - Duolingo Green",         
+								 "TWB64 236 - Super Mushroom Vision",  
+								 "TWB64 237 - Ancient Hisuian Brown",  
+								 "TWB64 238 - Sky Pop Ivory",          
+								 "TWB64 239 - LAWSON BLUE",            
+								 "TWB64 240 - Anime Expo Red",         
+								 "TWB64 241 - Brilliant Diamond Blue", 
+								 "TWB64 242 - Shining Pearl Pink",     
+								 "TWB64 243 - Funimation Melon",       
+								 "TWB64 244 - Teyvat Brown",           
+								 "TWB64 245 - Chozo Blue",             
+								 "TWB64 246 - Spotify Green",          
+								 "TWB64 247 - Dr Pepper Red",          
+								 "TWB64 248 - NHK Silver Gray",        
+								 "TWB64 249 - Starbucks Green",        
+								 "TWB64 250 - Tokyo Disney Magic",     
+								 "TWB64 251 - Kingdom Key Gold",       
+								 "TWB64 252 - Hogwarts Goldius",       
+								 "TWB64 253 - Kentucky Fried Red",     
+								 "TWB64 254 - Cheeto Orange",          
+								 "TWB64 255 - Namco Idol Pink",        
+								 "TWB64 256 - Domino's Blue",          
+								 "TWB64 257 - Pac-Man Vision",         
+								 "TWB64 258 - Bill's PC Screen",       
+								 "TWB64 259 - Sonic Mega Blue",        
+								 "TWB64 260 - Fool's Gold and Silver", 
+								 "TWB64 261 - UTA RED",                
+								 "TWB64 262 - Metallic Paldea Brass",  
+								 "TWB64 263 - Classy Christmas",       
+								 "TWB64 264 - Winter Christmas",       
+								 "TWB64 265 - IDOL WORLD TRICOLOR!!!", 
+								 "TWB64 266 - Inkling Tricolor",       
+								 "TWB64 267 - 7-Eleven Color Combo",   
+								 "TWB64 268 - PAC-PALETTE",            
+								 "TWB64 269 - Vulnerable Blue",        
+								 "TWB64 270 - Nightvision Green",      
+								 "TWB64 271 - Bandai Namco Tricolor",  
+								 "TWB64 272 - Gold, Silver, and Bronze",
+								 "TWB64 273 - Arendelle Winter Blue",  
+								 "TWB64 274 - Super Famicom Supreme",  
+								 "TWB64 275 - Absorbent and Yellow",   
+								 "TWB64 276 - 765PRO TRICOLOR",        
+								 "TWB64 277 - GameCube Glimmer",       
+								 "TWB64 278 - 1st Vision Pastel",      
+								 "TWB64 279 - Perfect Majin Emperor",  
+								 "TWB64 280 - J-Pop Idol Sherbet",     
+								 "TWB64 281 - Ryuuguu Sunset",         
+								 "TWB64 282 - Tropical Starfall",      
+								 "TWB64 283 - Colorful Horizons",      
+								 "TWB64 284 - BLACKPINK BLINK PINK",   
+								 "TWB64 285 - DMG-SWITCH",             
+								 "TWB64 286 - POCKET SWITCH",          
+								 "TWB64 287 - Sunny Passion Paradise", 
+								 "TWB64 288 - Saiyan Beast Silver",    
+								 "TWB64 289 - RADIANT SMILE RAMP",     
+								 "TWB64 290 - A-RISE BLUE",            
+								 "TWB64 291 - TROPICAL TWICE APRICOT", 
+								 "TWB64 292 - Odyssey Boy",            
+								 "TWB64 293 - Frog Coin Green",        
+								 "TWB64 294 - Garfield Vision",        
+								 "TWB64 295 - Bedrock Caveman Vision", 
+								 "TWB64 296 - BANGTAN ARMY PURPLE",    
+								 "TWB64 297 - Spider-Verse Red",       
+								 "TWB64 298 - Baja Blast Beach",       
+								 "TWB64 299 - 3DS Virtual Console Green",
+								 "TWB64 300 - Wonder Purple"};
+
+		const char* pixelshift1_colors_modes[] = {
+								 "PixelShift 01 - Arctic Green",              
+								 "PixelShift 02 - Arduboy",                   
+								 "PixelShift 03 - BGB 0.3 Emulator",          
+								 "PixelShift 04 - Camouflage",                
+								 "PixelShift 05 - Chocolate Bar",             
+								 "PixelShift 06 - CMYK",                      
+								 "PixelShift 07 - Cotton Candy",              
+								 "PixelShift 08 - Easy Greens",               
+								 "PixelShift 09 - Gamate",                    
+								 "PixelShift 10 - Game Boy Light",            
+								 "PixelShift 11 - Game Boy Pocket",           
+								 "PixelShift 12 - Game Boy Pocket Alt",       
+								 "PixelShift 13 - Game Pocket Computer",      
+								 "PixelShift 14 - Game & Watch Ball",         
+								 "PixelShift 15 - GB Backlight Blue",         
+								 "PixelShift 16 - GB Backlight Faded",        
+								 "PixelShift 17 - GB Backlight Orange",       
+								 "PixelShift 18 - GB Backlight White ",       
+								 "PixelShift 19 - GB Backlight Yellow Dark",  
+								 "PixelShift 20 - GB Bootleg",                
+								 "PixelShift 21 - GB Hunter",                 
+								 "PixelShift 22 - GB Kiosk",                  
+								 "PixelShift 23 - GB Kiosk 2",                
+								 "PixelShift 24 - GB New",                    
+								 "PixelShift 25 - GB Nuked",                  
+								 "PixelShift 26 - GB Old",                    
+								 "PixelShift 27 - GBP Bivert",                
+								 "PixelShift 28 - GB Washed Yellow Backlight",
+								 "PixelShift 29 - Ghost",                     
+								 "PixelShift 30 - Glow In The Dark",          
+								 "PixelShift 31 - Gold Bar",                  
+								 "PixelShift 32 - Grapefruit",                
+								 "PixelShift 33 - Gray Green Mix",            
+								 "PixelShift 34 - Missingno",                 
+								 "PixelShift 35 - MS-Dos",                    
+								 "PixelShift 36 - Newspaper",                 
+								 "PixelShift 37 - Pip-Boy",                   
+								 "PixelShift 38 - Pocket Girl",               
+								 "PixelShift 39 - Silhouette",                
+								 "PixelShift 40 - Sunburst",                  
+								 "PixelShift 41 - Technicolor",               
+								 "PixelShift 42 - Tron",                      
+								 "PixelShift 43 - Vaporwave",                 
+								 "PixelShift 44 - Virtual Boy",               
+								 "PixelShift 45 - Wish"}; 
+
+
+
+		int n_all_gambate_gc_colors_modes = 55;
+		int n_twb1_colors_modes = 100;
+		int n_twb2_colors_modes = 100;
+		int n_twb3_colors_modes = 100;
+		int n_pixelshift1_colors_modes = 45;
+
+		for (int i = 0; i < n_all_gambate_gc_colors_modes; i++)
+			colorizations_choices->add(all_gambate_gc_colors_modes[i], all_gambate_gc_colors_modes[i], currentColorization == std::string(all_gambate_gc_colors_modes[i]));
+		
+		for (int i = 0; i < n_twb1_colors_modes; i++)
+			twb1_colorizations_choices->add(twb1_colors_modes[i], twb1_colors_modes[i], twb1_currentColorization == std::string(twb1_colors_modes[i]));
+		
+		for (int i = 0; i < n_twb2_colors_modes; i++)
+			twb2_colorizations_choices->add(twb2_colors_modes[i], twb2_colors_modes[i], twb2_currentColorization == std::string(twb2_colors_modes[i]));
+
+		for (int i = 0; i < n_twb3_colors_modes; i++)
+			twb3_colorizations_choices->add(twb3_colors_modes[i], twb3_colors_modes[i], twb3_currentColorization == std::string(twb3_colors_modes[i]));
+		
+		for (int i = 0; i < n_pixelshift1_colors_modes; i++)
+			pixelshift1_colorizations_choices->add(pixelshift1_colors_modes[i], pixelshift1_colors_modes[i], pixelshift1_currentColorization == std::string(pixelshift1_colors_modes[i]));
+
+//		colorCorrection_enabled->addRange({ { _("DEFAULT"), "" }, {_("GBC Only"), "GBC only"}, {_("Always"), "always"}, {_("Disabled"), ""} }, SystemConf::getInstance()->get(configName + ".renderer.colorcorrection"));
+//		colorCorrection_mode_choices->addRange({ { _("DEFAULT"), "accurate" }, {_("Accurate"), "accurate"}, {_("Fast"), "fast"} }, SystemConf::getInstance()->get(configName + ".renderer.colorcorrection_mode"));
+//		colorCorrection_frontlight_choices->addRange({ { _("DEFAULT"), "central" }, {_("Central"), "central"}, {_("Above Screen"), "above screen"}, {_("Below screen"), "below screen"} }, SystemConf::getInstance()->get(configName + ".renderer.colorcorrection_frontlightposition"));
+
+
+		guiColorization->addWithLabel(_("GB COLORIZATION"), colorizations_choices);
+		guiColorization->addWithLabel(_("TWB64 - PACK 1 PALETTE"), twb1_colorizations_choices);
+		guiColorization->addWithLabel(_("TWB64 - PACK 2 PALETTE"), twb2_colorizations_choices);
+		guiColorization->addWithLabel(_("TWB64 - PACK 3 PALETTE"), twb3_colorizations_choices);
+		guiColorization->addWithLabel(_("PIXELSHIFT - PACK 1 PALETTE"), pixelshift1_colorizations_choices);
+/*		guiColorization->addWithLabel(_("COLOR CORRECTION"), colorCorrection_enabled);
+		guiColorization->addWithLabel(_("COLOR CORRECTION MODE"), colorCorrection_mode_choices);
+		guiColorization->addWithLabel(_("COLOR CORRECTION - FRONTLIGHT POSITION"), colorCorrection_frontlight_choices);
+*/
+
+		guiColorization->addSaveFunc([colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.colorization", colorizations_choices->getSelected()); });
+		guiColorization->addSaveFunc([twb1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb1_colorization", twb1_colorizations_choices->getSelected()); });
+		guiColorization->addSaveFunc([twb2_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb2_colorization", twb2_colorizations_choices->getSelected()); });
+		guiColorization->addSaveFunc([twb3_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb3_colorization", twb3_colorizations_choices->getSelected()); });
+		guiColorization->addSaveFunc([pixelshift1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.pixelshift1_colorization", pixelshift1_colorizations_choices->getSelected()); });
+/*		guiColorization->addSaveFunc([colorCorrection_enabled, configName] { SystemConf::getInstance()->set(configName + ".renderer.colorcorrection", colorCorrection_enabled->getSelected()); });
+		guiColorization->addSaveFunc([colorCorrection_mode_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.colorcorrection_mode", colorCorrection_mode_choices->getSelected()); });
+		guiColorization->addSaveFunc([colorCorrection_frontlight_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.colorcorrection_frontlightposition", colorCorrection_frontlight_choices->getSelected()); });
+*/
+	mWindow->pushGui(guiColorization);
+}
+
 void GuiMenu::openRetroachievementsSettings()
 {
 	Window* window = mWindow;
@@ -4590,489 +5089,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::colorization))
 	{
-
-		std::string currentEmulator = fileData != nullptr ? fileData->getEmulator(false) : systemData->getEmulator(false);
-		LOG(LogError) << currentEmulator;
-
-
-		// gameboy colorize
-		auto colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("COLORIZATION"), false);
-		auto twb1_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 1 PALETTE"), false);
-		auto twb2_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 2 PALETTE"), false);
-		auto twb3_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TWB - PACK 3 PALETTE"), false);
-		auto pixelshift1_colorizations_choices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("PIXELSHIFT - PACK 1 PALETTE"), false);
-
-		std::string currentColorization = SystemConf::getInstance()->get(configName + ".renderer.colorization");
-		std::string twb1_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb1_colorization");
-		std::string twb2_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb2_colorization");
-		std::string twb3_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.twb3_colorization");
-		std::string pixelshift1_currentColorization = SystemConf::getInstance()->get(configName + ".renderer.pixelshift1_colorization");
-
-
-
-
-		if (currentColorization.empty())
-			currentColorization = std::string("default");
-		if (twb1_currentColorization.empty())
-			twb1_currentColorization = std::string("TWB64 001 - Aqours Blue");
-		if (twb2_currentColorization.empty())
-			twb2_currentColorization = std::string("TWB64 101 - 765PRO Pink");
-		if (twb3_currentColorization.empty())
-			twb3_currentColorization = std::string("TWB64 201 - DMG-GOLD");
-		if (pixelshift1_currentColorization.empty())
-			pixelshift1_currentColorization = std::string("PixelShift 01 - Arctic Green");
-
-		colorizations_choices->add(_("DEFAULT"), "default", currentColorization == "default");
-		colorizations_choices->add(_("NONE"), "none", currentColorization == "none");
-		colorizations_choices->add(_("GBC"), "GBC", currentColorization == "GBC");
-		colorizations_choices->add(_("SGB"), "SGB", currentColorization == "SGB");
-		colorizations_choices->add(_("Best Guess"), "Best Guess", currentColorization == "Best Guess");
-
-		const char* all_gambate_gc_colors_modes[] = { "GB - DMG",
-								 "GB - Light",
-								 "GB - Pocket",
-								 "GBC - Blue",
-								 "GBC - Brown",
-								 "GBC - Dark Blue",
-								 "GBC - Dark Brown",
-								 "GBC - Dark Green",
-								 "GBC - Grayscale",
-								 "GBC - Green",
-								 "GBC - Inverted",
-								 "GBC - Orange",
-								 "GBC - Pastel Mix",
-								 "GBC - Red",
-								 "GBC - Yellow",
-								 "SGB - 1A",
-								 "SGB - 1B",
-								 "SGB - 1C",
-								 "SGB - 1D",
-								 "SGB - 1E",
-								 "SGB - 1F",
-								 "SGB - 1G",
-								 "SGB - 1H",
-								 "SGB - 2A",
-								 "SGB - 2B",
-								 "SGB - 2C",
-								 "SGB - 2D",
-								 "SGB - 2E",
-								 "SGB - 2F",
-								 "SGB - 2G",
-								 "SGB - 2H",
-								 "SGB - 3A",
-								 "SGB - 3B",
-								 "SGB - 3C",
-								 "SGB - 3D",
-								 "SGB - 3E",
-								 "SGB - 3F",
-								 "SGB - 3G",
-								 "SGB - 3H",
-								 "SGB - 4A",
-								 "SGB - 4B",
-								 "SGB - 4C",
-								 "SGB - 4D",
-								 "SGB - 4E",
-								 "SGB - 4F",
-								 "SGB - 4G",
-								 "SGB - 4H",
-								 "Special 1",
-								 "Special 2",
-								 "Special 3",
-								 "Special 4 (TI-83 Legacy)",
-								 "TWB64 - Pack 1",
-								 "TWB64 - Pack 2",
-								 "TWB64 - Pack 3",
-								 "PixelShift - Pack 1"};
-
-		const char* twb1_colors_modes[] = {
-								 "TWB64 001 - Aqours Blue",
-								 "TWB64 002 - Anime Expo Ver.",
-								 "TWB64 003 - SpongeBob Yellow",
-								 "TWB64 004 - Patrick Star Pink",
-								 "TWB64 005 - Neon Red",
-								 "TWB64 006 - Neon Blue",
-								 "TWB64 007 - Neon Yellow",
-								 "TWB64 008 - Neon Green",
-								 "TWB64 009 - Neon Pink",
-								 "TWB64 010 - Mario Red",
-								 "TWB64 011 - Nick Orange",
-								 "TWB64 012 - Virtual Vision",
-								 "TWB64 013 - Golden Wild",
-								 "TWB64 014 - Builder Yellow",
-								 "TWB64 015 - Classic Blurple",
-								 "TWB64 016 - 765 Production Ver.",
-								 "TWB64 017 - Superball Ivory",
-								 "TWB64 018 - Crunchyroll Orange",
-								 "TWB64 019 - Muse Pink",
-								 "TWB64 020 - Nijigasaki Yellow",
-								 "TWB64 021 - Gamate Ver.",
-								 "TWB64 022 - Greenscale Ver.",
-								 "TWB64 023 - Odyssey Gold",
-								 "TWB64 024 - Super Saiyan God",
-								 "TWB64 025 - Super Saiyan Blue",
-								 "TWB64 026 - Bizarre Pink",
-								 "TWB64 027 - Nintendo Switch Lite Ver.",
-								 "TWB64 028 - Game.com Ver.",
-								 "TWB64 029 - Sanrio Pink",
-								 "TWB64 030 - BANDAI NAMCO Ver.",
-								 "TWB64 031 - Cosmo Green",
-								 "TWB64 032 - Wanda Pink",
-								 "TWB64 033 - Link's Awakening DX Ver.",
-								 "TWB64 034 - Travel Wood",
-								 "TWB64 035 - Pokemon Ver.",
-								 "TWB64 036 - Game Grump Orange",
-								 "TWB64 037 - Scooby-Doo Mystery Ver.",
-								 "TWB64 038 - Pokemon mini Ver.",
-								 "TWB64 039 - Supervision Ver.",
-								 "TWB64 040 - DMG Ver.",
-								 "TWB64 041 - Pocket Ver.",
-								 "TWB64 042 - Light Ver.",
-								 "TWB64 043 - Miraitowa Blue",
-								 "TWB64 044 - Someity Pink",
-								 "TWB64 045 - Pikachu Yellow",
-								 "TWB64 046 - Eevee Brown",
-								 "TWB64 047 - Microvision Ver.",
-								 "TWB64 048 - TI-83 Ver.",
-								 "TWB64 049 - Aegis Cherry",
-								 "TWB64 050 - Labo Fawn",
-								 "TWB64 051 - MILLION LIVE GOLD!",
-								 "TWB64 052 - Tokyo Midtown Ver.",
-								 "TWB64 053 - VMU Ver.",
-								 "TWB64 054 - Game Master Ver.",
-								 "TWB64 055 - Android Green",
-								 "TWB64 056 - Walmart Discount Blue",
-								 "TWB64 057 - Google Red",
-								 "TWB64 058 - Google Blue",
-								 "TWB64 059 - Google Yellow",
-								 "TWB64 060 - Google Green",
-								 "TWB64 061 - WonderSwan Ver.",
-								 "TWB64 062 - Neo Geo Pocket Ver.",
-								 "TWB64 063 - Dew Green",
-								 "TWB64 064 - Coca-Cola Red",
-								 "TWB64 065 - GameKing Ver.",
-								 "TWB64 066 - Do The Dew Ver.",
-								 "TWB64 067 - Digivice Ver.",
-								 "TWB64 068 - Bikini Bottom Ver.",
-								 "TWB64 069 - Blossom Pink",
-								 "TWB64 070 - Bubbles Blue",
-								 "TWB64 071 - Buttercup Green",
-								 "TWB64 072 - NASCAR Ver.",
-								 "TWB64 073 - Lemon-Lime Green",
-								 "TWB64 074 - Mega Man V Ver.",
-								 "TWB64 075 - Tamagotchi Ver.",
-								 "TWB64 076 - Phantom Red",
-								 "TWB64 077 - Halloween Ver.",
-								 "TWB64 078 - Christmas Ver.",
-								 "TWB64 079 - Cardcaptor Pink",
-								 "TWB64 080 - Pretty Guardian Gold",
-								 "TWB64 081 - Camouflage Ver.",
-								 "TWB64 082 - Legendary Super Saiyan",
-								 "TWB64 083 - Super Saiyan Rose",
-								 "TWB64 084 - Super Saiyan",
-								 "TWB64 085 - Perfected Ultra Instinct",
-								 "TWB64 086 - Saint Snow Red",
-								 "TWB64 087 - Yellow Banana",
-								 "TWB64 088 - Green Banana",
-								 "TWB64 089 - Super Saiyan 3",
-								 "TWB64 090 - Super Saiyan Blue Evolved",
-								 "TWB64 091 - Pocket Tales Ver.",
-								 "TWB64 092 - Investigation Yellow",
-								 "TWB64 093 - S.E.E.S. Blue",
-								 "TWB64 094 - Game Awards Cyan",
-								 "TWB64 095 - Hokage Orange",
-								 "TWB64 096 - Straw Hat Red",
-								 "TWB64 097 - Sword Art Cyan",
-								 "TWB64 098 - Deku Alpha Emerald",
-								 "TWB64 099 - Blue Stripes Ver.",
-								 "TWB64 100 - Stone Orange"};
-
-		const char* twb2_colors_modes[] = {
-								 "TWB64 101 - 765PRO Pink",              
-								 "TWB64 102 - CINDERELLA Blue",          
-								 "TWB64 103 - MILLION Yellow!",          
-								 "TWB64 104 - SideM Green",              
-								 "TWB64 105 - SHINY Sky Blue",           
-								 "TWB64 106 - Angry Volcano Ver.",       
-								 "TWB64 107 - Yo-kai Pink",              
-								 "TWB64 108 - Yo-kai Green",             
-								 "TWB64 109 - Yo-kai Blue",              
-								 "TWB64 110 - Yo-kai Purple",            
-								 "TWB64 111 - Aquatic Iro",              
-								 "TWB64 112 - Tea Midori",               
-								 "TWB64 113 - Sakura Pink",              
-								 "TWB64 114 - Wisteria Murasaki",        
-								 "TWB64 115 - Oni Aka",                  
-								 "TWB64 116 - Golden Kiiro",             
-								 "TWB64 117 - Silver Shiro",             
-								 "TWB64 118 - Fruity Orange",            
-								 "TWB64 119 - AKB48 Pink",               
-								 "TWB64 120 - Miku Blue",                
-								 "TWB64 121 - Fairy Tail Red",           
-								 "TWB64 122 - Survey Corps Brown",       
-								 "TWB64 123 - Island Green",             
-								 "TWB64 124 - Mania Plus Green",         
-								 "TWB64 125 - Ninja Turtle Green",       
-								 "TWB64 126 - Slime Blue",               
-								 "TWB64 127 - Lime Midori",              
-								 "TWB64 128 - Ghostly Aoi",              
-								 "TWB64 129 - Retro Bogeda",             
-								 "TWB64 130 - Royal Blue",               
-								 "TWB64 131 - Neon Purple",              
-								 "TWB64 132 - Neon Orange",              
-								 "TWB64 133 - Moonlight Vision",         
-								 "TWB64 134 - Tokyo Red",                
-								 "TWB64 135 - Paris Gold",               
-								 "TWB64 136 - Beijing Blue",             
-								 "TWB64 137 - Pac-Man Yellow",           
-								 "TWB64 138 - Irish Green",              
-								 "TWB64 139 - Kakarot Orange",           
-								 "TWB64 140 - Dragon Ball Orange",       
-								 "TWB64 141 - Christmas Gold",           
-								 "TWB64 142 - Pepsi Vision",             
-								 "TWB64 143 - Bubblun Green",            
-								 "TWB64 144 - Bobblun Blue",             
-								 "TWB64 145 - Baja Blast Storm",         
-								 "TWB64 146 - Olympic Gold",             
-								 "TWB64 147 - Value Orange",             
-								 "TWB64 148 - Liella Purple!",           
-								 "TWB64 149 - Olympic Silver",           
-								 "TWB64 150 - Olympic Bronze",           
-								 "TWB64 151 - ANA Sky Blue",             
-								 "TWB64 152 - Nijigasaki Orange",        
-								 "TWB64 153 - holoblue",                 
-								 "TWB64 154 - Wrestling Red",            
-								 "TWB64 155 - Yoshi Egg Green",          
-								 "TWB64 156 - Pokedex Red",              
-								 "TWB64 157 - Disney Dream Blue",        
-								 "TWB64 158 - Xbox Green",               
-								 "TWB64 159 - Sonic Mega Blue",          
-								 "TWB64 160 - Sprite Green",             
-								 "TWB64 161 - Scarlett Green",           
-								 "TWB64 162 - Glitchy Blue",             
-								 "TWB64 163 - Classic LCD",              
-								 "TWB64 164 - 3DS Virtual Console Ver.", 
-								 "TWB64 165 - PocketStation Ver.",       
-								 "TWB64 166 - Timeless Gold and Red",    
-								 "TWB64 167 - Smurfy Blue",              
-								 "TWB64 168 - Swampy Ogre Green",        
-								 "TWB64 169 - Sailor Spinach Green",     
-								 "TWB64 170 - Shenron Green",            
-								 "TWB64 171 - Berserk Blood",            
-								 "TWB64 172 - Super Star Pink",          
-								 "TWB64 173 - Gamebuino Classic Ver.",   
-								 "TWB64 174 - Barbie Pink",              
-								 "TWB64 175 - Star Command Green",       
-								 "TWB64 176 - Nokia 3310 Ver.",          
-								 "TWB64 177 - Clover Green",             
-								 "TWB64 178 - Crash Orange",             
-								 "TWB64 179 - Famicom Disk Yellow",      
-								 "TWB64 180 - Team Rocket Red",          
-								 "TWB64 181 - SEIKO Timer Yellow",       
-								 "TWB64 182 - PINK109",                  
-								 "TWB64 183 - Doraemon Tricolor",        
-								 "TWB64 184 - Fury Blue",                
-								 "TWB64 185 - Rockstar Orange",          
-								 "TWB64 186 - Puyo Puyo Green",          
-								 "TWB64 187 - Susan G. Pink",            
-								 "TWB64 188 - Pizza Hut Red",            
-								 "TWB64 189 - Plumbob Green",            
-								 "TWB64 190 - Grand Ivory",              
-								 "TWB64 191 - Demon's Gold",             
-								 "TWB64 192 - SEGA Tokyo Blue",          
-								 "TWB64 193 - Champion's Tunic",         
-								 "TWB64 194 - DK Barrel Brown",          
-								 "TWB64 195 - EVA-01",                   
-								 "TWB64 196 - Equestrian Purple",        
-								 "TWB64 197 - Autobot Red",              
-								 "TWB64 198 - niconico sea green",       
-								 "TWB64 199 - Duracell Copper",          
-								 "TWB64 200 - TOKYO SKYTREE CLOUDY BLUE"};
-
-		const char* twb3_colors_modes[] = {
-								 "TWB64 201 - DMG-GOLD",               
-								 "TWB64 202 - LCD Clock Green",        
-								 "TWB64 203 - Famicom Frenzy",         
-								 "TWB64 204 - DK Arcade Blue",         
-								 "TWB64 205 - Advanced Indigo",        
-								 "TWB64 206 - Ultra Black",            
-								 "TWB64 207 - Chaos Emerald Green",    
-								 "TWB64 208 - Blue Bomber Azure",      
-								 "TWB64 209 - Garry's Blue",           
-								 "TWB64 210 - Steam Gray",             
-								 "TWB64 211 - Dream Land GB Ver.",     
-								 "TWB64 212 - Pokemon Pinball Ver.",   
-								 "TWB64 213 - Poketch Ver.",           
-								 "TWB64 214 - COLLECTION of SaGa Ver.",
-								 "TWB64 215 - Rocky-Valley Holiday",   
-								 "TWB64 216 - Giga Kiwi DMG",          
-								 "TWB64 217 - DMG Pea Green",          
-								 "TWB64 218 - Timing Hero Ver.",       
-								 "TWB64 219 - Invincible Blue",        
-								 "TWB64 220 - Grinchy Green",          
-								 "TWB64 221 - Winter Icy Blue",        
-								 "TWB64 222 - School Idol Mix",        
-								 "TWB64 223 - Green Awakening",        
-								 "TWB64 224 - Goomba Brown",           
-								 "TWB64 225 - Devil Red",              
-								 "TWB64 226 - Simpson Yellow",         
-								 "TWB64 227 - Spooky Purple",          
-								 "TWB64 228 - Treasure Gold",          
-								 "TWB64 229 - Cherry Blossom Pink",    
-								 "TWB64 230 - Golden Trophy",          
-								 "TWB64 231 - Winter Icy Blue",        
-								 "TWB64 232 - Leprechaun Green",       
-								 "TWB64 233 - SAITAMA SUPER BLUE",     
-								 "TWB64 234 - SAITAMA SUPER GREEN",    
-								 "TWB64 235 - Duolingo Green",         
-								 "TWB64 236 - Super Mushroom Vision",  
-								 "TWB64 237 - Ancient Hisuian Brown",  
-								 "TWB64 238 - Sky Pop Ivory",          
-								 "TWB64 239 - LAWSON BLUE",            
-								 "TWB64 240 - Anime Expo Red",         
-								 "TWB64 241 - Brilliant Diamond Blue", 
-								 "TWB64 242 - Shining Pearl Pink",     
-								 "TWB64 243 - Funimation Melon",       
-								 "TWB64 244 - Teyvat Brown",           
-								 "TWB64 245 - Chozo Blue",             
-								 "TWB64 246 - Spotify Green",          
-								 "TWB64 247 - Dr Pepper Red",          
-								 "TWB64 248 - NHK Silver Gray",        
-								 "TWB64 249 - Starbucks Green",        
-								 "TWB64 250 - Tokyo Disney Magic",     
-								 "TWB64 251 - Kingdom Key Gold",       
-								 "TWB64 252 - Hogwarts Goldius",       
-								 "TWB64 253 - Kentucky Fried Red",     
-								 "TWB64 254 - Cheeto Orange",          
-								 "TWB64 255 - Namco Idol Pink",        
-								 "TWB64 256 - Domino's Blue",          
-								 "TWB64 257 - Pac-Man Vision",         
-								 "TWB64 258 - Bill's PC Screen",       
-								 "TWB64 259 - Sonic Mega Blue",        
-								 "TWB64 260 - Fool's Gold and Silver", 
-								 "TWB64 261 - UTA RED",                
-								 "TWB64 262 - Metallic Paldea Brass",  
-								 "TWB64 263 - Classy Christmas",       
-								 "TWB64 264 - Winter Christmas",       
-								 "TWB64 265 - IDOL WORLD TRICOLOR!!!", 
-								 "TWB64 266 - Inkling Tricolor",       
-								 "TWB64 267 - 7-Eleven Color Combo",   
-								 "TWB64 268 - PAC-PALETTE",            
-								 "TWB64 269 - Vulnerable Blue",        
-								 "TWB64 270 - Nightvision Green",      
-								 "TWB64 271 - Bandai Namco Tricolor",  
-								 "TWB64 272 - Gold, Silver, and Bronze",
-								 "TWB64 273 - Arendelle Winter Blue",  
-								 "TWB64 274 - Super Famicom Supreme",  
-								 "TWB64 275 - Absorbent and Yellow",   
-								 "TWB64 276 - 765PRO TRICOLOR",        
-								 "TWB64 277 - GameCube Glimmer",       
-								 "TWB64 278 - 1st Vision Pastel",      
-								 "TWB64 279 - Perfect Majin Emperor",  
-								 "TWB64 280 - J-Pop Idol Sherbet",     
-								 "TWB64 281 - Ryuuguu Sunset",         
-								 "TWB64 282 - Tropical Starfall",      
-								 "TWB64 283 - Colorful Horizons",      
-								 "TWB64 284 - BLACKPINK BLINK PINK",   
-								 "TWB64 285 - DMG-SWITCH",             
-								 "TWB64 286 - POCKET SWITCH",          
-								 "TWB64 287 - Sunny Passion Paradise", 
-								 "TWB64 288 - Saiyan Beast Silver",    
-								 "TWB64 289 - RADIANT SMILE RAMP",     
-								 "TWB64 290 - A-RISE BLUE",            
-								 "TWB64 291 - TROPICAL TWICE APRICOT", 
-								 "TWB64 292 - Odyssey Boy",            
-								 "TWB64 293 - Frog Coin Green",        
-								 "TWB64 294 - Garfield Vision",        
-								 "TWB64 295 - Bedrock Caveman Vision", 
-								 "TWB64 296 - BANGTAN ARMY PURPLE",    
-								 "TWB64 297 - Spider-Verse Red",       
-								 "TWB64 298 - Baja Blast Beach",       
-								 "TWB64 299 - 3DS Virtual Console Green",
-								 "TWB64 300 - Wonder Purple"};
-
-		const char* pixelshift1_colors_modes[] = {
-								 "PixelShift 01 - Arctic Green",              
-								 "PixelShift 02 - Arduboy",                   
-								 "PixelShift 03 - BGB 0.3 Emulator",          
-								 "PixelShift 04 - Camouflage",                
-								 "PixelShift 05 - Chocolate Bar",             
-								 "PixelShift 06 - CMYK",                      
-								 "PixelShift 07 - Cotton Candy",              
-								 "PixelShift 08 - Easy Greens",               
-								 "PixelShift 09 - Gamate",                    
-								 "PixelShift 10 - Game Boy Light",            
-								 "PixelShift 11 - Game Boy Pocket",           
-								 "PixelShift 12 - Game Boy Pocket Alt",       
-								 "PixelShift 13 - Game Pocket Computer",      
-								 "PixelShift 14 - Game & Watch Ball",         
-								 "PixelShift 15 - GB Backlight Blue",         
-								 "PixelShift 16 - GB Backlight Faded",        
-								 "PixelShift 17 - GB Backlight Orange",       
-								 "PixelShift 18 - GB Backlight White ",       
-								 "PixelShift 19 - GB Backlight Yellow Dark",  
-								 "PixelShift 20 - GB Bootleg",                
-								 "PixelShift 21 - GB Hunter",                 
-								 "PixelShift 22 - GB Kiosk",                  
-								 "PixelShift 23 - GB Kiosk 2",                
-								 "PixelShift 24 - GB New",                    
-								 "PixelShift 25 - GB Nuked",                  
-								 "PixelShift 26 - GB Old",                    
-								 "PixelShift 27 - GBP Bivert",                
-								 "PixelShift 28 - GB Washed Yellow Backlight",
-								 "PixelShift 29 - Ghost",                     
-								 "PixelShift 30 - Glow In The Dark",          
-								 "PixelShift 31 - Gold Bar",                  
-								 "PixelShift 32 - Grapefruit",                
-								 "PixelShift 33 - Gray Green Mix",            
-								 "PixelShift 34 - Missingno",                 
-								 "PixelShift 35 - MS-Dos",                    
-								 "PixelShift 36 - Newspaper",                 
-								 "PixelShift 37 - Pip-Boy",                   
-								 "PixelShift 38 - Pocket Girl",               
-								 "PixelShift 39 - Silhouette",                
-								 "PixelShift 40 - Sunburst",                  
-								 "PixelShift 41 - Technicolor",               
-								 "PixelShift 42 - Tron",                      
-								 "PixelShift 43 - Vaporwave",                 
-								 "PixelShift 44 - Virtual Boy",               
-								 "PixelShift 45 - Wish"}; 
-
-
-
-		int n_all_gambate_gc_colors_modes = 55;
-		int n_twb1_colors_modes = 100;
-		int n_twb2_colors_modes = 100;
-		int n_twb3_colors_modes = 100;
-		int n_pixelshift1_colors_modes = 45;
-
-		for (int i = 0; i < n_all_gambate_gc_colors_modes; i++)
-			colorizations_choices->add(all_gambate_gc_colors_modes[i], all_gambate_gc_colors_modes[i], currentColorization == std::string(all_gambate_gc_colors_modes[i]));
-		
-		for (int i = 0; i < n_twb1_colors_modes; i++)
-			twb1_colorizations_choices->add(twb1_colors_modes[i], twb1_colors_modes[i], twb1_currentColorization == std::string(twb1_colors_modes[i]));
-		
-		for (int i = 0; i < n_twb2_colors_modes; i++)
-			twb2_colorizations_choices->add(twb2_colors_modes[i], twb2_colors_modes[i], twb2_currentColorization == std::string(twb2_colors_modes[i]));
-
-		for (int i = 0; i < n_twb3_colors_modes; i++)
-			twb3_colorizations_choices->add(twb3_colors_modes[i], twb3_colors_modes[i], twb3_currentColorization == std::string(twb3_colors_modes[i]));
-		
-		for (int i = 0; i < n_pixelshift1_colors_modes; i++)
-			pixelshift1_colorizations_choices->add(pixelshift1_colors_modes[i], pixelshift1_colors_modes[i], pixelshift1_currentColorization == std::string(pixelshift1_colors_modes[i]));
-
-        if (SystemData::es_features_loaded || (!SystemData::es_features_loaded && (systemData->getName() == "gb" || systemData->getName() == "gbc" || systemData->getName() == "gb2players" || systemData->getName() == "gbc2players" || systemData->getName() == "gbh" || systemData->getName() == "gbch"))) // only for gb, gbc and gb2players gbh gbch
-		{
-			systemConfiguration->addWithLabel(_("COLORIZATION"), colorizations_choices);
-			systemConfiguration->addWithLabel(_("TWB64 - PACK 1 PALETTE"), twb1_colorizations_choices);
-			systemConfiguration->addWithLabel(_("TWB64 - PACK 2 PALETTE"), twb2_colorizations_choices);
-			systemConfiguration->addWithLabel(_("TWB64 - PACK 3 PALETTE"), twb3_colorizations_choices);
-			systemConfiguration->addWithLabel(_("PIXELSHIFT - PACK 1 PALETTE"), pixelshift1_colorizations_choices);
-			systemConfiguration->addSaveFunc([colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.colorization", colorizations_choices->getSelected()); });
-			systemConfiguration->addSaveFunc([twb1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb1_colorization", twb1_colorizations_choices->getSelected()); });
-			systemConfiguration->addSaveFunc([twb2_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb2_colorization", twb2_colorizations_choices->getSelected()); });
-			systemConfiguration->addSaveFunc([twb3_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.twb3_colorization", twb3_colorizations_choices->getSelected()); });
-			systemConfiguration->addSaveFunc([pixelshift1_colorizations_choices, configName] { SystemConf::getInstance()->set(configName + ".renderer.pixelshift1_colorization", pixelshift1_colorizations_choices->getSelected()); });
-		}
+		systemConfiguration->addEntry(_("COLORIZATION"), true, [mWindow, configName] { openColorizationConfiguration(mWindow, configName); });
 	}
 
 	// Load per-game / per-emulator / per-system custom features
